@@ -33,12 +33,14 @@ public class UserController {
         User newUser = new User(dto);
         repo.save(newUser);
 
-        return ResponseEntity.ok(new ResponseMessage<User>(newUser, 200));
+        return service.checkAllUserCredencials(dto)
+                ? ResponseEntity.ok(new ResponseMessage<User>(newUser))
+                : ResponseEntity.status(403).body(new ResponseMessage("Credenciais erradas"));
     }
 
     @SuppressWarnings("rawtypes")
     @GetMapping
     public ResponseEntity<ResponseMessage> getAllUsers() {
-        return ResponseEntity.ok(new ResponseMessage<List<UserRes>>(service.getUserResList(repo.findAll()), 200));
+        return ResponseEntity.ok(new ResponseMessage<List<UserRes>>(service.getUserResList(repo.findAll())));
     }
 }
