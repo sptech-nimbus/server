@@ -3,6 +3,7 @@ package com.user.user.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,11 +32,11 @@ public class UserController {
     @PostMapping
     public ResponseEntity<ResponseMessage> registerUser(@RequestBody UserDTO dto) {
         if (!service.checkAllUserCredencials(dto)) {
-            return ResponseEntity.status(403).body(new ResponseMessage("Credenciais incorretas"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage("Verifique suas credenciais"));
         }
 
         if (repo.findUserByEmail(dto.email()).size() > 0) {
-            return ResponseEntity.status(403).body(new ResponseMessage("Email já utilizado"));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseMessage("Email já utilizado"));
         }
 
         User newUser = new User(dto);
