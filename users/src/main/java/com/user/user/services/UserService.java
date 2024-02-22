@@ -25,6 +25,10 @@ public class UserService {
         return usersRes;
     }
 
+    public UserRes convertUserToRes(User user) {
+        return new UserRes(user.getFirstName(), user.getLastName(), user.getUserType(), user.getUserId());
+    }
+
     public Boolean checkAllUserCredencials(UserDTO newUser) {
         return checkUserEmail(newUser.email())
                 && checkUserPassword(newUser.password())
