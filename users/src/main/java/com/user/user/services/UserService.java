@@ -23,13 +23,18 @@ public class UserService {
     }
 
     public Boolean checkAllUserCredencials(UserDTO newUser) {
-        return matchRegex(newUser.email(), "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
-                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$");
+        return checkUserEmail(newUser.email()) && checkUserPassword(newUser.password());
     }
 
-    public Boolean matchRegex(String value, String regex) {
-        return Pattern.compile(regex)
-                .matcher(value)
+    public Boolean checkUserEmail(String email) {
+        return Pattern.compile("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$")
+                .matcher(email)
                 .matches();
+    }
+
+    public Boolean checkUserPassword(String password) {
+        return Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$")
+                .matcher(password).matches();
     }
 }

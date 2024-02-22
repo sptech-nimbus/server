@@ -30,12 +30,17 @@ public class UserController {
     @SuppressWarnings("rawtypes")
     @PostMapping
     public ResponseEntity<ResponseMessage> registerUser(@RequestBody UserDTO dto) {
+        if (!service.checkAllUserCredencials(dto)) {
+            return ResponseEntity.status(403).body(new ResponseMessage("Credenciais incorretas"));
+        }
+
+        if (repo.findUserByEmail(dto.email()).size() > 0) {
+            return ResponseEntity.status(403).body(new ResponseMessage("Email já utilizado"));
+        }
+
         User newUser = new User(dto);
         repo.save(newUser);
-
-        return service.checkAllUserCredencials(dto)
-                ? ResponseEntity.ok(new ResponseMessage<User>(newUser))
-                : ResponseEntity.status(403).body(new ResponseMessage("Credenciais erradas"));
+        return ResponseEntity.ok(new ResponseMessage<User>(newUser));
     }
 
     @SuppressWarnings("rawtypes")
