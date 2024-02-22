@@ -35,12 +35,17 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "user_type", nullable = false)
+    private String userType;
+
     public User(UserDTO dto) {
         this.firstName = dto.firstName();
         this.lastName = dto.lastName();
         this.email = dto.email();
         this.password = dto.password();
+        this.userType = dto.userType();
     }
 
-    public record UserRes(String firstName, String lastName, String userId) {}
+    public record UserRes(String firstName, String lastName, String userType, String userId) {
+    }
 }
