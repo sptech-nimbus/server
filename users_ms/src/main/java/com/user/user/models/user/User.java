@@ -11,8 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "User")
-@Table(name = "User")
+@Entity(name = "user")
+@Table(name = "user")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,31 +21,16 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
-    private String userId;
+    private String id;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
-
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
-
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, columnDefinition = "COLLATE utf8_bin", unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = false, columnDefinition = "COLLATE utf8_bin")
     private String password;
 
-    @Column(name = "user_type", nullable = false)
-    private String userType;
-
     public User(UserDTO dto) {
-        this.firstName = dto.firstName();
-        this.lastName = dto.lastName();
         this.email = dto.email();
         this.password = dto.password();
-        this.userType = dto.userType();
-    }
-
-    public record UserRes(String firstName, String lastName, String userType, String userId) {
     }
 }
