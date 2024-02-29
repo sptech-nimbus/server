@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.user.user.models.responseMessage.ResponseMessage;
 import com.user.user.models.user.LoginDTO;
 import com.user.user.models.user.User;
 import com.user.user.models.user.UserDTO;
@@ -19,7 +20,6 @@ import com.user.user.models.user.User.UserRes;
 import com.user.user.repositories.UserRepository;
 import com.user.user.services.UserService;
 
-import models.ResponseMessage;
 
 @RestController
 @RequestMapping("users")
