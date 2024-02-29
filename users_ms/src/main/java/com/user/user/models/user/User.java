@@ -1,10 +1,13 @@
 package com.user.user.models.user;
 
+import com.user.user.models.coach.Coach;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,11 +26,14 @@ public class User {
     @Column(name = "user_id")
     private String id;
 
-    @Column(name = "email", nullable = false, columnDefinition = "COLLATE utf8_bin", unique = true)
+    @Column(name = "email", nullable = false, columnDefinition = "VARCHAR(255) COLLATE utf8_bin", unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false, columnDefinition = "COLLATE utf8_bin")
+    @Column(name = "password", nullable = false, columnDefinition = "VARCHAR(255) COLLATE utf8_bin")
     private String password;
+
+    @OneToOne(mappedBy = "user")
+    private Coach coach;
 
     public User(UserDTO dto) {
         this.email = dto.email();
