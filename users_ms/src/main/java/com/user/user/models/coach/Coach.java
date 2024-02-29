@@ -23,5 +23,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Coach extends Persona {
-
+    public Coach(CoachDTO dto) {
+        this.setFirstName(dto.firstName());
+        this.setLastName(dto.lastName());
+        this.setBirthDate(dto.birthDate());
+        this.setPhone(dto.phone());
+        this.setPicture(dto.picture());
+    }
 }

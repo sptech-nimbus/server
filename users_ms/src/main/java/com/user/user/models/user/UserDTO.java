@@ -1,5 +1,7 @@
 package com.user.user.models.user;
 
-public record UserDTO(String email, String password) {
+import com.user.user.models.coach.CoachDTO;
+
+public record UserDTO(String email, String password, CoachDTO coach) {
 
 }
