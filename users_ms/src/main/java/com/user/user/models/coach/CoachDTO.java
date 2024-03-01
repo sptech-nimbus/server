@@ -5,6 +5,6 @@ import java.time.LocalDate;
 public record CoachDTO(
         String firstName, String lastName,
         LocalDate birthDate,
-        String phone, Long picture, String userId) {
+        String phone, String picture, String userId) {
 
 }

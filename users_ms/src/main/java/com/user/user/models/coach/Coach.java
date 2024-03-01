@@ -1,11 +1,15 @@
 package com.user.user.models.coach;
 
+import java.util.List;
+
 import com.user.user.models.persona.Persona;
+import com.user.user.models.team.Team;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +27,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Coach extends Persona {
+    @OneToMany(mappedBy = "coach")
+    private List<Team> teams;
+
     public Coach(CoachDTO dto) {
         this.setFirstName(dto.firstName());
         this.setLastName(dto.lastName());

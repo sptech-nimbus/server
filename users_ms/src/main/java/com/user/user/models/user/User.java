@@ -1,5 +1,6 @@
 package com.user.user.models.user;
 
+import com.user.user.models.athlete.Athlete;
 import com.user.user.models.coach.Coach;
 
 import jakarta.persistence.Column;
@@ -34,6 +35,9 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private Coach coach;
+
+    @OneToOne(mappedBy = "user")
+    private Athlete athlete;
 
     public User(UserDTO dto) {
         this.email = dto.email();

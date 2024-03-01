@@ -29,9 +29,9 @@ public class Persona {
     private String lastName;
     private LocalDate birthDate;
     private String phone;
-    private Long picture;
+    private String picture;
 
-    @OneToOne(optional = true)
+    @OneToOne(optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 }
