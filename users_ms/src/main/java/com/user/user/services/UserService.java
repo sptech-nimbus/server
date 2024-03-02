@@ -21,6 +21,9 @@ public class UserService {
     @Autowired
     private CoachService coachService;
 
+    @Autowired
+    private AthleteService athleteService;
+
     public ResponseEntity<ResponseMessage> register(UserDTO dto) {
         if (!checkAllUserCredencials(dto)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -38,8 +41,23 @@ public class UserService {
         if (dto.coach() != null) {
             ResponseEntity<ResponseMessage> coachResponseEntity = coachService.register(dto.coach(), newUser);
 
-            if (!coachResponseEntity.getStatusCode().equals(HttpStatus.OK))
+            if (!coachResponseEntity.getStatusCode().equals(HttpStatus.OK)) {
+                repo.delete(newUser);
+
                 return coachResponseEntity;
+            }
+        } else if (dto.athlete() != null) {
+            ResponseEntity<ResponseMessage> athleteResponseEntity = athleteService.register(dto.athlete(), newUser);
+
+            if (!athleteResponseEntity.getStatusCode().equals(HttpStatus.OK)) {
+                System.out.println("certo");
+                repo.delete(newUser);
+
+                return athleteResponseEntity;
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseMessage<>("Tipo de usuário não permitido ou não informado"));
         }
 
         return ResponseEntity

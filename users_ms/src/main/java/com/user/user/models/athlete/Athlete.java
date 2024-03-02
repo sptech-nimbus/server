@@ -30,9 +30,19 @@ public class Athlete extends Persona {
         private String category;
 
         @Column(name = "is_starting", nullable = false, columnDefinition = "boolean default 0")
-        private Boolean starting;
+        private Boolean isStarting;
 
         @ManyToOne
-        @JoinColumn(name="team_id", referencedColumnName = "team_id")
+        @JoinColumn(name = "team_id", referencedColumnName = "team_id")
         private Team team;
+
+        public Athlete(AthleteDTO dto) {
+                this.setFirstName(dto.firstName());
+                this.setLastName(dto.lastName());
+                this.setBirthDate(dto.birthDate());
+                this.setPhone(dto.phone()); 
+                this.setPicture(dto.picture());
+                this.setCategory(dto.category());
+                this.setIsStarting(dto.isStarting());
+        }
 }
