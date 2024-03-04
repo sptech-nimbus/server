@@ -17,10 +17,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.chat.chat.domains.message.Message;
 import com.chat.chat.domains.message.MessageDTO;
+import com.chat.chat.domains.responseMessage.ResponseMessage;
 import com.chat.chat.domains.user.User;
 import com.chat.chat.repositories.MessageRepository;
-
-import models.ResponseMessage;
 
 @RestController
 @RequestMapping("/message")

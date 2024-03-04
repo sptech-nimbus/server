@@ -1,18 +1,22 @@
 package com.user.user.models.user;
 
+import com.user.user.models.athlete.Athlete;
+import com.user.user.models.coach.Coach;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "User")
-@Table(name = "User")
+@Entity(name = "user")
+@Table(name = "user")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,31 +25,22 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
-    private String userId;
+    private String id;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
-
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
-
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, columnDefinition = "VARCHAR(255) COLLATE utf8_bin", unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = false, columnDefinition = "VARCHAR(255) COLLATE utf8_bin")
     private String password;
 
-    @Column(name = "user_type", nullable = false)
-    private String userType;
+    @OneToOne(mappedBy = "user")
+    private Coach coach;
+
+    @OneToOne(mappedBy = "user")
+    private Athlete athlete;
 
     public User(UserDTO dto) {
-        this.firstName = dto.firstName();
-        this.lastName = dto.lastName();
         this.email = dto.email();
         this.password = dto.password();
-        this.userType = dto.userType();
-    }
-
-    public record UserRes(String firstName, String lastName, String userType, String userId) {
     }
 }
