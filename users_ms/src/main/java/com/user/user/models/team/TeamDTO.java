@@ -6,6 +6,7 @@ public record TeamDTO(
                 String category,
                 String picture,
                 String local,
+                String name,
                 Coach coach) {
 
 }
