@@ -2,6 +2,7 @@ package com.user.user.models.coach;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.user.user.models.persona.Persona;
 import com.user.user.models.team.Team;
 
@@ -11,7 +12,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @AttributeOverrides({
@@ -26,7 +29,10 @@ import lombok.Setter;
 @Table(name = "coach")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Coach extends Persona {
+    @JsonIgnore
     @OneToMany(mappedBy = "coach")
     private List<Team> teams;
 

@@ -48,8 +48,8 @@ public class Team {
     private List<Athlete> athletes;
 
     public Team(TeamDTO dto) {
+        this.coach = dto.coach();
         this.setCategory(dto.category());
-        this.setCoach(dto.coach());
         this.setLocal(dto.local());
         this.setPicture(dto.picture());
     }
