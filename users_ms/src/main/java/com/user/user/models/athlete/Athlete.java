@@ -1,5 +1,8 @@
 package com.user.user.models.athlete;
 
+import java.util.List;
+
+import com.user.user.models.injury.Injury;
 import com.user.user.models.persona.Persona;
 import com.user.user.models.team.Team;
 
@@ -9,6 +12,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,6 +39,9 @@ public class Athlete extends Persona {
         @ManyToOne
         @JoinColumn(name = "team_id", referencedColumnName = "team_id")
         private Team team;
+
+        @OneToMany(mappedBy = "Athlete")
+        private List<Injury> injuries;
 
         public Athlete(AthleteDTO dto) {
                 this.setFirstName(dto.firstName());
