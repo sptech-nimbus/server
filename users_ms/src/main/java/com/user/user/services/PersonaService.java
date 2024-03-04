@@ -2,12 +2,41 @@ package com.user.user.services;
 
 import java.time.LocalDate;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.user.user.models.persona.Persona;
+import com.user.user.models.responseMessage.ResponseMessage;
+import com.user.user.repositories.AthleteRepository;
+import com.user.user.repositories.CoachRepository;
 
+@SuppressWarnings("rawtypes")
 @Service
 public class PersonaService {
+
+    @Autowired
+    private AthleteRepository athleteRepo;
+
+    @Autowired
+    private CoachRepository coachRepo;
+
+    public ResponseEntity<ResponseMessage> getPersonaByUserId(String id) {
+        Persona personaFound = athleteRepo.findAthleteByUserId(id);
+
+        if (personaFound == null) {
+            personaFound = coachRepo.findCoachByUserId(id);
+        }
+
+        if (personaFound == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseMessage<>("Informações de usuário não encontradas"));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<Persona>(personaFound));
+    }
+
     public Boolean checkPersonaCredencials(Persona persona) {
         return checkFieldsNotNull(persona)
                 && checkValidPhone(persona.getPhone())

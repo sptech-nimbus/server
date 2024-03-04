@@ -14,7 +14,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @AttributeOverrides({
@@ -29,6 +31,8 @@ import lombok.Setter;
 @Table(name = "athlete")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Athlete extends Persona {
         @Column(name = "category", nullable = false)
         private String category;
@@ -40,14 +44,14 @@ public class Athlete extends Persona {
         @JoinColumn(name = "team_id", referencedColumnName = "team_id")
         private Team team;
 
-        @OneToMany(mappedBy = "Athlete")
+        @OneToMany(mappedBy = "athlete")
         private List<Injury> injuries;
 
         public Athlete(AthleteDTO dto) {
                 this.setFirstName(dto.firstName());
                 this.setLastName(dto.lastName());
                 this.setBirthDate(dto.birthDate());
-                this.setPhone(dto.phone()); 
+                this.setPhone(dto.phone());
                 this.setPicture(dto.picture());
                 this.setCategory(dto.category());
                 this.setIsStarting(dto.isStarting());
