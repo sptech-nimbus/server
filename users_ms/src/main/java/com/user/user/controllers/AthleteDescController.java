@@ -13,7 +13,7 @@ import com.user.user.services.AthleteDescService;
 
 @SuppressWarnings("rawtypes")
 @RestController
-@RequestMapping("athleteDesc")
+@RequestMapping("athleteDescs")
 public class AthleteDescController {
     @Autowired
     AthleteDescService service;

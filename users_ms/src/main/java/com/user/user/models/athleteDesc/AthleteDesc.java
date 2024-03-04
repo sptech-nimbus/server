@@ -24,6 +24,7 @@ import lombok.Setter;
 public class AthleteDesc {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name="athlete_desc_id")
     private String id;
 
     @Column(name = "weight")
