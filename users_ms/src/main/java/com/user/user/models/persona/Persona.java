@@ -2,6 +2,7 @@ package com.user.user.models.persona;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.user.user.models.user.User;
 
 import jakarta.persistence.GeneratedValue;
@@ -31,6 +32,7 @@ public class Persona {
     private String phone;
     private String picture;
 
+    @JsonIgnore
     @OneToOne(optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;

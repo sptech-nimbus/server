@@ -31,6 +31,9 @@ public class Team {
     @Column(name = "team_id")
     private String id;
 
+    @Column(name="name", nullable = false)
+    private String name;
+
     @Column(name = "category", nullable = false)
     private String category;
 
@@ -48,9 +51,10 @@ public class Team {
     private List<Athlete> athletes;
 
     public Team(TeamDTO dto) {
-        this.setCategory(dto.category());
         this.setCoach(dto.coach());
+        this.setCategory(dto.category());
         this.setLocal(dto.local());
         this.setPicture(dto.picture());
+        this.setName(dto.name());
     }
 }
