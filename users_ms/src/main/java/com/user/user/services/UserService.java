@@ -27,7 +27,7 @@ public class UserService {
     public ResponseEntity<ResponseMessage> register(UserDTO dto) {
         if (!checkAllUserCredencials(dto)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage("Verifique suas credenciais"));
+                    .body(new ResponseMessage("Verifique suas credenciais de usuário"));
         }
 
         if (repo.findByEmail(dto.email()).size() > 0) {
@@ -50,7 +50,6 @@ public class UserService {
             ResponseEntity<ResponseMessage> athleteResponseEntity = athleteService.register(dto.athlete(), newUser);
 
             if (!athleteResponseEntity.getStatusCode().equals(HttpStatus.OK)) {
-                System.out.println("certo");
                 repo.delete(newUser);
 
                 return athleteResponseEntity;
