@@ -2,6 +2,7 @@ package com.user.user.models.injury;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.user.user.models.athlete.Athlete;
 
 import jakarta.persistence.Column;
@@ -38,6 +39,7 @@ public class Injury {
     @Column(name = "final_date")
     private LocalDate finalDate;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "athlete_id", referencedColumnName = "athlete_id")
     private Athlete athlete;
