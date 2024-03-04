@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.user.user.models.responseMessage.ResponseMessage;
 import com.user.user.models.team.Team;
 import com.user.user.models.team.TeamDTO;
+import com.user.user.repositories.CoachRepository;
 import com.user.user.repositories.TeamRepository;
 
 @SuppressWarnings("rawtypes")
@@ -17,6 +18,9 @@ import com.user.user.repositories.TeamRepository;
 public class TeamService {
     @Autowired
     TeamRepository repo;
+
+    @Autowired
+    CoachRepository coachRepo;
 
     public ResponseEntity<ResponseMessage> register(TeamDTO dto) {
         Team newTeam = new Team(dto);
@@ -26,9 +30,18 @@ public class TeamService {
                     .body(new ResponseMessage<>("Verifique as credenciais do time"));
         }
 
+        if (!checkCoach(newTeam.getCoach().getId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseMessage<>("Coach não encontrado"));
+        }
+
         repo.save(newTeam);
 
         return ResponseEntity.ok(new ResponseMessage<Team>(newTeam));
+    }
+
+    public Boolean checkCoach(String coachId) {
+        return !coachRepo.findById(coachId).isEmpty();
     }
 
     public Boolean checkFieldsNotNull(Team team) {
