@@ -8,7 +8,7 @@ import com.user.user.models.persona.Persona;
 
 @Service
 public class PersonaService {
-    public Boolean checkPersona(Persona persona) {
+    public Boolean checkPersonaCredencials(Persona persona) {
         return checkFieldsNotNull(persona)
                 && checkValidPhone(persona.getPhone())
                 && checkPlus18(persona.getBirthDate());
@@ -33,18 +33,16 @@ public class PersonaService {
     };
 
     public Boolean checkValidPhone(String phone) {
+        if (phone == null)
+            return true;
+
         phone = phone.replaceAll("[^0-9]", "");
 
-        if (java.util.Arrays.asList(validsDDD).indexOf(Integer.parseInt(phone.substring(0, 2))) == -1)
-            return false;
-
-        if (phone.length() != 11)
-            return false;
-
-        return true;
+        return java.util.Arrays.asList(validsDDD).indexOf(Integer.parseInt(phone.substring(0, 2))) > -1
+                && phone.length() == 11;
     }
 
     public Boolean checkPlus18(LocalDate birthDate) {
-        return birthDate.plusYears(18).isAfter(LocalDate.now());
+        return birthDate.plusYears(18).isBefore(LocalDate.now());
     }
 }
