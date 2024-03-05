@@ -1,5 +1,8 @@
 package com.events.events.domains.team;
 
+import java.util.List;
+
+import com.events.events.domains.athlete.Athlete;
 import com.events.events.domains.coach.Coach;
 
 import lombok.AllArgsConstructor;
@@ -18,4 +21,5 @@ public class Team {
     private String picture;
     private String local;
     private Coach coach;
+    private List<Athlete> athletes;
 }
