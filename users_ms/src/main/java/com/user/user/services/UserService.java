@@ -1,13 +1,14 @@
 package com.user.user.services;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.user.user.domains.responseMessage.ResponseMessage;
+import com.user.user.domains.user.ChangePasswordDTO;
 import com.user.user.domains.user.User;
 import com.user.user.domains.user.UserDTO;
 import com.user.user.repositories.UserRepository;
@@ -72,6 +73,24 @@ public class UserService {
 
         return ResponseEntity
                 .ok(new ResponseMessage<String>("Login realizado", "Login realizado", userFound.getId()));
+    }
+
+    public ResponseEntity<ResponseMessage> changePassword(String id, ChangePasswordDTO dto) {
+        Optional<User> userFound = repo.findById(id);
+
+        if (!userFound.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage<>("Usuário nâo encontrado"));
+        }
+
+        if (userFound.get().getPassword().equals(dto.oldPassword())) {
+            userFound.get().setPassword(dto.newPassword());
+
+            repo.save(userFound.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage<>("Senha antiga incorreta"));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<>("Senha alterada com sucesso"));
     }
 
     public Boolean checkAllUserCredencials(UserDTO newUser) {

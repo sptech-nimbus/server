@@ -5,11 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.user.user.domains.responseMessage.ResponseMessage;
+import com.user.user.domains.user.ChangePasswordDTO;
 import com.user.user.domains.user.UserDTO;
 import com.user.user.services.PersonaService;
 import com.user.user.services.UserService;
@@ -37,5 +39,10 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseMessage> getUserById(@PathVariable String id) {
         return personaService.getPersonaByUserId(id);
+    }
+
+    @PutMapping("/changePassword/{id}")
+    public ResponseEntity<ResponseMessage> changePassword(@PathVariable String id, @RequestBody ChangePasswordDTO dto) {
+        return service.changePassword(id, dto);
     }
 }

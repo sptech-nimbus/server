@@ -12,7 +12,6 @@ import com.events.events.domains.game.Game;
 import com.events.events.domains.game.GameDTO;
 import com.events.events.domains.game.GameWithTeams;
 import com.events.events.domains.responseMessage.ResponseMessage;
-import com.events.events.domains.team.Team;
 import com.events.events.repositories.GameRepository;
 
 @SuppressWarnings("rawtypes")
