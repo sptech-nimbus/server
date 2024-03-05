@@ -7,9 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.user.user.models.responseMessage.ResponseMessage;
-import com.user.user.models.team.Team;
-import com.user.user.models.team.TeamDTO;
+import com.user.user.domains.responseMessage.ResponseMessage;
+import com.user.user.domains.team.Team;
+import com.user.user.domains.team.TeamDTO;
 import com.user.user.repositories.CoachRepository;
 import com.user.user.repositories.TeamRepository;
 

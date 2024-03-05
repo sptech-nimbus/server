@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.user.user.models.responseMessage.ResponseMessage;
-import com.user.user.models.user.UserDTO;
+import com.user.user.domains.responseMessage.ResponseMessage;
+import com.user.user.domains.user.UserDTO;
 import com.user.user.services.PersonaService;
 import com.user.user.services.UserService;
 

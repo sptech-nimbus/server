@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.user.user.models.responseMessage.ResponseMessage;
-import com.user.user.models.team.TeamDTO;
+import com.user.user.domains.responseMessage.ResponseMessage;
+import com.user.user.domains.team.TeamDTO;
 import com.user.user.services.TeamService;
 
 @SuppressWarnings("rawtypes")

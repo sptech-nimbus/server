@@ -5,9 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.user.user.models.athleteDesc.AthleteDesc;
-import com.user.user.models.athleteDesc.AthleteDescDTO;
-import com.user.user.models.responseMessage.ResponseMessage;
+import com.user.user.domains.athleteDesc.AthleteDesc;
+import com.user.user.domains.athleteDesc.AthleteDescDTO;
+import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.repositories.AthleteDescRepository;
 import com.user.user.repositories.AthleteRepository;
 
