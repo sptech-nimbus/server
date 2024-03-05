@@ -28,9 +28,6 @@ public class AthleteHistoric {
     @Column(name = "athlete_historic_id")
     private String id;
 
-    @Column(name = "training_id")
-    private Training training;
-
     @Column(name = "observations")
     private String observations;
 
@@ -79,4 +76,8 @@ public class AthleteHistoric {
     @ManyToOne
     @JoinColumn(name = "game_id", referencedColumnName = "game_id")
     private Game game;
+
+    @ManyToOne
+    @JoinColumn(name = "training_id", referencedColumnName = "training_id")
+    private Training training;
 }
