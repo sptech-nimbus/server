@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.user.user.models.persona.Persona;
-import com.user.user.models.responseMessage.ResponseMessage;
+import com.user.user.domains.persona.Persona;
+import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.repositories.AthleteRepository;
 import com.user.user.repositories.CoachRepository;
 

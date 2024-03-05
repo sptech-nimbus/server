@@ -7,9 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.user.user.models.responseMessage.ResponseMessage;
-import com.user.user.models.user.User;
-import com.user.user.models.user.UserDTO;
+import com.user.user.domains.responseMessage.ResponseMessage;
+import com.user.user.domains.user.User;
+import com.user.user.domains.user.UserDTO;
 import com.user.user.repositories.UserRepository;
 
 @SuppressWarnings("rawtypes")

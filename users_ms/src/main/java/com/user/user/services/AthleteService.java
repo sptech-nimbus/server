@@ -5,10 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.user.user.models.athlete.Athlete;
-import com.user.user.models.athlete.AthleteDTO;
-import com.user.user.models.responseMessage.ResponseMessage;
-import com.user.user.models.user.User;
+import com.user.user.domains.athlete.Athlete;
+import com.user.user.domains.athlete.AthleteDTO;
+import com.user.user.domains.responseMessage.ResponseMessage;
+import com.user.user.domains.user.User;
 import com.user.user.repositories.AthleteRepository;
 
 @SuppressWarnings("rawtypes")

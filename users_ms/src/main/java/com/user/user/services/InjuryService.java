@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.user.user.models.injury.Injury;
-import com.user.user.models.injury.InjuryDTO;
-import com.user.user.models.responseMessage.ResponseMessage;
+import com.user.user.domains.injury.Injury;
+import com.user.user.domains.injury.InjuryDTO;
+import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.repositories.InjuryRepository;
 
 @SuppressWarnings("rawtypes")
