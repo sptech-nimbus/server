@@ -1,6 +1,9 @@
 package com.events.events.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -21,5 +24,16 @@ public class GameService {
         repo.save(newGame);
 
         return ResponseEntity.ok(new ResponseMessage<Game>(newGame));
+    }
+
+    public ResponseEntity<ResponseMessage> getGamesFromTeamId(String teamId) {
+        List<Game> games = repo.findGamesByChallengerOrChallenged(teamId, teamId);
+
+        if (!games.isEmpty()) {
+            return ResponseEntity.ok(new ResponseMessage<List<Game>>(games));
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ResponseMessage<>("Nenhum jogo encontrado"));
     }
 }

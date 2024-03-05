@@ -52,5 +52,6 @@ public class Game {
         this.setChallenger(dto.challenger());
         this.setDateTime(dto.dateTime());
         this.setLocal(dto.local());
+        this.setConfirmed(false);
     }
 }
