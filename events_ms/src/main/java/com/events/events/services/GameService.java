@@ -1,5 +1,6 @@
 package com.events.events.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,9 @@ import org.springframework.stereotype.Service;
 
 import com.events.events.domains.game.Game;
 import com.events.events.domains.game.GameDTO;
+import com.events.events.domains.game.GameWithTeams;
 import com.events.events.domains.responseMessage.ResponseMessage;
+import com.events.events.domains.team.Team;
 import com.events.events.repositories.GameRepository;
 
 @SuppressWarnings("rawtypes")
@@ -17,6 +20,9 @@ import com.events.events.repositories.GameRepository;
 public class GameService {
     @Autowired
     GameRepository repo;
+
+    @Autowired
+    TeamService teamService;
 
     public ResponseEntity<ResponseMessage> register(GameDTO dto) {
         Game newGame = new Game(dto);
@@ -29,8 +35,16 @@ public class GameService {
     public ResponseEntity<ResponseMessage> getGamesFromTeamId(String teamId) {
         List<Game> games = repo.findGamesByChallengerOrChallenged(teamId, teamId);
 
+        List<GameWithTeams> gamesWithTeams = new ArrayList<>();
+
         if (!games.isEmpty()) {
-            return ResponseEntity.ok(new ResponseMessage<List<Game>>(games));
+            for (Game game : games) {
+                gamesWithTeams.add(new GameWithTeams(teamService.getTeamInfoById(game.getChallenger()),
+                        teamService.getTeamInfoById(game.getChallenged()),
+                        game));
+            }
+
+            return ResponseEntity.ok(new ResponseMessage<List<GameWithTeams>>(gamesWithTeams));
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)

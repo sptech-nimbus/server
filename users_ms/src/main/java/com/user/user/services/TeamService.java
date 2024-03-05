@@ -40,6 +40,10 @@ public class TeamService {
         return ResponseEntity.ok(new ResponseMessage<Team>(newTeam));
     }
 
+    public ResponseEntity<ResponseMessage> getTeamById(String id) {
+        return ResponseEntity.ok(new ResponseMessage<Team>(repo.findById(id).get()));
+    }
+
     public Boolean checkCoach(String coachId) {
         return !coachRepo.findById(coachId).isEmpty();
     }
