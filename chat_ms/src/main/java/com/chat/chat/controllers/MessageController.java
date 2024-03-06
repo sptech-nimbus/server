@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.chat.chat.domains.message.ChatMessageDTO;
 import com.chat.chat.domains.message.Message;
 import com.chat.chat.domains.message.MessageDTO;
 import com.chat.chat.domains.responseMessage.ResponseMessage;
-import com.chat.chat.domains.user.User;
 import com.chat.chat.repositories.MessageRepository;
 
+@SuppressWarnings("rawtypes")
 @RestController
 @RequestMapping("/message")
 public class MessageController {
@@ -30,24 +31,24 @@ public class MessageController {
     @Autowired
     private RestTemplate restTemplate;
 
-    @SuppressWarnings("rawtypes")
     @PostMapping(consumes = "application/json")
     @CrossOrigin
     @SendTo("/topic/messages")
     @MessageMapping("/sendMessage")
     public ResponseEntity<ResponseMessage> registerMessage(@RequestBody MessageDTO message) {
-        Message mensagem = new Message(message);
-        if (mensagem.getDate() == null)
-            mensagem.setDate(LocalDateTime.now());
+        Message newMessage = new Message(message);
+        if (newMessage.getDate() == null)
+            newMessage.setDate(LocalDateTime.now());
 
-        ResponseEntity<User> userEntity = restTemplate
-                .getForEntity("http://localhost:3000/users/" + mensagem.getUserId(), User.class);
+        ResponseEntity<ResponseMessage> chatUserEntity = restTemplate
+                .getForEntity("http://localhost:3000/users/ms-get-chat-user/" + newMessage.getUserId(),
+                        ResponseMessage.class);
 
-        System.out.println(userEntity);
+        ChatMessageDTO chatMessageDTO = new ChatMessageDTO(newMessage, chatUserEntity.getBody().getData());
 
-        repository.save(mensagem);
+        repository.save(newMessage);
 
-        return ResponseEntity.ok(new ResponseMessage<Message>("Mensagem enviada", mensagem));
+        return ResponseEntity.ok(new ResponseMessage<ChatMessageDTO>(chatMessageDTO));
     }
 
     @GetMapping

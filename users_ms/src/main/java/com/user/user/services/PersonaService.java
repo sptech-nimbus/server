@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.user.user.domains.persona.ChatUserDTO;
 import com.user.user.domains.persona.Persona;
 import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.repositories.AthleteRepository;
@@ -35,6 +36,24 @@ public class PersonaService {
         }
 
         return ResponseEntity.ok(new ResponseMessage<Persona>(personaFound));
+    }
+
+    public ResponseEntity<ResponseMessage> getChatUserByUserId(String id) {
+        Persona personaFound = athleteRepo.findAthleteByUserId(id);
+
+        if (personaFound == null) {
+            personaFound = coachRepo.findCoachByUserId(id);
+        }
+
+        if (personaFound == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseMessage<>("Informações de usuário não encontradas"));
+        }
+
+        ChatUserDTO chatUser = new ChatUserDTO(personaFound.getFirstName(), personaFound.getLastName(),
+                personaFound.getPicture());
+
+        return ResponseEntity.ok(new ResponseMessage<ChatUserDTO>(chatUser));
     }
 
     public Boolean checkPersonaCredencials(Persona persona) {

@@ -1,4 +1,4 @@
-ackage com.chat.chat.repositories;
+package com.chat.chat.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
