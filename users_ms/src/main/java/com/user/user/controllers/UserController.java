@@ -42,6 +42,11 @@ public class UserController {
         return personaService.getPersonaByUserId(id);
     }
 
+    @GetMapping("/ms-get-chat-user/{id}")
+    public ResponseEntity<ResponseMessage> getChatUserByUserId(@PathVariable String id) {
+        return personaService.getChatUserByUserId(id);
+    }
+
     @PutMapping("/change-password/{id}")
     public ResponseEntity<ResponseMessage> changePassword(@PathVariable String id, @RequestBody ChangePasswordDTO dto) {
         return service.changePassword(id, dto);

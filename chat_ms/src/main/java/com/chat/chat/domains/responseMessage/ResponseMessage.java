@@ -1,5 +1,12 @@
 package com.chat.chat.domains.responseMessage;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
 public class ResponseMessage<T> {
     private String clientMsg;
     private String serverMsg;
