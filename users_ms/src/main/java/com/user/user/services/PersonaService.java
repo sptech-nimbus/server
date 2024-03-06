@@ -50,8 +50,7 @@ public class PersonaService {
                     .body(new ResponseMessage<>("Informações de usuário não encontradas"));
         }
 
-        ChatUserDTO chatUser = new ChatUserDTO(personaFound.getFirstName(), personaFound.getLastName(),
-                personaFound.getPicture());
+        ChatUserDTO chatUser = new ChatUserDTO(personaFound);
 
         return ResponseEntity.ok(new ResponseMessage<ChatUserDTO>(chatUser));
     }
