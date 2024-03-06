@@ -21,6 +21,7 @@ public class AthleteDescService {
     AthleteRepository athleteRepo;
 
     public ResponseEntity<ResponseMessage> register(AthleteDescDTO dto) {
+        System.out.println(dto);
         AthleteDesc newAthleteDesc = new AthleteDesc(dto);
 
         if (!checkAthlete(newAthleteDesc.getAthlete().getId())) {
@@ -30,6 +31,17 @@ public class AthleteDescService {
         repo.save(newAthleteDesc);
 
         return ResponseEntity.ok(new ResponseMessage<AthleteDesc>(newAthleteDesc));
+    }
+
+    public ResponseEntity<ResponseMessage> getAthleteDescsByAthleteId(String athleteId) {
+        AthleteDesc athleteDesc = repo.findByAthleteId(athleteId);
+
+        if (athleteDesc == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseMessage<>("Informações de atleta não encontradas"));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<AthleteDesc>(athleteDesc));
     }
 
     public Boolean checkAthlete(String athleteId) {
