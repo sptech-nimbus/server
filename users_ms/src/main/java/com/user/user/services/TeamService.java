@@ -1,15 +1,19 @@
 package com.user.user.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.user.user.domains.athlete.Athlete;
 import com.user.user.domains.responseMessage.ResponseMessage;
+import com.user.user.domains.team.RegisterAthleteDTO;
 import com.user.user.domains.team.Team;
 import com.user.user.domains.team.TeamDTO;
+import com.user.user.repositories.AthleteRepository;
 import com.user.user.repositories.CoachRepository;
 import com.user.user.repositories.TeamRepository;
 
@@ -21,6 +25,9 @@ public class TeamService {
 
     @Autowired
     CoachRepository coachRepo;
+
+    @Autowired
+    AthleteRepository athleteRepo;
 
     public ResponseEntity<ResponseMessage> register(TeamDTO dto) {
         Team newTeam = new Team(dto);
@@ -38,6 +45,21 @@ public class TeamService {
         repo.save(newTeam);
 
         return ResponseEntity.ok(new ResponseMessage<Team>(newTeam));
+    }
+
+    public ResponseEntity<ResponseMessage> registerAthleteToTeam(RegisterAthleteDTO dto) {
+        Optional<Athlete> athlete = athleteRepo.findById(dto.athlete().getId());
+
+        if (!athlete.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage<>("Atleta não encontrado"));
+        }
+
+        athlete.get().setTeam(dto.team());
+
+        athleteRepo.save(athlete.get());
+
+        return ResponseEntity.ok(new ResponseMessage<>(
+                "Atleta " + athlete.get().getLastName() + " cadastrado no time"));
     }
 
     public ResponseEntity<ResponseMessage> getTeamById(String id) {

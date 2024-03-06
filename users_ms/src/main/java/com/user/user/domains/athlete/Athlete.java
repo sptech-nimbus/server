@@ -2,6 +2,7 @@ package com.user.user.domains.athlete;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.user.user.domains.injury.Injury;
 import com.user.user.domains.persona.Persona;
 import com.user.user.domains.team.Team;
@@ -40,6 +41,7 @@ public class Athlete extends Persona {
         @Column(name = "is_starting", nullable = false, columnDefinition = "boolean default 0")
         private Boolean isStarting;
 
+        @JsonIgnore
         @ManyToOne
         @JoinColumn(name = "team_id", referencedColumnName = "team_id")
         private Team team;
