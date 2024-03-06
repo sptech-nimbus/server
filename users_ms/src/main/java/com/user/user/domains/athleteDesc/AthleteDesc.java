@@ -24,7 +24,7 @@ import lombok.Setter;
 public class AthleteDesc {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name="athlete_desc_id")
+    @Column(name = "athlete_desc_id")
     private String id;
 
     @Column(name = "weight")
@@ -44,6 +44,6 @@ public class AthleteDesc {
         this.setPosition(dto.position());
         this.setWeight(dto.weight());
         this.setHeight(dto.height());
-        this.setAthlete(dto.athelete());
+        this.setAthlete(dto.athlete());
     }
 }
