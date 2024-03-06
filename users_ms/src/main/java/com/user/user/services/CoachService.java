@@ -1,5 +1,7 @@
 package com.user.user.services;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +32,19 @@ public class CoachService extends PersonaService {
 
         return ResponseEntity
                 .ok(new ResponseMessage<String>("Cadastro realizado", "Cadastro realizado", newCoach.getId()));
+    }
+
+    public ResponseEntity<ResponseMessage> removeUserFromCoach(String id) {
+        Optional<Coach> coachFound = repo.findById(id);
+
+        if (!coachFound.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage<>("Treinador não encontrado."));
+        }
+
+        coachFound.get().setUser(null);
+
+        repo.save(coachFound.get());
+
+        return ResponseEntity.ok(new ResponseMessage<>("Usuário desvinculado de Treinador"));
     }
 }

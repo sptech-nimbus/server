@@ -28,11 +28,11 @@ public class UserService {
     public ResponseEntity<ResponseMessage> register(UserDTO dto) {
         if (!checkAllUserCredencials(dto)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage("Verifique suas credenciais de usuário"));
+                    .body(new ResponseMessage("Verifique suas credenciais de usuário."));
         }
 
         if (repo.findByEmail(dto.email()).size() > 0) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseMessage("Email já utilizado"));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseMessage("Email já utilizado."));
         }
 
         User newUser = new User(dto);
@@ -57,22 +57,22 @@ public class UserService {
             }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage<>("Tipo de usuário não permitido ou não informado"));
+                    .body(new ResponseMessage<>("Tipo de usuário não permitido ou não informado."));
         }
 
         return ResponseEntity
-                .ok(new ResponseMessage<String>("Cadastro realizado", "Cadastro realizado", newUser.getId()));
+                .ok(new ResponseMessage<String>("Cadastro realizado.", "Cadastro realizado.", newUser.getId()));
     }
 
     public ResponseEntity<ResponseMessage> login(UserDTO dto) {
         User userFound = repo.findByEmailAndPassword(dto.email(), dto.password());
 
         if (userFound == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage("Email ou senha incorretos"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage("Email ou senha incorretos."));
         }
 
         return ResponseEntity
-                .ok(new ResponseMessage<String>("Login realizado", "Login realizado", userFound.getId()));
+                .ok(new ResponseMessage<String>("Login realizado.", "Login realizado.", userFound.getId()));
     }
 
     public ResponseEntity<ResponseMessage> changePassword(String id, ChangePasswordDTO dto) {
@@ -87,10 +87,32 @@ public class UserService {
 
             repo.save(userFound.get());
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage<>("Senha antiga incorreta"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage<>("Senha antiga incorreta."));
         }
 
-        return ResponseEntity.ok(new ResponseMessage<>("Senha alterada com sucesso"));
+        return ResponseEntity.ok(new ResponseMessage<>("Senha alterada com sucesso."));
+    }
+
+    public ResponseEntity<ResponseMessage> deleteUser(String id, String password) {
+        Optional<User> userFound = repo.findById(id);
+
+        if (!userFound.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage<>("Usuário não encontrado."));
+        }
+
+        if (!userFound.get().getPassword().equals(password)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage<>("Senha incorreta."));
+        }
+
+        if (userFound.get().getAthlete() != null) {
+            athleteService.removeUserFromAthlete(userFound.get().getAthlete().getId());
+        } else if (userFound.get().getCoach() != null) {
+            coachService.removeUserFromCoach(userFound.get().getCoach().getId());
+        }
+
+        repo.delete(userFound.get());
+
+        return ResponseEntity.ok(new ResponseMessage<>("Usuário deletado."));
     }
 
     public Boolean checkAllUserCredencials(UserDTO newUser) {
