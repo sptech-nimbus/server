@@ -23,7 +23,8 @@ import lombok.Setter;
         @AttributeOverride(name = "lastName", column = @Column(name = "last_name", nullable = false)),
         @AttributeOverride(name = "birthDate", column = @Column(name = "birth_date", nullable = false)),
         @AttributeOverride(name = "phone", column = @Column(name = "phone", nullable = true)),
-        @AttributeOverride(name = "picture", column = @Column(name = "picture", nullable = true))
+        @AttributeOverride(name = "picture", column = @Column(name = "picture", nullable = true)),
+        @AttributeOverride(name = "user", column = @Column(name = "user_id", nullable = true))
 })
 @Entity(name = "coach")
 @Table(name = "coach")

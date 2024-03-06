@@ -33,7 +33,7 @@ public class Persona {
     private String picture;
 
     @JsonIgnore
-    @OneToOne(optional = false)
+    @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 }

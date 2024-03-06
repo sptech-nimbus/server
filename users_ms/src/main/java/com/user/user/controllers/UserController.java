@@ -2,6 +2,7 @@ package com.user.user.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,8 +42,13 @@ public class UserController {
         return personaService.getPersonaByUserId(id);
     }
 
-    @PutMapping("/changePassword/{id}")
+    @PutMapping("/change-password/{id}")
     public ResponseEntity<ResponseMessage> changePassword(@PathVariable String id, @RequestBody ChangePasswordDTO dto) {
         return service.changePassword(id, dto);
+    }
+
+    @DeleteMapping("/{id}/{password}")
+    public ResponseEntity<ResponseMessage> deleteUser(@PathVariable String id, @PathVariable String password) {
+        return service.deleteUser(id, password);
     }
 }
