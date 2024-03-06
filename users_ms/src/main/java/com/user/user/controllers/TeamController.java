@@ -1,5 +1,7 @@
 package com.user.user.controllers;
 
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,5 +42,10 @@ public class TeamController {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseMessage> getTeamById(@PathVariable String id) {
         return service.getTeamById(id);
+    }
+
+    @GetMapping("/{id}/{nowDate}")
+    public ResponseEntity<ResponseMessage> getActiveInjuriesOnTeam(@PathVariable String id, @PathVariable LocalDate nowDate) {
+        return service.getActiveInjuriesOnTeam(id, nowDate);
     }
 }
