@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.user.user.domains.athlete.Athlete;
-import com.user.user.domains.athlete.InjuredAthlete;
+import com.user.user.domains.athlete.InjuredAthleteDTO;
 import com.user.user.domains.injury.Injury;
 import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.domains.team.RegisterAthleteDTO;
@@ -77,14 +77,14 @@ public class TeamService {
     public ResponseEntity<ResponseMessage> getActiveInjuriesOnTeam(String id, LocalDate nowDate) {
         List<Athlete> athletes = athleteRepo.findByTeamId(id);
 
-        List<InjuredAthlete> injuredAthletes = new ArrayList<>();
+        List<InjuredAthleteDTO> injuredAthletes = new ArrayList<>();
 
         for (Athlete athlete : athletes) {
             List<Injury> injuries = athlete.getInjuries();
 
             for (Injury injury : injuries) {
                 if (nowDate.isAfter(injury.getInicialDate()) && nowDate.isBefore(injury.getFinalDate())) {
-                    injuredAthletes.add(new InjuredAthlete(athlete, injury));
+                    injuredAthletes.add(new InjuredAthleteDTO(athlete, injury));
                 }
             }
         }
@@ -93,7 +93,7 @@ public class TeamService {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Sem jogadores lesionados"));
         }
 
-        return ResponseEntity.ok(new ResponseMessage<List<InjuredAthlete>>(injuredAthletes));
+        return ResponseEntity.ok(new ResponseMessage<List<InjuredAthleteDTO>>(injuredAthletes));
     }
 
     public Boolean checkCoach(String coachId) {
