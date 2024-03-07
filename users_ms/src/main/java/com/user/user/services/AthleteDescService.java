@@ -1,5 +1,7 @@
 package com.user.user.services;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +23,7 @@ public class AthleteDescService {
     AthleteRepository athleteRepo;
 
     public ResponseEntity<ResponseMessage> register(AthleteDescDTO dto) {
-        System.out.println(dto);
         AthleteDesc newAthleteDesc = new AthleteDesc(dto);
-
-        if (!checkAthlete(newAthleteDesc.getAthlete().getId())) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage<>("Atleta não encontrado"));
-        }
 
         repo.save(newAthleteDesc);
 
@@ -34,17 +31,29 @@ public class AthleteDescService {
     }
 
     public ResponseEntity<ResponseMessage> getAthleteDescsByAthleteId(String athleteId) {
-        AthleteDesc athleteDesc = repo.findByAthleteId(athleteId);
+        Optional<AthleteDesc> athleteDesc = repo.findByAthleteId(athleteId);
 
-        if (athleteDesc == null) {
+        if (!athleteDesc.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseMessage<>("Informações de atleta não encontradas"));
         }
 
-        return ResponseEntity.ok(new ResponseMessage<AthleteDesc>(athleteDesc));
+        return ResponseEntity.ok(new ResponseMessage<AthleteDesc>(athleteDesc.get()));
     }
 
-    public Boolean checkAthlete(String athleteId) {
-        return !athleteRepo.findById(athleteId).isEmpty();
+    public ResponseEntity<ResponseMessage> putAthleteDescByAthleteId(String athleteId, AthleteDescDTO dto) {
+        Optional<AthleteDesc> athleteDesc = repo.findByAthleteId(athleteId);
+
+        if (!athleteDesc.isPresent()) {
+            return ResponseEntity.status(204).body(new ResponseMessage("Informações de atleta não encontradas"));
+        }
+
+        athleteDesc.get().setHeight(dto.height());
+        athleteDesc.get().setWeight(dto.weight());
+        athleteDesc.get().setPosition(dto.position());
+
+        repo.save(athleteDesc.get());
+
+        return ResponseEntity.ok().body(new ResponseMessage("Informações de atleta atualizadas"));
     }
 }
