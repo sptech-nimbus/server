@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,5 +29,10 @@ public class AthleteDescController {
     @GetMapping("/{athleteId}")
     public ResponseEntity<ResponseMessage> getAthleteDescsByAthleteId(@PathVariable String athleteId) {
         return service.getAthleteDescsByAthleteId(athleteId);
+    }
+
+    @PutMapping("/{athleteId}")
+    public ResponseEntity<ResponseMessage> putAthleteDescByAthleteId(@PathVariable String athleteId, @RequestBody AthleteDescDTO dto) {
+        return service.putAthleteDescByAthleteId(athleteId, dto);
     }
 }
