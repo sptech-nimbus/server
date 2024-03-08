@@ -34,7 +34,10 @@ public class TeamController {
         return service.registerAthleteToTeam(id, dto);
     }
 
-    @PutMapping("/{}")
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseMessage> putTeamById(@PathVariable String id, @RequestBody TeamDTO team) {
+        return service.putTeamById(id, team);
+    }
 
     @GetMapping
     public ResponseEntity<ResponseMessage> getAllTeams() {
