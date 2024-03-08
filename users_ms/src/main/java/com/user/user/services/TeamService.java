@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,14 +56,19 @@ public class TeamService {
         return ResponseEntity.ok(new ResponseMessage<Team>(newTeam));
     }
 
-    public ResponseEntity<ResponseMessage> registerAthleteToTeam(RegisterAthleteDTO dto) {
+    public ResponseEntity<ResponseMessage> registerAthleteToTeam(String id, RegisterAthleteDTO dto) {
         Optional<Athlete> athlete = athleteRepo.findById(dto.athlete().getId());
 
         if (!athlete.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage<>("Atleta não encontrado"));
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Atleta não encontrado"));
         }
 
-        athlete.get().setTeam(dto.team());
+        Optional<Team> team = repo.findById(id);
+
+        if (!team.isPresent())
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Time não encontrado"));
+
+        athlete.get().setTeam(team.get());
 
         athleteRepo.save(athlete.get());
 
@@ -94,6 +100,23 @@ public class TeamService {
         }
 
         return ResponseEntity.ok(new ResponseMessage<List<InjuredAthleteDTO>>(injuredAthletes));
+    }
+
+    public ResponseEntity<ResponseMessage> putTeamById(String id, TeamDTO dto) {
+        Optional<Team> team = repo.findById(id);
+
+        if (!team.isPresent())
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Time não encontrado"));
+
+        BeanUtils.copyProperties(dto, team.get());
+
+        try {
+            repo.save(team.get());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ResponseMessage<>(e.getMessage()));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<>("Time atualizado"));
     }
 
     public Boolean checkCoach(String coachId) {
