@@ -29,10 +29,12 @@ public class TeamController {
         return service.register(dto);
     }
 
-    @PutMapping("/register-athlete")
-    public ResponseEntity<ResponseMessage> registerAthleteOnTeam(@RequestBody RegisterAthleteDTO dto) {
-        return service.registerAthleteToTeam(dto);
+    @PutMapping("/{id}/register-athlete")
+    public ResponseEntity<ResponseMessage> registerAthleteOnTeam(@PathVariable String id, @RequestBody RegisterAthleteDTO dto) {
+        return service.registerAthleteToTeam(id, dto);
     }
+
+    @PutMapping("/{}")
 
     @GetMapping
     public ResponseEntity<ResponseMessage> getAllTeams() {
