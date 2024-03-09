@@ -15,7 +15,7 @@ import com.user.user.repositories.CoachRepository;
 
 @SuppressWarnings("rawtypes")
 @Service
-public class CoachService extends PersonaService {
+public class CoachService extends PersonaService implements _persona<CoachDTO> {
     @Autowired
     private CoachRepository repo;
 
@@ -46,5 +46,11 @@ public class CoachService extends PersonaService {
         repo.save(coachFound.get());
 
         return ResponseEntity.ok(new ResponseMessage<>("Usuário desvinculado de Treinador"));
+    }
+
+    @Override
+    public ResponseEntity<ResponseMessage> putPersona(String id, CoachDTO dto) {
+        
+        return null;
     }
 }
