@@ -2,6 +2,7 @@ package com.user.user.services;
 
 import java.util.Optional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +51,21 @@ public class CoachService extends PersonaService implements _persona<CoachDTO> {
 
     @Override
     public ResponseEntity<ResponseMessage> putPersona(String id, CoachDTO dto) {
-        
-        return null;
+        Optional<Coach> coachFound = repo.findById(id);
+
+        if (!coachFound.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Treinador não encontrado."));
+        }
+
+        BeanUtils.copyProperties(dto, coachFound.get());
+
+        try {
+            repo.save(coachFound.get());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage<>("Erro ao atualizar treinador.", e.getMessage()));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<>("Treinador atualizado com sucesso"));
     }
 }

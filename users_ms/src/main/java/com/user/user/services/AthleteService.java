@@ -53,7 +53,6 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
 
     @Override
     public ResponseEntity<ResponseMessage> putPersona(String id, AthleteDTO dto) {
-        System.out.println(id);
         Optional<Athlete> athleteFound = repo.findById(id);
 
         if (!athleteFound.isPresent()) {
