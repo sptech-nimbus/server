@@ -2,6 +2,7 @@ package com.user.user.services;
 
 import java.util.Optional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import com.user.user.repositories.AthleteRepository;
 
 @SuppressWarnings("rawtypes")
 @Service
-public class AthleteService extends PersonaService {
+public class AthleteService extends PersonaService implements _persona<AthleteDTO> {
     @Autowired
     private AthleteRepository repo;
 
@@ -48,6 +49,26 @@ public class AthleteService extends PersonaService {
         repo.save(athleteFound.get());
 
         return ResponseEntity.ok(new ResponseMessage<>("Usuário desvinculado de atleta"));
+    }
+
+    @Override
+    public ResponseEntity<ResponseMessage> putPersona(String id, AthleteDTO dto) {
+        Optional<Athlete> athleteFound = repo.findById(id);
+
+        if (!athleteFound.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Atleta não encontrado."));
+        }
+
+        BeanUtils.copyProperties(dto, athleteFound.get());
+
+        try {
+            repo.save(athleteFound.get());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage<>("Erro ao atualizar atleta.", e.getMessage()));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<>("Atleta atualizado com sucesso"));
     }
 
     public Boolean checkCategory(String category) {

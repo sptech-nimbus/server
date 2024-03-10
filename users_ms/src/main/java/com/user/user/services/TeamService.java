@@ -113,7 +113,7 @@ public class TeamService {
         try {
             repo.save(team.get());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ResponseMessage<>(e.getMessage()));
+            return ResponseEntity.status(500).body(new ResponseMessage<>("Erro ao atualizar time", e.getMessage()));
         }
 
         return ResponseEntity.ok(new ResponseMessage<>("Time atualizado"));
