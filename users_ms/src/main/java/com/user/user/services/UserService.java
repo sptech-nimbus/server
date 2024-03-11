@@ -1,6 +1,7 @@
 package com.user.user.services;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,7 +62,7 @@ public class UserService {
         }
 
         return ResponseEntity
-                .ok(new ResponseMessage<String>("Cadastro realizado.", "Cadastro realizado.", newUser.getId()));
+                .ok(new ResponseMessage<UUID>("Cadastro realizado.", "Cadastro realizado.", newUser.getId()));
     }
 
     public ResponseEntity<ResponseMessage> login(UserDTO dto) {
@@ -72,7 +73,7 @@ public class UserService {
         }
 
         return ResponseEntity
-                .ok(new ResponseMessage<String>("Login realizado.", "Login realizado.", userFound.getId()));
+                .ok(new ResponseMessage<UUID>("Login realizado.", "Login realizado.", userFound.getId()));
     }
 
     public ResponseEntity<ResponseMessage> changePassword(String id, ChangePasswordDTO dto) {

@@ -1,6 +1,7 @@
 package com.user.user.domains.injury;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.user.user.domains.athlete.Athlete;
@@ -28,7 +29,7 @@ public class Injury {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "injury_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "type")
     private String type;

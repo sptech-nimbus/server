@@ -1,6 +1,7 @@
 package com.user.user.services;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class PersonaService {
     @Autowired
     private CoachRepository coachRepo;
 
-    public ResponseEntity<ResponseMessage> getPersonaByUserId(String id) {
+    public ResponseEntity<ResponseMessage> getPersonaByUserId(UUID id) {
         Persona personaFound = athleteRepo.findAthleteByUserId(id);
 
         if (personaFound == null) {
@@ -38,7 +39,7 @@ public class PersonaService {
         return ResponseEntity.ok(new ResponseMessage<Persona>(personaFound));
     }
 
-    public ResponseEntity<ResponseMessage> getChatUserByUserId(String id) {
+    public ResponseEntity<ResponseMessage> getChatUserByUserId(UUID id) {
         Persona personaFound = athleteRepo.findAthleteByUserId(id);
 
         if (personaFound == null) {
