@@ -7,6 +7,7 @@ import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 public class ChatApplication {
+
 	public static void main(String[] args) {
 		SpringApplication.run(ChatApplication.class, args);
 	}
@@ -15,4 +16,5 @@ public class ChatApplication {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
+
 }
