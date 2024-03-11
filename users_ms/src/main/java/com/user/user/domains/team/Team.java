@@ -1,6 +1,7 @@
 package com.user.user.domains.team;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.user.user.domains.athlete.Athlete;
 import com.user.user.domains.coach.Coach;
@@ -29,7 +30,7 @@ public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "team_id")
-    private String id;
+    private UUID id;
 
     @Column(name="name", nullable = false)
     private String name;

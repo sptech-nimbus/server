@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ public class TeamService {
         return ResponseEntity.ok(new ResponseMessage<Team>(newTeam));
     }
 
-    public ResponseEntity<ResponseMessage> registerAthleteToTeam(String id, RegisterAthleteDTO dto) {
+    public ResponseEntity<ResponseMessage> registerAthleteToTeam(UUID id, RegisterAthleteDTO dto) {
         Optional<Athlete> athlete = athleteRepo.findById(dto.athlete().getId());
 
         if (!athlete.isPresent()) {
@@ -76,11 +77,11 @@ public class TeamService {
                 "Atleta " + athlete.get().getLastName() + " cadastrado no time"));
     }
 
-    public ResponseEntity<ResponseMessage> getTeamById(String id) {
+    public ResponseEntity<ResponseMessage> getTeamById(UUID id) {
         return ResponseEntity.ok(new ResponseMessage<Team>(repo.findById(id).get()));
     }
 
-    public ResponseEntity<ResponseMessage> getActiveInjuriesOnTeam(String id, LocalDate nowDate) {
+    public ResponseEntity<ResponseMessage> getActiveInjuriesOnTeam(UUID id, LocalDate nowDate) {
         List<Athlete> athletes = athleteRepo.findByTeamId(id);
 
         List<InjuredAthleteDTO> injuredAthletes = new ArrayList<>();
@@ -102,7 +103,7 @@ public class TeamService {
         return ResponseEntity.ok(new ResponseMessage<List<InjuredAthleteDTO>>(injuredAthletes));
     }
 
-    public ResponseEntity<ResponseMessage> putTeamById(String id, TeamDTO dto) {
+    public ResponseEntity<ResponseMessage> putTeamById(UUID id, TeamDTO dto) {
         Optional<Team> team = repo.findById(id);
 
         if (!team.isPresent())
@@ -113,13 +114,13 @@ public class TeamService {
         try {
             repo.save(team.get());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ResponseMessage<>(e.getMessage()));
+            return ResponseEntity.status(500).body(new ResponseMessage<>("Erro ao atualizar time", e.getMessage()));
         }
 
         return ResponseEntity.ok(new ResponseMessage<>("Time atualizado"));
     }
 
-    public Boolean checkCoach(String coachId) {
+    public Boolean checkCoach(UUID coachId) {
         return !coachRepo.findById(coachId).isEmpty();
     }
 
