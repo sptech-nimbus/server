@@ -76,7 +76,7 @@ public class UserService {
                 .ok(new ResponseMessage<UUID>("Login realizado.", "Login realizado.", userFound.getId()));
     }
 
-    public ResponseEntity<ResponseMessage> changePassword(String id, ChangePasswordDTO dto) {
+    public ResponseEntity<ResponseMessage> changePassword(UUID id, ChangePasswordDTO dto) {
         Optional<User> userFound = repo.findById(id);
 
         if (!userFound.isPresent()) {
@@ -94,7 +94,7 @@ public class UserService {
         return ResponseEntity.ok(new ResponseMessage<>("Senha alterada com sucesso."));
     }
 
-    public ResponseEntity<ResponseMessage> deleteUser(String id, String password) {
+    public ResponseEntity<ResponseMessage> deleteUser(UUID id, String password) {
         Optional<User> userFound = repo.findById(id);
 
         if (!userFound.isPresent()) {
