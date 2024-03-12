@@ -1,6 +1,8 @@
 package com.chat.chat.services;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,8 +25,8 @@ public class MessageService {
     @Autowired
     private RestTemplate restTemplate;
 
-    public ResponseEntity<ResponseMessage> register(MessageDTO dto) {
-        Message newMessage = new Message(dto);
+    public ResponseEntity<ResponseMessage> register(MessageDTO dto, UUID teamId) {
+        Message newMessage = new Message(dto, teamId);
         if (newMessage.getDate() == null)
             newMessage.setDate(LocalDateTime.now());
 
@@ -36,7 +38,7 @@ public class MessageService {
                             ResponseMessage.class);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Erro ao enviar mensagem", e.getMessage()));
+                    .body(new ResponseMessage("Serviço de usuários não disponível no momento", e.getMessage()));
         }
 
         ChatMessageDTO chatMessageDTO = new ChatMessageDTO(newMessage, chatUserEntity.getBody().getData());
@@ -49,5 +51,11 @@ public class MessageService {
         }
 
         return ResponseEntity.ok(new ResponseMessage<ChatMessageDTO>(chatMessageDTO));
+    }
+
+    public ResponseEntity<ResponseMessage> getMessagesByTeamId(UUID teamId) {
+        List<Message> messages = repo.getMessagesByTeamId(teamId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage<List<Message>>(messages));
     }
 }
