@@ -1,5 +1,7 @@
 package com.user.user.controllers;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +22,7 @@ public class AthleteController {
     AthleteService service;
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseMessage> putAthlete(@PathVariable String id, @RequestBody AthleteDTO dto) {
+    public ResponseEntity<ResponseMessage> putAthlete(@PathVariable UUID id, @RequestBody AthleteDTO dto) {
         return service.putPersona(id, dto);
     }
 }

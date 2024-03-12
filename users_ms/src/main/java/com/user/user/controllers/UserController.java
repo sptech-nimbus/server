@@ -1,5 +1,7 @@
 package com.user.user.controllers;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,22 +40,22 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseMessage> getUserById(@PathVariable String id) {
+    public ResponseEntity<ResponseMessage> getUserById(@PathVariable UUID id) {
         return personaService.getPersonaByUserId(id);
     }
 
     @GetMapping("/ms-get-chat-user/{id}")
-    public ResponseEntity<ResponseMessage> getChatUserByUserId(@PathVariable String id) {
+    public ResponseEntity<ResponseMessage> getChatUserByUserId(@PathVariable UUID id) {
         return personaService.getChatUserByUserId(id);
     }
 
     @PutMapping("/change-password/{id}")
-    public ResponseEntity<ResponseMessage> changePassword(@PathVariable String id, @RequestBody ChangePasswordDTO dto) {
+    public ResponseEntity<ResponseMessage> changePassword(@PathVariable UUID id, @RequestBody ChangePasswordDTO dto) {
         return service.changePassword(id, dto);
     }
 
     @DeleteMapping("/{id}/{password}")
-    public ResponseEntity<ResponseMessage> deleteUser(@PathVariable String id, @PathVariable String password) {
+    public ResponseEntity<ResponseMessage> deleteUser(@PathVariable UUID id, @PathVariable String password) {
         return service.deleteUser(id, password);
     }
 }

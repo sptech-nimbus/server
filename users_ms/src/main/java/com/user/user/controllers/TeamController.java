@@ -1,6 +1,7 @@
 package com.user.user.controllers;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +31,12 @@ public class TeamController {
     }
 
     @PutMapping("/{id}/register-athlete")
-    public ResponseEntity<ResponseMessage> registerAthleteOnTeam(@PathVariable String id, @RequestBody RegisterAthleteDTO dto) {
+    public ResponseEntity<ResponseMessage> registerAthleteOnTeam(@PathVariable UUID id, @RequestBody RegisterAthleteDTO dto) {
         return service.registerAthleteToTeam(id, dto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseMessage> putTeamById(@PathVariable String id, @RequestBody TeamDTO team) {
+    public ResponseEntity<ResponseMessage> putTeamById(@PathVariable UUID id, @RequestBody TeamDTO team) {
         return service.putTeamById(id, team);
     }
 
@@ -45,12 +46,12 @@ public class TeamController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseMessage> getTeamById(@PathVariable String id) {
+    public ResponseEntity<ResponseMessage> getTeamById(@PathVariable UUID id) {
         return service.getTeamById(id);
     }
 
     @GetMapping("/{id}/{nowDate}")
-    public ResponseEntity<ResponseMessage> getActiveInjuriesOnTeam(@PathVariable String id, @PathVariable LocalDate nowDate) {
+    public ResponseEntity<ResponseMessage> getActiveInjuriesOnTeam(@PathVariable UUID id, @PathVariable LocalDate nowDate) {
         return service.getActiveInjuriesOnTeam(id, nowDate);
     }
 }
