@@ -2,6 +2,7 @@ package com.events.events.domains.training;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import com.events.events.domains.athleteHistoric.AthleteHistoric;
 
@@ -19,7 +20,7 @@ public class Training {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "training_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "date_time")
     private LocalDateTime dateTime;

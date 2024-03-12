@@ -1,5 +1,7 @@
 package com.events.events.domains.athleteHistoric;
 
+import java.util.UUID;
+
 import com.events.events.domains.game.Game;
 import com.events.events.domains.training.Training;
 
@@ -26,7 +28,7 @@ public class AthleteHistoric {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "athlete_historic_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "observations")
     private String observations;

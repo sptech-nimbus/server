@@ -2,6 +2,7 @@ package com.events.events.domains.coach;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import com.events.events.domains.team.Team;
 
@@ -15,7 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Coach {
-    private String id;
+    private UUID id;
     private String firstName;
     private String lastName;
     private LocalDate birthDate;

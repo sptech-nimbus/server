@@ -1,10 +1,11 @@
 package com.events.events.domains.game;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record GameDTO(
                 LocalDateTime dateTime,
                 String local,
-                String challenger,
-                String challenged) {
+                UUID challenger,
+                UUID challenged) {
 }

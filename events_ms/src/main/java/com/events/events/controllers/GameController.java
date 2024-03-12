@@ -1,5 +1,7 @@
 package com.events.events.controllers;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +28,7 @@ public class GameController {
     }
 
     @GetMapping("/{teamId}")
-    public ResponseEntity<ResponseMessage> getGamesFromTeamId(@PathVariable String teamId) {
+    public ResponseEntity<ResponseMessage> getGamesFromTeamId(@PathVariable UUID teamId) {
         return service.getGamesFromTeamId(teamId);
     }
 }

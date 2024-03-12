@@ -1,6 +1,7 @@
 package com.events.events.domains.athlete;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Athlete {
-    private String id;
+    private UUID id;
     private String firstName;
     private String lastName;
     private LocalDate birthDate;
