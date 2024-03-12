@@ -27,12 +27,15 @@ public class Message {
 
     private String message;
 
-    private UUID userId;
-
     private LocalDateTime date;
 
-    public Message(MessageDTO dto) {
+    private UUID userId;
+
+    private UUID teamId;
+
+    public Message(MessageDTO dto, UUID teamId) {
         this.message = dto.message();
         this.userId = dto.userId();
+        this.teamId = teamId;
     }
 }

@@ -1,11 +1,15 @@
 package com.chat.chat.controllers;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +21,7 @@ import com.chat.chat.services.MessageService;
 
 @SuppressWarnings("rawtypes")
 @RestController
-@RequestMapping("/message")
+@RequestMapping("/messages")
 public class MessageController {
     @Autowired
     private MessageService service;
@@ -27,7 +31,12 @@ public class MessageController {
     @SendTo("/topic/{teamId}")
     @MessageMapping("/send-message/{teamId}")
     public ResponseEntity<ResponseMessage> registerMessage(@RequestBody MessageDTO dto,
-            @DestinationVariable String teamId) {
-        return service.register(dto);
+            @DestinationVariable UUID teamId) {
+        return service.register(dto, teamId);
+    }
+
+    @GetMapping("{teamId}")
+    public ResponseEntity<ResponseMessage> getMessagesByTeamId(@PathVariable UUID teamId) {
+        return service.getMessagesByTeamId(teamId);
     }
 }
