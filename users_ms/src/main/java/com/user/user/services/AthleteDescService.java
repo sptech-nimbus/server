@@ -1,6 +1,7 @@
 package com.user.user.services;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class AthleteDescService {
         return ResponseEntity.ok(new ResponseMessage<AthleteDesc>(newAthleteDesc));
     }
 
-    public ResponseEntity<ResponseMessage> getAthleteDescsByAthleteId(String athleteId) {
+    public ResponseEntity<ResponseMessage> getAthleteDescsByAthleteId(UUID athleteId) {
         Optional<AthleteDesc> athleteDesc = repo.findByAthleteId(athleteId);
 
         if (!athleteDesc.isPresent()) {
@@ -41,7 +42,7 @@ public class AthleteDescService {
         return ResponseEntity.ok(new ResponseMessage<AthleteDesc>(athleteDesc.get()));
     }
 
-    public ResponseEntity<ResponseMessage> putAthleteDescByAthleteId(String athleteId, AthleteDescDTO dto) {
+    public ResponseEntity<ResponseMessage> putAthleteDescByAthleteId(UUID athleteId, AthleteDescDTO dto) {
         Optional<AthleteDesc> athleteDesc = repo.findByAthleteId(athleteId);
 
         if (!athleteDesc.isPresent()) {

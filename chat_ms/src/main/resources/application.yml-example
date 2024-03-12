@@ -1,0 +1,5 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://nimbus:<password>@messages.tubo34f.mongodb.net/?retryWrites=true&w=majority&appName=messages
+      database: nimbus-messages

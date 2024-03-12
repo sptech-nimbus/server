@@ -1,4 +1,6 @@
 package com.chat.chat.domains.message;
 
-public record MessageDTO(String message, String userId) {
+import java.util.UUID;
+
+public record MessageDTO(String message, UUID userId) {
 }

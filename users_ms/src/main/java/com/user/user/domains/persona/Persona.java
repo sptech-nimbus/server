@@ -1,6 +1,7 @@
 package com.user.user.domains.persona;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.user.user.domains.user.User;
@@ -24,7 +25,7 @@ import lombok.Setter;
 public class Persona {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     private String firstName;
     private String lastName;

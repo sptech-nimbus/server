@@ -1,5 +1,7 @@
 package com.user.user.domains.user;
 
+import java.util.UUID;
+
 import com.user.user.domains.athlete.Athlete;
 import com.user.user.domains.coach.Coach;
 
@@ -25,7 +27,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "email", nullable = false, columnDefinition = "VARCHAR(255) COLLATE utf8_bin", unique = true)
     private String email;

@@ -1,6 +1,7 @@
 package com.user.user.services;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +33,10 @@ public class CoachService extends PersonaService implements _persona<CoachDTO> {
         repo.save(newCoach);
 
         return ResponseEntity
-                .ok(new ResponseMessage<String>("Cadastro realizado", "Cadastro realizado", newCoach.getId()));
+                .ok(new ResponseMessage<UUID>("Cadastro realizado", "Cadastro realizado", newCoach.getId()));
     }
 
-    public ResponseEntity<ResponseMessage> removeUserFromCoach(String id) {
+    public ResponseEntity<ResponseMessage> removeUserFromCoach(UUID id) {
         Optional<Coach> coachFound = repo.findById(id);
 
         if (!coachFound.isPresent()) {
@@ -50,7 +51,7 @@ public class CoachService extends PersonaService implements _persona<CoachDTO> {
     }
 
     @Override
-    public ResponseEntity<ResponseMessage> putPersona(String id, CoachDTO dto) {
+    public ResponseEntity<ResponseMessage> putPersona(UUID id, CoachDTO dto) {
         Optional<Coach> coachFound = repo.findById(id);
 
         if (!coachFound.isPresent()) {

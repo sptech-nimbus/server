@@ -1,9 +1,10 @@
 package com.chat.chat.repositories;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.UUID;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.chat.chat.domains.message.Message;
 
-public interface MessageRepository extends JpaRepository<Message, String> {
-	
+public interface MessageRepository extends MongoRepository<Message, UUID> {
 }

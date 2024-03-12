@@ -1,5 +1,7 @@
 package com.user.user.domains.athleteDesc;
 
+import java.util.UUID;
+
 import com.user.user.domains.athlete.Athlete;
 
 import jakarta.persistence.Column;
@@ -25,7 +27,7 @@ public class AthleteDesc {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "athlete_desc_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "weight")
     private Double weight;
