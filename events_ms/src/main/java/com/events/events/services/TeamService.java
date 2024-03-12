@@ -15,11 +15,15 @@ public class TeamService {
     @Autowired
     private RestTemplate restTemplate;
 
-    public Object getTeamInfoById(UUID teamId) {
-        ResponseEntity<ResponseMessage> teamResponseEntity = restTemplate.getForEntity(
-                "http://localhost:3000/teams/" + teamId,
-                ResponseMessage.class);
+    public Object getTeamInfoById(UUID teamId) throws Exception {
+        try {
+            ResponseEntity<ResponseMessage> teamResponseEntity = restTemplate.getForEntity(
+                    "http://localhost:3000/teams/" + teamId,
+                    ResponseMessage.class);
 
-        return teamResponseEntity.getBody().getData();
+            return teamResponseEntity.getBody().getData();
+        } catch (Exception e) {
+            throw e;
+        }
     }
 }
