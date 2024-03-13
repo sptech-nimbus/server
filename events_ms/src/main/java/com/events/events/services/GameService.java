@@ -46,7 +46,6 @@ public class GameService {
 
                     gamesWithTeams.add(gameWithTeams);
                 } catch (Exception e) {
-                    System.out.println(e);
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(new ResponseMessage("Serviço de usuários fora do ar no momento", e.getMessage()));
                 }

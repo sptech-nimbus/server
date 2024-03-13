@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record GameDTO(
-                LocalDateTime dateTime,
-                String local,
-                UUID challenger,
-                UUID challenged) {
+        LocalDateTime dateTime,
+        String local,
+        UUID challenger,
+        UUID challenged) {
 }

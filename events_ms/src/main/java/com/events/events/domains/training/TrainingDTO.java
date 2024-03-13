@@ -1,4 +1,10 @@
 package com.events.events.domains.training;
- 
-public record TrainingDTO() {
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public record TrainingDTO(LocalDateTime inicialDateTime,
+                LocalDateTime finalDateTime,
+                String local,
+                UUID teamId) {
 }
