@@ -1,34 +1,25 @@
 package com.events.events.controllers;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.events.events.domains.game.GameDTO;
 import com.events.events.domains.responseMessage.ResponseMessage;
-import com.events.events.services.GameService;
+import com.events.events.domains.training.TrainingDTO;
+import com.events.events.services.TrainingService;
 
 @SuppressWarnings("rawtypes")
 @RestController
-@RequestMapping("games")
-public class GameController {
+@RequestMapping("trainings")
+public class TrainingController {
     @Autowired
-    GameService service;
+    TrainingService service;
 
     @PostMapping
-    public ResponseEntity<ResponseMessage> registerGame(@RequestBody GameDTO dto) {
+    public ResponseEntity<ResponseMessage> registerTraining(@RequestBody TrainingDTO dto) {
         return service.register(dto);
-    }
-
-    @GetMapping("/{teamId}")
-    public ResponseEntity<ResponseMessage> getGamesFromTeamId(@PathVariable UUID teamId) {
-        return service.getGamesFromTeamId(teamId);
     }
 }

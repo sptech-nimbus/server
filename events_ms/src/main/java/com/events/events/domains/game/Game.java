@@ -2,6 +2,7 @@ package com.events.events.domains.game;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import com.events.events.domains.athleteHistoric.AthleteHistoric;
 
@@ -27,7 +28,7 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "game_id")
-    private String id;
+    private UUID id;
 
     @Column(name = "confirmed", columnDefinition = "boolean default 0")
     private Boolean confirmed;
@@ -39,10 +40,10 @@ public class Game {
     private String local;
 
     @Column(name = "challenger_id", nullable = false)
-    private String challenger;
+    private UUID challenger;
 
     @Column(name = "challenged_id", nullable = false)
-    private String challenged;
+    private UUID challenged;
 
     @OneToMany(mappedBy = "game")
     private List<AthleteHistoric> athletesHistorics;

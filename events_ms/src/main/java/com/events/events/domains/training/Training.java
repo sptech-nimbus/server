@@ -2,6 +2,7 @@ package com.events.events.domains.training;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import com.events.events.domains.athleteHistoric.AthleteHistoric;
 
@@ -12,24 +13,42 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity(name = "training")
 @Table(name = "training")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Training {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "training_id")
-    private String id;
+    private UUID id;
 
-    @Column(name = "date_time")
-    private LocalDateTime dateTime;
+    @Column(name = "inicial_date_time")
+    private LocalDateTime inicialDateTime;
+
+    @Column(name = "final_date_time")
+    private LocalDateTime finalDateTime;
 
     @Column(name = "local")
     private String local;
 
     @Column(name = "team_id")
-    private String team;
+    private UUID team;
 
     @OneToMany(mappedBy = "training")
     private List<AthleteHistoric> athletesHistorics;
+
+    public Training(TrainingDTO dto) {
+        this.setFinalDateTime(dto.finalDateTime());
+        this.setInicialDateTime(dto.inicialDateTime());
+        this.setLocal(dto.local());
+        this.setTeam(dto.teamId());
+    }
 }

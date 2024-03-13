@@ -1,6 +1,7 @@
 package com.events.events.domains.team;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.events.events.domains.athlete.Athlete;
 import com.events.events.domains.coach.Coach;
@@ -15,7 +16,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Team {
-    private String id;
+    private UUID id;
     private String name;
     private String category;
     private String picture;

@@ -2,6 +2,7 @@ package com.events.events.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,16 +32,23 @@ public class GameService {
         return ResponseEntity.ok(new ResponseMessage<Game>(newGame));
     }
 
-    public ResponseEntity<ResponseMessage> getGamesFromTeamId(String teamId) {
+    public ResponseEntity<ResponseMessage> getGamesFromTeamId(UUID teamId) {
         List<Game> games = repo.findGamesByChallengerOrChallenged(teamId, teamId);
 
         List<GameWithTeams> gamesWithTeams = new ArrayList<>();
 
         if (!games.isEmpty()) {
             for (Game game : games) {
-                gamesWithTeams.add(new GameWithTeams(teamService.getTeamInfoById(game.getChallenger()),
-                        teamService.getTeamInfoById(game.getChallenged()),
-                        game));
+                try {
+                    GameWithTeams gameWithTeams = new GameWithTeams(teamService.getTeamInfoById(game.getChallenger()),
+                    teamService.getTeamInfoById(game.getChallenged()),
+                    game);
+
+                    gamesWithTeams.add(gameWithTeams);
+                } catch (Exception e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(new ResponseMessage("Serviço de usuários fora do ar no momento", e.getMessage()));
+                }
             }
 
             return ResponseEntity.ok(new ResponseMessage<List<GameWithTeams>>(gamesWithTeams));
