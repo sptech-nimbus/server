@@ -10,10 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.events.events.domains.coach.Coach;
 import com.events.events.domains.game.Game;
 import com.events.events.domains.game.GameDTO;
 import com.events.events.domains.game.GameWithTeams;
 import com.events.events.domains.responseMessage.ResponseMessage;
+import com.events.events.domains.team.Team;
 import com.events.events.repositories.GameRepository;
 
 @SuppressWarnings("rawtypes")
@@ -24,6 +26,9 @@ public class GameService {
 
     @Autowired
     TeamService teamService;
+
+    @Autowired
+    CoachService coachService;
 
     public ResponseEntity<ResponseMessage> register(GameDTO dto) {
         Game newGame = new Game(dto);
@@ -59,15 +64,64 @@ public class GameService {
                 .body(new ResponseMessage<>("Nenhum jogo encontrado"));
     }
 
-    public ResponseEntity<ResponseMessage> cancelGameById(UUID id) {
+    public ResponseEntity<ResponseMessage> confirmGame(UUID id, Coach coach) {
+        Game game;
+        Coach coachFound;
+
+        try {
+            coachFound = coachService.getCoachById(coach.getId());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage<>(e.getMessage()));
+        }
+
+        try {
+            game = findGameById(id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage(e.getMessage()));
+        }
+
+        if (coachFound.getTeams().stream().anyMatch(t -> t.getId().equals(game.getChallenged()))) {
+            if (game.getConfirmed()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseMessage<>("Jogo já confirmado"));
+            }
+
+            game.setConfirmed(true);
+
+            repo.save(game);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseMessage("Apenas o time desafiado pode confirmar um jogo"));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Jogo confirmado"));
+    }
+
+    public ResponseEntity<ResponseMessage> cancelGameById(UUID id, Team team) {
+        Game game;
+
+        try {
+            game = findGameById(id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage(e.getMessage()));
+        }
+
+        if (team.getId().equals(game.getChallenged()) || team.getId().equals(game.getChallenger()))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ResponseMessage<>("Apenas times do jogo podem cancelar o jogo"));
+
+        repo.delete(game);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Jogo cancelado"));
+    }
+
+    public Game findGameById(UUID id) throws Exception {
         Optional<Game> game = repo.findById(id);
 
         if (!game.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage("Jogo não encontrado"));
+            throw new Exception("Jogo não encontrado");
         }
 
-        repo.delete(game.get());
-
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Jogo cancelado"));
+        return game.get();
     }
 }
