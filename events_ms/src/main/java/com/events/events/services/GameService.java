@@ -2,6 +2,7 @@ package com.events.events.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +42,8 @@ public class GameService {
             for (Game game : games) {
                 try {
                     GameWithTeams gameWithTeams = new GameWithTeams(teamService.getTeamInfoById(game.getChallenger()),
-                    teamService.getTeamInfoById(game.getChallenged()),
-                    game);
+                            teamService.getTeamInfoById(game.getChallenged()),
+                            game);
 
                     gamesWithTeams.add(gameWithTeams);
                 } catch (Exception e) {
@@ -56,5 +57,17 @@ public class GameService {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ResponseMessage<>("Nenhum jogo encontrado"));
+    }
+
+    public ResponseEntity<ResponseMessage> cancelGameById(UUID id) {
+        Optional<Game> game = repo.findById(id);
+
+        if (!game.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage("Jogo não encontrado"));
+        }
+
+        repo.delete(game.get());
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Jogo cancelado"));
     }
 }
