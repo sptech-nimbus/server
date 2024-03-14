@@ -58,4 +58,10 @@ public class Athlete extends Persona {
                 this.setCategory(dto.category());
                 this.setIsStarting(dto.isStarting());
         }
+
+        @Override
+        public String toString() {
+                return "Athlete [category=" + category + ", isStarting=" + isStarting + ", team=" + team + ", injuries="
+                                + injuries + "]";
+        }
 }

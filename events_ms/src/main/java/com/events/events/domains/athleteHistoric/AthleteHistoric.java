@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.events.events.domains.game.Game;
 import com.events.events.domains.training.Training;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,6 +30,9 @@ public class AthleteHistoric {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "athlete_historic_id")
     private UUID id;
+
+    @Column(name = "athlete_id")
+    private UUID athleteId;
 
     @Column(name = "observations")
     private String observations;
@@ -75,6 +79,7 @@ public class AthleteHistoric {
     @Column(name = "two_points_attemped")
     private Integer twoPointsAttemped;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "game_id", referencedColumnName = "game_id")
     private Game game;

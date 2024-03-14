@@ -14,10 +14,10 @@ public class RestTemplateService<T> {
 
     public T getTemplateById(String port, String endPoint, UUID id, Class<T> classType) throws Exception {
         try {
-            ResponseEntity<T> coachResponseEntity = restTemplate.getForEntity(
+            ResponseEntity<T> restResponseEntity = restTemplate.getForEntity(
                     "http://localhost:" + port + "/" + endPoint + "/" + id, classType);
 
-            return coachResponseEntity.getBody();
+            return restResponseEntity.getBody();
         } catch (Exception e) {
             throw e;
         }

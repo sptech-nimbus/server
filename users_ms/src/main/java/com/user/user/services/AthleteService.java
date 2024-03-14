@@ -52,6 +52,17 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
         return ResponseEntity.ok(new ResponseMessage<>("Usuário desvinculado de atleta"));
     }
 
+    public ResponseEntity<Athlete> getAthleteForMs(UUID id) {
+        Optional<Athlete> athleteFound = repo.findById(id);
+        System.out.println(athleteFound.get());
+
+        if (!athleteFound.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(athleteFound.get());
+    }
+
     @Override
     public ResponseEntity<ResponseMessage> putPersona(UUID id, AthleteDTO dto) {
         Optional<Athlete> athleteFound = repo.findById(id);
