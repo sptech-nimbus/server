@@ -30,7 +30,11 @@ public class TeamController {
 
     @PostMapping
     public ResponseEntity<ResponseMessage> registerTeam(@RequestBody TeamDTO dto) {
-        return service.register(dto);
+        try {
+            return service.register(dto);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
+        }
     }
 
     @PatchMapping("register-athlete/{id}")

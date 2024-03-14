@@ -41,19 +41,18 @@ public class TeamService {
     InjuryRepository injuryRepo;
 
     public ResponseEntity<ResponseMessage> register(TeamDTO dto) {
+        List<String> fieldsErrors = checkFields(dto);
+        if (!fieldsErrors.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseMessage<>(String.join(", ", fieldsErrors)));
+        }
+
+        coachRepo.findById(dto.coach().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Treinador", dto.coach().getId()));
+
         Team newTeam = new Team();
 
         BeanUtils.copyProperties(dto, newTeam);
-
-        if (!checkFieldsNotNull(newTeam)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage<>("Verifique as credenciais do time"));
-        }
-
-        if (!checkCoach(newTeam.getCoach().getId())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage<>("Coach não encontrado"));
-        }
 
         repo.save(newTeam);
 
@@ -141,14 +140,22 @@ public class TeamService {
         return ResponseEntity.ok().body(new ResponseMessage<List<Athlete>>(athletes));
     }
 
-    public Boolean checkCoach(UUID coachId) {
-        return !coachRepo.findById(coachId).isEmpty();
-    }
+    public List<String> checkFields(TeamDTO dto) {
+        List<String> errors = new ArrayList<>();
 
-    public Boolean checkFieldsNotNull(Team team) {
-        return team.getCategory() != null &&
-                team.getCoach() != null
-                && team.getName() != null;
+        if (dto.category() == null || dto.category() == "") {
+            errors.add("Campo categoria é obrigatório");
+        }
+
+        if (dto.coach().getId() == null) {
+            errors.add("Campo treinador -> id é obrigatório");
+        }
+
+        if (dto.name() == null || dto.name() == "") {
+            errors.add("Campo nome é obrigatório");
+        }
+
+        return errors;
     }
 
     public ResponseEntity<ResponseMessage> getAllTeams() {
