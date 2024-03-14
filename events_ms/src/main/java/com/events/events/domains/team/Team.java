@@ -23,4 +23,16 @@ public class Team {
     private String local;
     private Coach coach;
     private List<Athlete> athletes;
+    @Override
+    public String toString() {
+        return "Team {" + '\'' +
+                "id=" + id + '\'' +
+                "name=" + name + '\'' +
+                "category=" + category + '\'' +
+                "picture=" + picture + '\'' +
+                "local=" + local + '\'' +
+                "coach=" + coach + '\'' +
+                "athletes=" + athletes + '\'' +
+                "}";
+    }
 }

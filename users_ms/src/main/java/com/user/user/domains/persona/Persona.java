@@ -40,7 +40,16 @@ public class Persona {
 
     @Override
     public String toString() {
-        return "Persona [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", birthDate=" + birthDate
-                + ", phone=" + phone + ", picture=" + picture + ", user=" + user + "]";
+        return "Persona { " + '\'' +
+                "id=" + id + '\'' +
+                "firstName=" + firstName + '\'' +
+                "lastName=" + lastName + '\'' +
+                "birthDate=" + birthDate + '\'' +
+                "phone=" + phone + '\'' +
+                "picture=" + picture + '\'' +
+                "user=" + user + '\'' +
+                "}";
     }
+
+    
 }

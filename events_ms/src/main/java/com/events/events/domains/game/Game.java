@@ -59,4 +59,20 @@ public class Game {
         this.setLocal(dto.local());
         this.setConfirmed(false);
     }
+
+    @Override
+    public String toString() {
+        return "Game {" + '\'' +
+                "id=" + id + '\'' +
+                "confirmed=" + confirmed + '\'' +
+                "inicialDateTime=" + inicialDateTime + '\'' +
+                "finalDateTime=" + finalDateTime + '\'' +
+                "local=" + local + '\'' +
+                "challenger=" + challenger + '\'' +
+                "challenged=" + challenged + '\'' +
+                "athletesHistorics=" + athletesHistorics + '\'' +
+                "}";
+    }
+
+    
 }

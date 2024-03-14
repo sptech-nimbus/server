@@ -51,4 +51,16 @@ public class Training {
         this.setLocal(dto.local());
         this.setTeam(dto.teamId());
     }
+
+    @Override
+    public String toString() {
+        return "Training {" + '\'' +
+                "id=" + id + '\'' +
+                "inicialDateTime=" + inicialDateTime + '\'' +
+                "finalDateTime=" + finalDateTime + '\'' +
+                "local=" + local + '\'' +
+                "team=" + team + '\'' +
+                "athletesHistorics=" + athletesHistorics + '\'' +
+                "}";
+    }
 }

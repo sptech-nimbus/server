@@ -58,4 +58,19 @@ public class Team {
         this.setPicture(dto.picture());
         this.setName(dto.name());
     }
+
+    @Override
+    public String toString() {
+        return "Team {" + '\'' +
+                "id=" + id + '\'' +
+                "name=" + name + '\'' +
+                "category=" + category + '\'' +
+                "picture=" + picture + '\'' +
+                "local=" + local + '\'' +
+                "coach=" + coach + '\'' +
+                "athletes=" + athletes + '\'' +
+                "}";
+    }
+
+    
 }
