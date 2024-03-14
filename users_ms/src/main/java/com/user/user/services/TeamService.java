@@ -100,17 +100,14 @@ public class TeamService {
     }
 
     public ResponseEntity<ResponseMessage> putTeamById(UUID id, TeamDTO dto) {
-        Optional<Team> team = repo.findById(id);
+        Team team = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
 
-        if (!team.isPresent())
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Time não encontrado"));
-
-        BeanUtils.copyProperties(dto, team.get());
+        BeanUtils.copyProperties(dto, team);
 
         try {
-            repo.save(team.get());
+            repo.save(team);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ResponseMessage<>("Erro ao atualizar time", e.getMessage()));
+            throw e;
         }
 
         return ResponseEntity.ok(new ResponseMessage<>("Time atualizado"));

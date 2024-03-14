@@ -49,7 +49,13 @@ public class TeamController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseMessage> putTeamById(@PathVariable UUID id, @RequestBody TeamDTO team) {
-        return service.putTeamById(id, team);
+        try {
+            return service.putTeamById(id, team);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ResponseMessage<>(e.getMessage()));
+        }
     }
 
     @GetMapping
