@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.user.user.domains.coach.Coach;
 import com.user.user.domains.coach.CoachDTO;
+import com.user.user.domains.coach.sCoachDTO;
 import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.domains.user.User;
 import com.user.user.repositories.CoachRepository;
@@ -50,12 +51,23 @@ public class CoachService extends PersonaService implements _persona<CoachDTO> {
         return ResponseEntity.ok(new ResponseMessage<>("Usuário desvinculado de Treinador"));
     }
 
+    public ResponseEntity<sCoachDTO> getCoachById(UUID id) {
+        Optional<Coach> coachFound = repo.findById(id);
+
+        if (!coachFound.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(new sCoachDTO(coachFound.get()));
+    }
+
     @Override
     public ResponseEntity<ResponseMessage> putPersona(UUID id, CoachDTO dto) {
         Optional<Coach> coachFound = repo.findById(id);
 
         if (!coachFound.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Treinador não encontrado."));
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .body(new ResponseMessage<>("Treinador não encontrado."));
         }
 
         BeanUtils.copyProperties(dto, coachFound.get());

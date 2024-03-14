@@ -33,8 +33,11 @@ public class Game {
     @Column(name = "confirmed", columnDefinition = "boolean default 0")
     private Boolean confirmed;
 
-    @Column(name = "date_time", nullable = false)
-    private LocalDateTime dateTime;
+    @Column(name = "inicial_date_time")
+    private LocalDateTime inicialDateTime;
+
+    @Column(name = "final_date_time")
+    private LocalDateTime finalDateTime;
 
     @Column(name = "local")
     private String local;
@@ -51,7 +54,8 @@ public class Game {
     public Game(GameDTO dto) {
         this.setChallenged(dto.challenged());
         this.setChallenger(dto.challenger());
-        this.setDateTime(dto.dateTime());
+        this.setFinalDateTime(dto.finalDateTime());
+        this.setInicialDateTime(dto.inicialDateTime());
         this.setLocal(dto.local());
         this.setConfirmed(false);
     }
