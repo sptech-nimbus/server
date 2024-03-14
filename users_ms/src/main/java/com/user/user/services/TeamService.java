@@ -16,13 +16,13 @@ import com.user.user.domains.athlete.Athlete;
 import com.user.user.domains.athlete.InjuredAthleteDTO;
 import com.user.user.domains.injury.Injury;
 import com.user.user.domains.responseMessage.ResponseMessage;
-import com.user.user.domains.team.RegisterAthleteDTO;
 import com.user.user.domains.team.Team;
 import com.user.user.domains.team.TeamDTO;
 import com.user.user.repositories.AthleteRepository;
 import com.user.user.repositories.CoachRepository;
 import com.user.user.repositories.InjuryRepository;
 import com.user.user.repositories.TeamRepository;
+import com.user.user.utils.Sorts;
 
 @SuppressWarnings("rawtypes")
 @Service
@@ -57,8 +57,8 @@ public class TeamService {
         return ResponseEntity.ok(new ResponseMessage<Team>(newTeam));
     }
 
-    public ResponseEntity<ResponseMessage> registerAthleteToTeam(UUID id, RegisterAthleteDTO dto) {
-        Optional<Athlete> athlete = athleteRepo.findById(dto.athlete().getId());
+    public ResponseEntity<ResponseMessage> registerAthleteToTeam(UUID id, Athlete athleteRes) {
+        Optional<Athlete> athlete = athleteRepo.findById(athleteRes.getId());
 
         if (!athlete.isPresent()) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Atleta não encontrado"));
@@ -127,6 +127,21 @@ public class TeamService {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
         return ResponseEntity.status(200).body(teamFound.get());
+    }
+
+    public ResponseEntity<ResponseMessage> getAthletesByAgeAsc(UUID id) {
+        Optional<Team> teamFound = repo.findById(id);
+
+        if (!teamFound.isPresent())
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Time não encontrado"));
+
+        List<Athlete> athletes = teamFound.get().getAthletes();
+
+        System.out.println(athletes);
+
+        Sorts.mergeSortAthletesByAgeAsc(athletes, athletes.size());
+
+        return ResponseEntity.ok().body(new ResponseMessage<List<Athlete>>(athletes));
     }
 
     public Boolean checkCoach(UUID coachId) {
