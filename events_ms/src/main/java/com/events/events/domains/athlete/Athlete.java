@@ -20,4 +20,19 @@ public class Athlete {
     private String phone;
     private String picture;
     private String category;
+
+
+    @Override
+    public String toString() {
+        return "Athlete {" + '\'' +
+                "id=" + id + '\'' +
+                " firstName=" + firstName + '\'' +
+                " lastName=" + lastName + '\'' +
+                " birthDate=" + birthDate + '\'' +
+                " phone=" + phone + '\'' +
+                " picture=" + picture + '\'' +
+                " category=" + category + '\'' +
+                "}";
+    }
 }
+

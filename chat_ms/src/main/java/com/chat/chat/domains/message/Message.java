@@ -38,4 +38,17 @@ public class Message {
         this.userId = dto.userId();
         this.teamId = teamId;
     }
+
+    @Override
+    public String toString() {
+        return "Messages{" +
+                "messageId=" + messageId + '\'' +
+                "message=" + message + '\'' +
+                "date=" + date + '\'' +
+                "userId=" + userId + '\'' +
+                "teamId=" + teamId +
+                "}";
+    }
+
+    
 }

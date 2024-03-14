@@ -51,4 +51,17 @@ public class Injury {
         this.setFinalDate(dto.finalDate());
         this.setAthlete(dto.athlete());
     }
+
+    @Override
+    public String toString() {
+        return "Injury {" + '\'' +
+                "id=" + id + '\'' +
+                "type=" + type + '\'' +
+                "inicialDate=" + inicialDate + '\'' +
+                "finalDate=" + finalDate + '\'' +
+                "athlete=" + athlete + '\'' +
+                "}";
+    }
+
+    
 }
