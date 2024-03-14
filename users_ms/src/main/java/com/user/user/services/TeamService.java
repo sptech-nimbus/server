@@ -18,6 +18,7 @@ import com.user.user.domains.injury.Injury;
 import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.domains.team.Team;
 import com.user.user.domains.team.TeamDTO;
+import com.user.user.exceptions.ResourceNotFoundException;
 import com.user.user.repositories.AthleteRepository;
 import com.user.user.repositories.CoachRepository;
 import com.user.user.repositories.InjuryRepository;
@@ -40,7 +41,9 @@ public class TeamService {
     InjuryRepository injuryRepo;
 
     public ResponseEntity<ResponseMessage> register(TeamDTO dto) {
-        Team newTeam = new Team(dto);
+        Team newTeam = new Team();
+
+        BeanUtils.copyProperties(dto, newTeam);
 
         if (!checkFieldsNotNull(newTeam)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -57,24 +60,18 @@ public class TeamService {
         return ResponseEntity.ok(new ResponseMessage<Team>(newTeam));
     }
 
-    public ResponseEntity<ResponseMessage> registerAthleteToTeam(UUID id, Athlete athleteRes) {
-        Optional<Athlete> athlete = athleteRepo.findById(athleteRes.getId());
+    public ResponseEntity<ResponseMessage> registerAthleteToTeam(UUID id, Athlete athlete) {
+        Team teamFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
 
-        if (!athlete.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Atleta não encontrado"));
-        }
+        Athlete athleteFound = athleteRepo.findById(athlete.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Atleta", athlete.getId()));
 
-        Optional<Team> team = repo.findById(id);
+        athleteFound.setTeam(teamFound);
 
-        if (!team.isPresent())
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Time não encontrado"));
+        athleteRepo.save(athleteFound);
 
-        athlete.get().setTeam(team.get());
-
-        athleteRepo.save(athlete.get());
-
-        return ResponseEntity.ok(new ResponseMessage<>(
-                "Atleta " + athlete.get().getLastName() + " cadastrado no time"));
+        return ResponseEntity.status(200).body(new ResponseMessage(
+                "Atleta " + athleteFound.getLastName() + " cadastrado no time"));
     }
 
     public ResponseEntity<ResponseMessage> getTeamById(UUID id) {

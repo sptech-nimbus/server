@@ -18,6 +18,7 @@ import com.user.user.domains.athlete.Athlete;
 import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.domains.team.Team;
 import com.user.user.domains.team.TeamDTO;
+import com.user.user.exceptions.ResourceNotFoundException;
 import com.user.user.services.TeamService;
 
 @SuppressWarnings("rawtypes")
@@ -35,7 +36,11 @@ public class TeamController {
     @PatchMapping("register-athlete/{id}")
     public ResponseEntity<ResponseMessage> registerAthleteOnTeam(@PathVariable UUID id,
             @RequestBody Athlete athlete) {
-        return service.registerAthleteToTeam(id, athlete);
+        try {
+            return service.registerAthleteToTeam(id, athlete);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")

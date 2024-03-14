@@ -32,7 +32,7 @@ public class Team {
     @Column(name = "team_id")
     private UUID id;
 
-    @Column(name="name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "category", nullable = false)
@@ -51,14 +51,6 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private List<Athlete> athletes;
 
-    public Team(TeamDTO dto) {
-        this.setCoach(dto.coach());
-        this.setCategory(dto.category());
-        this.setLocal(dto.local());
-        this.setPicture(dto.picture());
-        this.setName(dto.name());
-    }
-
     @Override
     public String toString() {
         return "Team {" + '\'' +
@@ -71,6 +63,4 @@ public class Team {
                 "athletes=" + athletes + '\'' +
                 "}";
     }
-
-    
 }
