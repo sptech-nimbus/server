@@ -1,6 +1,9 @@
 package com.events.events.domains.athleteHistoric;
 
-public record AtheteHistoricDTO(
+import com.events.events.domains.game.Game;
+import com.events.events.domains.training.Training;
+
+public record AthleteHistoricDTO(
         String observations,
         Integer offRebounds,
         Integer defRebounds,
@@ -15,5 +18,7 @@ public record AtheteHistoricDTO(
         Integer threePointsConverted,
         Integer threePointsAttemped,
         Integer twoPointsConverted,
-        Integer twoPointsAttemped) {
+        Integer twoPointsAttemped,
+        Game game,
+        Training training) {
 }
