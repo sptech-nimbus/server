@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.domains.team.RegisterAthleteDTO;
+import com.user.user.domains.team.Team;
 import com.user.user.domains.team.TeamDTO;
 import com.user.user.services.TeamService;
 
@@ -31,7 +32,8 @@ public class TeamController {
     }
 
     @PutMapping("/{id}/register-athlete")
-    public ResponseEntity<ResponseMessage> registerAthleteOnTeam(@PathVariable UUID id, @RequestBody RegisterAthleteDTO dto) {
+    public ResponseEntity<ResponseMessage> registerAthleteOnTeam(@PathVariable UUID id,
+            @RequestBody RegisterAthleteDTO dto) {
         return service.registerAthleteToTeam(id, dto);
     }
 
@@ -51,7 +53,13 @@ public class TeamController {
     }
 
     @GetMapping("/{id}/{nowDate}")
-    public ResponseEntity<ResponseMessage> getActiveInjuriesOnTeam(@PathVariable UUID id, @PathVariable LocalDate nowDate) {
+    public ResponseEntity<ResponseMessage> getActiveInjuriesOnTeam(@PathVariable UUID id,
+            @PathVariable LocalDate nowDate) {
         return service.getActiveInjuriesOnTeam(id, nowDate);
+    }
+
+    @GetMapping("ms-get-team/{id}")
+    public ResponseEntity<Team> getTeamByIdByMs(@PathVariable UUID id) {
+        return service.getTeamByIdForMs(id);
     }
 }
