@@ -120,6 +120,15 @@ public class TeamService {
         return ResponseEntity.ok(new ResponseMessage<>("Time atualizado"));
     }
 
+    public ResponseEntity<Team> getTeamByIdForMs(UUID id) {
+        Optional<Team> teamFound = repo.findById(id);
+
+        if (!teamFound.isPresent())
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+        return ResponseEntity.status(200).body(teamFound.get());
+    }
+
     public Boolean checkCoach(UUID coachId) {
         return !coachRepo.findById(coachId).isEmpty();
     }

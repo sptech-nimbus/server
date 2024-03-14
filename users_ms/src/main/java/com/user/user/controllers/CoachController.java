@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.user.user.domains.coach.Coach;
 import com.user.user.domains.coach.CoachDTO;
 import com.user.user.domains.coach.sCoachDTO;
 import com.user.user.domains.responseMessage.ResponseMessage;

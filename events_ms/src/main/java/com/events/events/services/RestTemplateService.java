@@ -7,20 +7,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.events.events.domains.coach.Coach;
-
 @Service
-public class CoachService {
+public class RestTemplateService<T> {
     @Autowired
     private RestTemplate restTemplate;
 
-    public Coach getCoachById(UUID coachId) throws Exception {
+    public T getTemplateById(String port, String endPoint, UUID id, Class<T> classType) throws Exception {
         try {
-            ResponseEntity<Coach> coachResponseEntity = restTemplate.getForEntity(
-                    "http://localhost:3000/coaches/ms-get-coach/" + coachId,
-                    Coach.class);
+            ResponseEntity<T> restResponseEntity = restTemplate.getForEntity(
+                    "http://localhost:" + port + "/" + endPoint + "/" + id, classType);
 
-            return coachResponseEntity.getBody();
+            return restResponseEntity.getBody();
         } catch (Exception e) {
             throw e;
         }

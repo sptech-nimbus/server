@@ -25,10 +25,10 @@ public class GameService {
     GameRepository repo;
 
     @Autowired
-    TeamService teamService;
+    RestTemplateService<Team> teamService;
 
     @Autowired
-    CoachService coachService;
+    RestTemplateService<Coach> coachService;
 
     public ResponseEntity<ResponseMessage> register(GameDTO dto) {
         Game newGame = new Game(dto);
@@ -46,8 +46,9 @@ public class GameService {
         if (!games.isEmpty()) {
             for (Game game : games) {
                 try {
-                    GameWithTeams gameWithTeams = new GameWithTeams(teamService.getTeamInfoById(game.getChallenger()),
-                            teamService.getTeamInfoById(game.getChallenged()),
+                    GameWithTeams gameWithTeams = new GameWithTeams(
+                            teamService.getTemplateById("3000", "teams/ms-get-team", game.getChallenger(), Team.class),
+                            teamService.getTemplateById("3000", "teams/ms-get-team", game.getChallenged(), Team.class),
                             game);
 
                     gamesWithTeams.add(gameWithTeams);
@@ -69,7 +70,7 @@ public class GameService {
         Coach coachFound;
 
         try {
-            coachFound = coachService.getCoachById(coach.getId());
+            coachFound = coachService.getTemplateById("3000", "coaches/ms-get-coach", coach.getId(), Coach.class);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseMessage<>(e.getMessage()));
