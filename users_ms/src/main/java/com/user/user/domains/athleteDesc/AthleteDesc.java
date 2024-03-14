@@ -48,4 +48,17 @@ public class AthleteDesc {
         this.setHeight(dto.height());
         this.setAthlete(dto.athlete());
     }
+
+    @Override
+    public String toString() {
+        return "AthleteDesc {" + '\'' +
+                "id=" + id + '\'' +
+                "weight=" + weight + '\'' +
+                "height=" + height + '\'' +
+                "position=" + position + '\'' +
+                "athlete=" + athlete + '\'' +
+                "}";
+    }
+
+    
 }

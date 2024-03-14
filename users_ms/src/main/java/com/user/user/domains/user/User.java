@@ -45,4 +45,17 @@ public class User {
         this.email = dto.email();
         this.password = dto.password();
     }
+
+    @Override
+    public String toString() {
+        return "User {" + '\'' +
+                "id=" + id + '\'' +
+                "email=" + email + '\'' +
+                "password=" + password + '\'' +
+                "coach=" + coach + '\'' +
+                "athlete=" + athlete + '\'' +
+                "}";
+    }
+
+    
 }

@@ -87,4 +87,32 @@ public class AthleteHistoric {
     @ManyToOne
     @JoinColumn(name = "training_id", referencedColumnName = "training_id")
     private Training training;
+
+    @Override
+    public String toString() {
+        return "AthleteHistoric {" + '\'' + 
+                "id=" + id + '\'' +
+                "athleteId=" + athleteId + '\'' +
+                "observations=" + observations + '\'' +
+                "offRebounds=" + offRebounds + '\'' +
+                "defRebounds=" + defRebounds + '\'' +
+                "blocks=" + blocks + '\'' +
+                "fouls=" + fouls + '\'' +
+                "turnovers=" + turnovers + '\'' +
+                "minutes=" + minutes + '\'' +
+                "assists=" + assists + '\'' +
+                "freeThrowConverted=" + freeThrowConverted + '\'' +
+                "freeThrowAttemped=" + freeThrowAttemped + '\'' +
+                "steals=" + steals + '\'' +
+                "threePointsConverted=" + threePointsConverted + '\'' +
+                "threePointsAttemped=" + threePointsAttemped + '\'' +
+                "twoPointsConverted=" + twoPointsConverted + '\'' +
+                "twoPointsAttemped=" + twoPointsAttemped + '\'' +
+                "game=" + game + '\'' +
+                "training=" + training + '\'' +
+                "}";
+    }
+
+
+    
 }
