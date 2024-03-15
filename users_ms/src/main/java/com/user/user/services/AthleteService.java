@@ -15,6 +15,7 @@ import com.user.user.domains.athlete.Athlete;
 import com.user.user.domains.athlete.AthleteDTO;
 import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.domains.user.User;
+import com.user.user.exceptions.ResourceNotFoundException;
 import com.user.user.repositories.AthleteRepository;
 
 @SuppressWarnings("rawtypes")
@@ -44,17 +45,13 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
     }
 
     public ResponseEntity<ResponseMessage> removeUserFromAthlete(UUID id) {
-        Optional<Athlete> athleteFound = repo.findById(id);
+        Athlete athleteFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Atleta", id));
 
-        if (!athleteFound.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage<>("Atleta não encontrado."));
-        }
+        athleteFound.setUser(null);
 
-        athleteFound.get().setUser(null);
+        repo.save(athleteFound);
 
-        repo.save(athleteFound.get());
-
-        return ResponseEntity.ok(new ResponseMessage<>("Usuário desvinculado de atleta"));
+        return ResponseEntity.ok(new ResponseMessage("Usuário desvinculado de atleta"));
     }
 
     public ResponseEntity<Athlete> getAthleteForMs(UUID id) {
