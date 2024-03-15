@@ -78,15 +78,16 @@ public class TeamService {
     }
 
     public ResponseEntity<ResponseMessage> getActiveInjuriesOnTeam(UUID id, LocalDate nowDate) {
-        List<Athlete> athletes = athleteRepo.findByTeamId(id);
+        Team team = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
 
         List<InjuredAthleteDTO> injuredAthletes = new ArrayList<>();
 
-        for (Athlete athlete : athletes) {
+        for (Athlete athlete : team.getAthletes()) {
             List<Injury> injuries = athlete.getInjuries();
 
             for (Injury injury : injuries) {
-                if (nowDate.isAfter(injury.getInicialDate()) && nowDate.isBefore(injury.getFinalDate())) {
+                if (nowDate.isAfter(injury.getInicialDate()) &&
+                        nowDate.isBefore(injury.getFinalDate())) {
                     injuredAthletes.add(new InjuredAthleteDTO(athlete, injury));
                 }
             }

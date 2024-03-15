@@ -68,10 +68,14 @@ public class TeamController {
         return service.getTeamById(id);
     }
 
-    @GetMapping("/{id}/{nowDate}")
+    @GetMapping("/active-injuries/{id}/{nowDate}")
     public ResponseEntity<ResponseMessage> getActiveInjuriesOnTeam(@PathVariable UUID id,
             @PathVariable LocalDate nowDate) {
-        return service.getActiveInjuriesOnTeam(id, nowDate);
+        try {
+            return service.getActiveInjuriesOnTeam(id, nowDate);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
+        }
     }
 
     @GetMapping("ms-get-team/{id}")
