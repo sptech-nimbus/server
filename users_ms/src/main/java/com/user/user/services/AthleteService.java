@@ -1,5 +1,7 @@
 package com.user.user.services;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,20 +24,23 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
     private AthleteRepository repo;
 
     public ResponseEntity<ResponseMessage> register(AthleteDTO dto, User user) {
-        Athlete newAthlete = new Athlete(dto);
+        Athlete newAthlete = new Athlete();
+
+        BeanUtils.copyProperties(dto, newAthlete);
+
         newAthlete.setUser(user);
 
         if (!checkPersonaCredencials(newAthlete)
-                || !checkCategory(newAthlete.getCategory())
-                || !checkIsStarting(newAthlete.getIsStarting())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                || !checkAthleteCredentials(dto.category(), dto.isStarting()).isEmpty()) {
+            return ResponseEntity.status(400)
                     .body(new ResponseMessage<>("Verifique suas credenciais de atleta"));
         }
 
         repo.save(newAthlete);
 
         return ResponseEntity
-                .ok(new ResponseMessage<UUID>("Cadastro realizado", "Cadastro realizado", newAthlete.getId()));
+                .status(200)
+                .body(new ResponseMessage<UUID>("Cadastro realizado", newAthlete.getId()));
     }
 
     public ResponseEntity<ResponseMessage> removeUserFromAthlete(UUID id) {
@@ -83,11 +88,17 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
         return ResponseEntity.ok(new ResponseMessage<>("Atleta atualizado com sucesso"));
     }
 
-    public Boolean checkCategory(String category) {
-        return category != null;
-    }
+    public List<String> checkAthleteCredentials(String category, Boolean isStarting) {
+        List<String> errors = new ArrayList<>();
 
-    public Boolean checkIsStarting(Boolean isStarting) {
-        return isStarting != null;
+        if (category == null || category == "") {
+            errors.add("Campo categoria é obrigatório");
+        }
+
+        if (isStarting == null) {
+            errors.add("Campo titular é obrigatório");
+        }
+
+        return errors;
     }
 }

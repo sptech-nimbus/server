@@ -49,16 +49,6 @@ public class Athlete extends Persona {
         @OneToMany(mappedBy = "athlete")
         private List<Injury> injuries;
 
-        public Athlete(AthleteDTO dto) {
-                this.setFirstName(dto.firstName());
-                this.setLastName(dto.lastName());
-                this.setBirthDate(dto.birthDate());
-                this.setPhone(dto.phone());
-                this.setPicture(dto.picture());
-                this.setCategory(dto.category());
-                this.setIsStarting(dto.isStarting());
-        }
-
         @Override
         public String toString() {
                 return "Athlete {" + '\'' +
