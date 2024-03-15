@@ -42,8 +42,9 @@ public class TeamService {
 
     public ResponseEntity<ResponseMessage> register(TeamDTO dto) {
         List<String> fieldsErrors = checkFields(dto);
+
         if (!fieldsErrors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            return ResponseEntity.status(400)
                     .body(new ResponseMessage<>(String.join(", ", fieldsErrors)));
         }
 
@@ -94,7 +95,7 @@ public class TeamService {
         }
 
         if (injuredAthletes.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Sem jogadores lesionados"));
+            return ResponseEntity.status(204).body(new ResponseMessage<>("Sem jogadores lesionados"));
         }
 
         return ResponseEntity.ok(new ResponseMessage<List<InjuredAthleteDTO>>(injuredAthletes));
@@ -111,7 +112,7 @@ public class TeamService {
             throw e;
         }
 
-        return ResponseEntity.ok(new ResponseMessage<>("Time atualizado"));
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Time atualizado"));
     }
 
     public ResponseEntity<Team> getTeamByIdForMs(UUID id) {
@@ -128,11 +129,9 @@ public class TeamService {
 
         List<Athlete> athletes = teamFound.get().getAthletes();
 
-        System.out.println(athletes);
-
         Sorts.mergeSortAthletesByAgeAsc(athletes, athletes.size());
 
-        return ResponseEntity.ok().body(new ResponseMessage<List<Athlete>>(athletes));
+        return ResponseEntity.status(200).body(new ResponseMessage<List<Athlete>>(athletes));
     }
 
     public List<String> checkFields(TeamDTO dto) {
@@ -154,6 +153,6 @@ public class TeamService {
     }
 
     public ResponseEntity<ResponseMessage> getAllTeams() {
-        return ResponseEntity.ok(new ResponseMessage<List<Team>>(repo.findAll()));
+        return ResponseEntity.status(200).body(new ResponseMessage<List<Team>>(repo.findAll()));
     }
 }
