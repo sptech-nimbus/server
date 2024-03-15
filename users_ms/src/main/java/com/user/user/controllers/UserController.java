@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,9 +54,13 @@ public class UserController {
         return personaService.getChatUserByUserId(id);
     }
 
-    @PutMapping("/change-password/{id}")
+    @PatchMapping("/change-password/{id}")
     public ResponseEntity<ResponseMessage> changePassword(@PathVariable UUID id, @RequestBody ChangePasswordDTO dto) {
-        return service.changePassword(id, dto);
+        try {
+            return service.changePassword(id, dto);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage("Usuário não encontrado"));
+        }
     }
 
     @DeleteMapping("/{id}/{password}")
