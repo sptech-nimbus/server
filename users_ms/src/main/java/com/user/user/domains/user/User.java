@@ -41,11 +41,6 @@ public class User {
     @OneToOne(mappedBy = "user")
     private Athlete athlete;
 
-    public User(UserDTO dto) {
-        this.email = dto.email();
-        this.password = dto.password();
-    }
-
     @Override
     public String toString() {
         return "User {" + '\'' +
