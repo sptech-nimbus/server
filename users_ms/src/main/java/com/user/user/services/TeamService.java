@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -125,7 +124,7 @@ public class TeamService {
         Optional<Team> teamFound = repo.findById(id);
 
         if (!teamFound.isPresent())
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Time não encontrado"));
+            return ResponseEntity.status(204).body(new ResponseMessage<>("Time não encontrado"));
 
         List<Athlete> athletes = teamFound.get().getAthletes();
 

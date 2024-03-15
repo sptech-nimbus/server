@@ -1,10 +1,13 @@
 package com.user.user.services;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +15,7 @@ import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.domains.user.ChangePasswordDTO;
 import com.user.user.domains.user.User;
 import com.user.user.domains.user.UserDTO;
+import com.user.user.exceptions.ResourceNotFoundException;
 import com.user.user.repositories.UserRepository;
 
 @SuppressWarnings("rawtypes")
@@ -27,23 +31,28 @@ public class UserService {
     private AthleteService athleteService;
 
     public ResponseEntity<ResponseMessage> register(UserDTO dto) {
-        if (!checkAllUserCredencials(dto)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage("Verifique suas credenciais de usuário."));
+        List<String> credencialsErrors = checkAllUserCredencials(dto);
+
+        if (!credencialsErrors.isEmpty()) {
+            return ResponseEntity.status(400)
+                    .body(new ResponseMessage("Verifique suas credenciais de usuário.",
+                            String.join(", ", credencialsErrors)));
         }
 
-        if (repo.findByEmail(dto.email()).size() > 0) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseMessage("Email já utilizado."));
+        if (repo.findByEmail(dto.email()).isPresent()) {
+            return ResponseEntity.status(409).body(new ResponseMessage("Email já utilizado."));
         }
 
-        User newUser = new User(dto);
+        User newUser = new User();
+
+        BeanUtils.copyProperties(dto, newUser);
 
         repo.save(newUser);
 
         if (dto.coach() != null) {
             ResponseEntity<ResponseMessage> coachResponseEntity = coachService.register(dto.coach(), newUser);
 
-            if (!coachResponseEntity.getStatusCode().equals(HttpStatus.OK)) {
+            if (!coachResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
                 repo.delete(newUser);
 
                 return coachResponseEntity;
@@ -51,74 +60,79 @@ public class UserService {
         } else if (dto.athlete() != null) {
             ResponseEntity<ResponseMessage> athleteResponseEntity = athleteService.register(dto.athlete(), newUser);
 
-            if (!athleteResponseEntity.getStatusCode().equals(HttpStatus.OK)) {
+            if (!athleteResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
                 repo.delete(newUser);
 
                 return athleteResponseEntity;
             }
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage<>("Tipo de usuário não permitido ou não informado."));
+            return ResponseEntity.status(400)
+                    .body(new ResponseMessage("Tipo de usuário não permitido ou não informado."));
         }
 
         return ResponseEntity
-                .ok(new ResponseMessage<UUID>("Cadastro realizado.", "Cadastro realizado.", newUser.getId()));
+                .status(200).body(new ResponseMessage<UUID>("Cadastro realizado", newUser.getId()));
     }
 
     public ResponseEntity<ResponseMessage> login(UserDTO dto) {
-        User userFound = repo.findByEmailAndPassword(dto.email(), dto.password());
+        User userFound = repo.findByEmailAndPassword(dto.email(), dto.password())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário", null));
 
-        if (userFound == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage("Email ou senha incorretos."));
-        }
+        String userType = userFound.getAthlete() != null ? "Athlete" : "Coach";
 
         return ResponseEntity
-                .ok(new ResponseMessage<UUID>("Login realizado.", "Login realizado.", userFound.getId()));
+                .status(200)
+                .body(new ResponseMessage<UUID>("Login realizado.", userType, userFound.getId()));
     }
 
     public ResponseEntity<ResponseMessage> changePassword(UUID id, ChangePasswordDTO dto) {
-        Optional<User> userFound = repo.findById(id);
+        User userFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
 
-        if (!userFound.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage<>("Usuário nâo encontrado"));
-        }
+        if (userFound.getPassword().equals(dto.oldPassword())) {
+            if (checkUserPassword(dto.newPassword())) {
+                userFound.setPassword(dto.newPassword());
 
-        if (userFound.get().getPassword().equals(dto.oldPassword())) {
-            userFound.get().setPassword(dto.newPassword());
-
-            repo.save(userFound.get());
+                repo.save(userFound);
+            } else {
+                return ResponseEntity.status(409).body(new ResponseMessage("Senha fora dos padrões."));
+            }
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage<>("Senha antiga incorreta."));
+            return ResponseEntity.status(400).body(new ResponseMessage("Antiga senha incorreta."));
         }
 
-        return ResponseEntity.ok(new ResponseMessage<>("Senha alterada com sucesso."));
+        return ResponseEntity.ok(new ResponseMessage("Senha alterada com sucesso."));
     }
 
     public ResponseEntity<ResponseMessage> deleteUser(UUID id, String password) {
-        Optional<User> userFound = repo.findById(id);
+        User userFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
 
-        if (!userFound.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage<>("Usuário não encontrado."));
+        if (!String.valueOf(userFound.getPassword()).equals(password)) {
+            return ResponseEntity.status(400).body(new ResponseMessage("Senha incorreta."));
         }
 
-        if (!userFound.get().getPassword().equals(password)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage<>("Senha incorreta."));
+        if (userFound.getAthlete() != null) {
+            athleteService.removeUserFromAthlete(userFound.getAthlete().getId());
+        } else {
+            coachService.removeUserFromCoach(userFound.getCoach().getId());
         }
 
-        if (userFound.get().getAthlete() != null) {
-            athleteService.removeUserFromAthlete(userFound.get().getAthlete().getId());
-        } else if (userFound.get().getCoach() != null) {
-            coachService.removeUserFromCoach(userFound.get().getCoach().getId());
-        }
+        repo.delete(userFound);
 
-        repo.delete(userFound.get());
-
-        return ResponseEntity.ok(new ResponseMessage<>("Usuário deletado."));
+        return ResponseEntity.status(200).body(new ResponseMessage("Usuário deletado."));
     }
 
-    public Boolean checkAllUserCredencials(UserDTO newUser) {
-        return checkUserEmail(newUser.email())
-                && checkUserPassword(newUser.password());
+    public List<String> checkAllUserCredencials(UserDTO dto) {
+        List<String> errors = new ArrayList<>();
+
+        if (!checkUserEmail(dto.email())) {
+            errors.add("Email inválido");
+        }
+
+        if (!checkUserPassword(dto.password())) {
+            errors.add("Senha inválida");
+        }
+
+        return errors;
     }
 
     public Boolean checkUserEmail(String email) {
