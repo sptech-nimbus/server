@@ -55,14 +55,9 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
     }
 
     public ResponseEntity<Athlete> getAthleteForMs(UUID id) {
-        Optional<Athlete> athleteFound = repo.findById(id);
-        System.out.println(athleteFound.get());
+        Athlete athleteFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Atleta", id));
 
-        if (!athleteFound.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(athleteFound.get());
+        return ResponseEntity.status(200).body(athleteFound);
     }
 
     @Override

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.user.user.domains.athlete.Athlete;
 import com.user.user.domains.athlete.AthleteDTO;
 import com.user.user.domains.responseMessage.ResponseMessage;
+import com.user.user.exceptions.ResourceNotFoundException;
 import com.user.user.services.AthleteService;
 
 @SuppressWarnings("rawtypes")
@@ -30,6 +31,10 @@ public class AthleteController {
 
     @GetMapping("ms-get-athlete/{id}")
     public ResponseEntity<Athlete> getAthleteForMs(@PathVariable UUID id) {
-        return service.getAthleteForMs(id);
+        try{
+            return service.getAthleteForMs(id);
+        }catch(ResourceNotFoundException e) {
+            return ResponseEntity.status(404).build();
+        }
     }
 }
