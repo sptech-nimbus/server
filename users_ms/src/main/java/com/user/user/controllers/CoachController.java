@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.user.user.domains.coach.CoachDTO;
 import com.user.user.domains.coach.sCoachDTO;
 import com.user.user.domains.responseMessage.ResponseMessage;
+import com.user.user.exceptions.ResourceNotFoundException;
 import com.user.user.services.CoachService;
 
 @SuppressWarnings("rawtypes")
@@ -25,11 +26,19 @@ public class CoachController {
 
     @GetMapping("/ms-get-coach/{id}")
     public ResponseEntity<sCoachDTO> getCoachById(@PathVariable UUID id) {
-        return service.getCoachById(id);
+        try {
+            return service.getCoachById(id);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).build();
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseMessage> putAthlete(@PathVariable UUID id, @RequestBody CoachDTO dto) {
-        return service.putPersona(id, dto);
+    public ResponseEntity<ResponseMessage> putCoach(@PathVariable UUID id, @RequestBody CoachDTO dto) {
+        try {
+            return service.putPersona(id, dto);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+        }
     }
 }
