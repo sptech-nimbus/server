@@ -36,15 +36,4 @@ public class Coach extends Persona {
     @JsonIgnore
     @OneToMany(mappedBy = "coach")
     private List<Team> teams;
-
-    public Coach(CoachDTO dto) {
-        this.setFirstName(dto.firstName());
-        this.setLastName(dto.lastName());
-        this.setBirthDate(dto.birthDate());
-        this.setPhone(dto.phone());
-        this.setPicture(dto.picture());
-    }
-
-    
-    
 }
