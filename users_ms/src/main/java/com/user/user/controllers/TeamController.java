@@ -80,7 +80,11 @@ public class TeamController {
 
     @GetMapping("ms-get-team/{id}")
     public ResponseEntity<Team> getTeamByIdByMs(@PathVariable UUID id) {
-        return service.getTeamByIdForMs(id);
+        try {
+            return service.getTeamByIdForMs(id);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).build();
+        }
     }
 
     @GetMapping("get-team-athletes-asc-age/{id}")

@@ -115,12 +115,9 @@ public class TeamService {
     }
 
     public ResponseEntity<Team> getTeamByIdForMs(UUID id) {
-        Optional<Team> teamFound = repo.findById(id);
+        Team teamFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
 
-        if (!teamFound.isPresent())
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-
-        return ResponseEntity.status(200).body(teamFound.get());
+        return ResponseEntity.status(200).body(teamFound);
     }
 
     public ResponseEntity<ResponseMessage> getAthletesByAgeAsc(UUID id) {

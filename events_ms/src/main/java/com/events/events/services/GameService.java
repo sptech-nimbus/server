@@ -16,6 +16,7 @@ import com.events.events.domains.game.GameDTO;
 import com.events.events.domains.game.GameWithTeams;
 import com.events.events.domains.responseMessage.ResponseMessage;
 import com.events.events.domains.team.Team;
+import com.events.events.exceptions.ResourceNotFoundException;
 import com.events.events.repositories.GameRepository;
 
 @SuppressWarnings("rawtypes")
@@ -52,6 +53,9 @@ public class GameService {
                             game);
 
                     gamesWithTeams.add(gameWithTeams);
+                } catch (ResourceNotFoundException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(new ResponseMessage(e.getMessage()));
                 } catch (Exception e) {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(new ResponseMessage("Serviço de usuários fora do ar no momento", e.getMessage()));
