@@ -28,26 +28,17 @@ public class TeamController {
     @Autowired
     TeamService service;
 
+    // POST
     @PostMapping
     public ResponseEntity<ResponseMessage> registerTeam(@RequestBody TeamDTO dto) {
-        return service.register(dto);
-    }
-
-    @PatchMapping("register-athlete/{id}")
-    public ResponseEntity<ResponseMessage> registerAthleteOnTeam(@PathVariable UUID id,
-            @RequestBody Athlete athlete) {
         try {
-            return service.registerAthleteToTeam(id, athlete);
+            return service.register(dto);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ResponseMessage> putTeamById(@PathVariable UUID id, @RequestBody TeamDTO team) {
-        return service.putTeamById(id, team);
-    }
-
+    // GET
     @GetMapping
     public ResponseEntity<ResponseMessage> getAllTeams() {
         return service.getAllTeams();
@@ -58,19 +49,50 @@ public class TeamController {
         return service.getTeamById(id);
     }
 
-    @GetMapping("/{id}/{nowDate}")
+    @GetMapping("/active-injuries/{id}/{nowDate}")
     public ResponseEntity<ResponseMessage> getActiveInjuriesOnTeam(@PathVariable UUID id,
             @PathVariable LocalDate nowDate) {
-        return service.getActiveInjuriesOnTeam(id, nowDate);
+        try {
+            return service.getActiveInjuriesOnTeam(id, nowDate);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
+        }
     }
 
     @GetMapping("ms-get-team/{id}")
     public ResponseEntity<Team> getTeamByIdByMs(@PathVariable UUID id) {
-        return service.getTeamByIdForMs(id);
+        try {
+            return service.getTeamByIdForMs(id);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).build();
+        }
     }
 
     @GetMapping("get-team-athletes-asc-age/{id}")
     public ResponseEntity<ResponseMessage> getAthletesByAgeAsc(@PathVariable UUID id) {
         return service.getAthletesByAgeAsc(id);
+    }
+
+    // PATCH
+    @PatchMapping("register-athlete/{id}")
+    public ResponseEntity<ResponseMessage> registerAthleteOnTeam(@PathVariable UUID id,
+            @RequestBody Athlete athlete) {
+        try {
+            return service.registerAthleteToTeam(id, athlete);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
+        }
+    }
+
+    // PUT
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseMessage> putTeamById(@PathVariable UUID id, @RequestBody TeamDTO team) {
+        try {
+            return service.putTeamById(id, team);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ResponseMessage<>(e.getMessage()));
+        }
     }
 }

@@ -62,10 +62,9 @@ public class Athlete extends Persona {
         @Override
         public String toString() {
                 return "Athlete {" + '\'' +
-                        "category=" + category + '\'' +
-                        "isStarting=" + isStarting + '\'' +
-                        "team=" + team + '\'' +
-                        "injuries=" + injuries + '\'' +
-                        "}";
+                                "category=" + category + '\'' +
+                                "isStarting=" + isStarting + '\'' +
+                                "injuries=" + injuries + '\'' +
+                                "}";
         }
 }
