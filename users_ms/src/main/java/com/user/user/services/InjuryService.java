@@ -42,4 +42,17 @@ public class InjuryService {
 
         return ResponseEntity.status(200).body(new ResponseMessage("Lesão atualizada"));
     }
+
+    public ResponseEntity<ResponseMessage> deleteInjury(UUID id) {
+        Injury injuryFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Lesão", id));
+
+        try {
+            repo.delete(injuryFound);
+        } catch (Exception e) {
+            return ResponseEntity.status(409)
+                    .body(new ResponseMessage("Erro ao deletar registro de lesão", e.getMessage()));
+        }
+        return ResponseEntity.status(200)
+                .body(new ResponseMessage("Registro de lesão deletado"));
+    }
 }
