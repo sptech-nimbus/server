@@ -14,27 +14,44 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.user.user.domains.athleteDesc.AthleteDescDTO;
 import com.user.user.domains.responseMessage.ResponseMessage;
+import com.user.user.exceptions.ResourceNotFoundException;
 import com.user.user.services.AthleteDescService;
 
 @SuppressWarnings("rawtypes")
 @RestController
-@RequestMapping("athleteDescs")
+@RequestMapping("athlete-descs")
 public class AthleteDescController {
     @Autowired
     AthleteDescService service;
 
+    // POST
     @PostMapping
     public ResponseEntity<ResponseMessage> registerAthleteDesc(@RequestBody AthleteDescDTO dto) {
-        return service.register(dto);
+        try {
+            return service.register(dto);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+        }
     }
 
+    // GET
     @GetMapping("/{athleteId}")
     public ResponseEntity<ResponseMessage> getAthleteDescsByAthleteId(@PathVariable UUID athleteId) {
-        return service.getAthleteDescsByAthleteId(athleteId);
+        try {
+            return service.getAthleteDescsByAthleteId(athleteId);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+        }
     }
 
+    // PUT
     @PutMapping("/{athleteId}")
-    public ResponseEntity<ResponseMessage> putAthleteDescByAthleteId(@PathVariable UUID athleteId, @RequestBody AthleteDescDTO dto) {
-        return service.putAthleteDescByAthleteId(athleteId, dto);
+    public ResponseEntity<ResponseMessage> putAthleteDescByAthleteId(@PathVariable UUID athleteId,
+            @RequestBody AthleteDescDTO dto) {
+        try {
+            return service.putAthleteDescByAthleteId(athleteId, dto);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+        }
     }
 }
