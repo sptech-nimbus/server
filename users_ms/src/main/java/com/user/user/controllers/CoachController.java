@@ -24,6 +24,7 @@ public class CoachController {
     @Autowired
     CoachService service;
 
+    // GET
     @GetMapping("/ms-get-coach/{id}")
     public ResponseEntity<sCoachDTO> getCoachById(@PathVariable UUID id) {
         try {
@@ -33,6 +34,7 @@ public class CoachController {
         }
     }
 
+    // PUT
     @PutMapping("/{id}")
     public ResponseEntity<ResponseMessage> putCoach(@PathVariable UUID id, @RequestBody CoachDTO dto) {
         try {

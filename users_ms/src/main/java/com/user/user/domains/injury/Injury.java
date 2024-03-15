@@ -45,13 +45,6 @@ public class Injury {
     @JoinColumn(name = "athlete_id", referencedColumnName = "athlete_id")
     private Athlete athlete;
 
-    public Injury(InjuryDTO dto) {
-        this.setType(dto.type());
-        this.setInicialDate(dto.inicialDate());
-        this.setFinalDate(dto.finalDate());
-        this.setAthlete(dto.athlete());
-    }
-
     @Override
     public String toString() {
         return "Injury {" + '\'' +
