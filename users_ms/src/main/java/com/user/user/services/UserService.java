@@ -111,7 +111,11 @@ public class UserService {
         }
 
         if (userFound.getAthlete() != null) {
-            athleteService.removeUserFromAthlete(userFound.getAthlete().getId());
+            try {
+                athleteService.removeUserFromAthlete(userFound.getAthlete().getId());
+            } catch (ResourceNotFoundException e) {
+                throw new ResourceNotFoundException("Atleta", userFound.getAthlete().getId());
+            }
         } else {
             coachService.removeUserFromCoach(userFound.getCoach().getId());
         }

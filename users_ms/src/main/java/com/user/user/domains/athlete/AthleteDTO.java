@@ -9,5 +9,4 @@ public record AthleteDTO(String firstName,
                 String picture,
                 String category,
                 Boolean isStarting) {
-
 }
