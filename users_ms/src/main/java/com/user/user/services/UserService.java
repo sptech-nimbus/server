@@ -17,6 +17,7 @@ import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.domains.user.ChangePasswordDTO;
 import com.user.user.domains.user.User;
 import com.user.user.domains.user.UserDTO;
+import com.user.user.exceptions.ResourceNotFoundException;
 import com.user.user.repositories.UserRepository;
 
 @SuppressWarnings("rawtypes")
@@ -76,14 +77,14 @@ public class UserService {
     }
 
     public ResponseEntity<ResponseMessage> login(UserDTO dto) {
-        User userFound = repo.findByEmailAndPassword(dto.email(), dto.password()).get();
+        User userFound = repo.findByEmailAndPassword(dto.email(), dto.password())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário", null));
 
-        if (userFound == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage("Email ou senha incorretos."));
-        }
+        String userType = userFound.getAthlete() != null ? "Athlete" : "Coach";
 
         return ResponseEntity
-                .ok(new ResponseMessage<UUID>("Login realizado.", "Login realizado.", userFound.getId()));
+                .status(200)
+                .body(new ResponseMessage<UUID>("Login realizado.", userType, userFound.getId()));
     }
 
     public ResponseEntity<ResponseMessage> changePassword(UUID id, ChangePasswordDTO dto) {

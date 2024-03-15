@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.domains.user.ChangePasswordDTO;
 import com.user.user.domains.user.UserDTO;
+import com.user.user.exceptions.ResourceNotFoundException;
 import com.user.user.services.PersonaService;
 import com.user.user.services.UserService;
 
@@ -36,7 +37,11 @@ public class UserController {
 
     @PostMapping("login")
     public ResponseEntity<ResponseMessage> login(@RequestBody UserDTO dto) {
-        return service.login(dto);
+        try {
+            return service.login(dto);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage("Usuário não encontrado"));
+        }
     }
 
     @GetMapping("/{id}")
