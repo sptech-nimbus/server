@@ -2,12 +2,10 @@ package com.user.user.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -62,22 +60,18 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
 
     @Override
     public ResponseEntity<ResponseMessage> putPersona(UUID id, AthleteDTO dto) {
-        Optional<Athlete> athleteFound = repo.findById(id);
+        Athlete athleteFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Atleta", id));
 
-        if (!athleteFound.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseMessage<>("Atleta não encontrado."));
-        }
-
-        BeanUtils.copyProperties(dto, athleteFound.get());
+        BeanUtils.copyProperties(dto, athleteFound);
 
         try {
-            repo.save(athleteFound.get());
+            repo.save(athleteFound);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage<>("Erro ao atualizar atleta.", e.getMessage()));
+            return ResponseEntity.status(500)
+                    .body(new ResponseMessage("Erro ao atualizar atleta.", e.getMessage()));
         }
 
-        return ResponseEntity.ok(new ResponseMessage<>("Atleta atualizado com sucesso"));
+        return ResponseEntity.ok(new ResponseMessage("Atleta atualizado com sucesso"));
     }
 
     public List<String> checkAthleteCredentials(String category, Boolean isStarting) {

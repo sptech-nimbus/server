@@ -24,17 +24,23 @@ public class AthleteController {
     @Autowired
     AthleteService service;
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ResponseMessage> putAthlete(@PathVariable UUID id, @RequestBody AthleteDTO dto) {
-        return service.putPersona(id, dto);
-    }
-
+    // GET
     @GetMapping("ms-get-athlete/{id}")
     public ResponseEntity<Athlete> getAthleteForMs(@PathVariable UUID id) {
-        try{
+        try {
             return service.getAthleteForMs(id);
-        }catch(ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).build();
+        }
+    }
+
+    // PUT
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseMessage> putAthlete(@PathVariable UUID id, @RequestBody AthleteDTO dto) {
+        try {
+            return service.putPersona(id, dto);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
         }
     }
 }
