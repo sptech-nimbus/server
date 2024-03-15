@@ -30,6 +30,7 @@ public class UserController {
     @Autowired
     private PersonaService personaService;
 
+    // POST
     @PostMapping
     public ResponseEntity<ResponseMessage> registerUser(@RequestBody UserDTO dto) {
         return service.register(dto);
@@ -44,6 +45,7 @@ public class UserController {
         }
     }
 
+    // GET
     @GetMapping("/{id}")
     public ResponseEntity<ResponseMessage> getUserById(@PathVariable UUID id) {
         return personaService.getPersonaByUserId(id);
@@ -54,6 +56,7 @@ public class UserController {
         return personaService.getChatUserByUserId(id);
     }
 
+    // PATCH
     @PatchMapping("/change-password/{id}")
     public ResponseEntity<ResponseMessage> changePassword(@PathVariable UUID id, @RequestBody ChangePasswordDTO dto) {
         try {
@@ -63,8 +66,13 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/{id}/{password}")
-    public ResponseEntity<ResponseMessage> deleteUser(@PathVariable UUID id, @PathVariable String password) {
-        return service.deleteUser(id, password);
+    // DELETE
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseMessage> deleteUser(@PathVariable UUID id, @RequestBody String password) {
+        try {
+            return service.deleteUser(id, password);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage("Usuário não encontrado"));
+        }
     }
 }

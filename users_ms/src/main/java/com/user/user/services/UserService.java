@@ -2,13 +2,11 @@ package com.user.user.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -106,25 +104,21 @@ public class UserService {
     }
 
     public ResponseEntity<ResponseMessage> deleteUser(UUID id, String password) {
-        Optional<User> userFound = repo.findById(id);
+        User userFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
 
-        if (!userFound.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage<>("Usuário não encontrado."));
+        if (!String.valueOf(userFound.getPassword()).equals(password)) {
+            return ResponseEntity.status(400).body(new ResponseMessage("Senha incorreta."));
         }
 
-        if (!userFound.get().getPassword().equals(password)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage<>("Senha incorreta."));
+        if (userFound.getAthlete() != null) {
+            athleteService.removeUserFromAthlete(userFound.getAthlete().getId());
+        } else {
+            coachService.removeUserFromCoach(userFound.getCoach().getId());
         }
 
-        if (userFound.get().getAthlete() != null) {
-            athleteService.removeUserFromAthlete(userFound.get().getAthlete().getId());
-        } else if (userFound.get().getCoach() != null) {
-            coachService.removeUserFromCoach(userFound.get().getCoach().getId());
-        }
+        repo.delete(userFound);
 
-        repo.delete(userFound.get());
-
-        return ResponseEntity.ok(new ResponseMessage<>("Usuário deletado."));
+        return ResponseEntity.status(200).body(new ResponseMessage("Usuário deletado."));
     }
 
     public List<String> checkAllUserCredencials(UserDTO dto) {
