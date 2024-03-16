@@ -17,18 +17,20 @@ import com.events.events.services.AthleteHistoricService;
 
 @SuppressWarnings("rawtypes")
 @RestController
-@RequestMapping("athlete-historic")
+@RequestMapping("athlete-historics")
 public class AthleteHistoricController {
     @Autowired
     AthleteHistoricService service;
 
+    // POST
     @PostMapping
     public ResponseEntity<ResponseMessage> postAthleteHistoric(@RequestBody AthleteHistoricDTO dto) {
         return service.register(dto);
     }
 
-    @GetMapping("{athleteId}")
+    // GET
+    @GetMapping("/from-athlete/{athleteId}")
     public ResponseEntity<ResponseMessage> getAthleteHistoricByAthleteId(@PathVariable UUID athleteId) {
-        return service.getAthleteHistoricByAthleteId(athleteId);
+        return service.getAthleteHistoricsByAthleteId(athleteId);
     }
 }
