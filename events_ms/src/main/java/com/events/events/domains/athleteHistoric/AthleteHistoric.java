@@ -112,7 +112,4 @@ public class AthleteHistoric {
                 "training=" + training + '\'' +
                 "}";
     }
-
-
-    
 }

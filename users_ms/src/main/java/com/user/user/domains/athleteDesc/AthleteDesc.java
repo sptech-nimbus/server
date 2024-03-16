@@ -42,13 +42,6 @@ public class AthleteDesc {
     @JoinColumn(name = "athlete_id", referencedColumnName = "athlete_id")
     private Athlete athlete;
 
-    public AthleteDesc(AthleteDescDTO dto) {
-        this.setPosition(dto.position());
-        this.setWeight(dto.weight());
-        this.setHeight(dto.height());
-        this.setAthlete(dto.athlete());
-    }
-
     @Override
     public String toString() {
         return "AthleteDesc {" + '\'' +
@@ -59,6 +52,4 @@ public class AthleteDesc {
                 "athlete=" + athlete + '\'' +
                 "}";
     }
-
-    
 }
