@@ -55,6 +55,7 @@ public class Athlete extends Persona {
                                 "category=" + category + '\'' +
                                 "isStarting=" + isStarting + '\'' +
                                 "injuries=" + injuries + '\'' +
+                                "persona=" + super.toString() + '\'' +
                                 "}";
         }
 }
