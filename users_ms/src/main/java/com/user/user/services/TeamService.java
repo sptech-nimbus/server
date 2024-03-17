@@ -3,7 +3,6 @@ package com.user.user.services;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
@@ -121,14 +120,11 @@ public class TeamService {
     }
 
     public ResponseEntity<ResponseMessage> getAthletesByAgeAsc(UUID id) {
-        Optional<Team> teamFound = repo.findById(id);
+        Team teamFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
 
-        if (!teamFound.isPresent())
-            return ResponseEntity.status(204).body(new ResponseMessage<>("Time não encontrado"));
+        List<Athlete> athletes = teamFound.getAthletes();
 
-        List<Athlete> athletes = teamFound.get().getAthletes();
-
-        Sorts.mergeSortAthletesByAgeAsc(athletes, athletes.size());
+        Sorts.mergeSortAthletesByAgeAsc(athletes, 0, athletes.size() - 1);
 
         return ResponseEntity.status(200).body(new ResponseMessage<List<Athlete>>(athletes));
     }
