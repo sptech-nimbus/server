@@ -6,46 +6,40 @@ import java.util.List;
 import com.user.user.domains.athlete.Athlete;
 
 public class Sorts {
-    public static void mergeSortAthletesByAgeAsc(List<Athlete> a, int size) {
-        if (size < 2)
-            return;
+    public static void mergeSortAthletesByAgeAsc(List<Athlete> a, int left, int right) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
 
-        int mid = size / 2;
+            mergeSortAthletesByAgeAsc(a, left, mid);
+            mergeSortAthletesByAgeAsc(a, mid + 1, right);
 
-        List<Athlete> l = new ArrayList<>(mid);
-        List<Athlete> r = new ArrayList<>(size - mid);
-
-        for (int i = 0; i < mid; i++) {
-            l.set(i, a.get(i));
+            mergeAthletes(a, left, mid, right);
         }
-
-        for (int i = mid; i < size; i++) {
-            r.set(i - mid, a.get(i));
-        }
-
-        mergeSortAthletesByAgeAsc(l, mid);
-        mergeSortAthletesByAgeAsc(r, mid);
-
-        mergeAthletes(a, l, r, mid, size - mid);
     }
 
-    public static void mergeAthletes(List<Athlete> a, List<Athlete> l, List<Athlete> r, int left, int right) {
-        int i = 0, j = 0, k = 0;
+    private static void mergeAthletes(List<Athlete> a, int left, int mid, int right) {
+        int i = left, j = mid + 1;
 
-        while (i < left && j < right) {
-            if (l.get(i).getBirthDate().isBefore(r.get(j).getBirthDate())) {
-                a.set(k++, l.get(i++));
+        List<Athlete> temp = new ArrayList<>(right - left + 1);
+
+        while (i <= mid && j <= right) {
+            if (a.get(i).getBirthDate().compareTo(a.get(j).getBirthDate()) <= 0) {
+                temp.add(a.get(i++));
             } else {
-                a.set(k++, r.get(j++));
+                temp.add(a.get(j++));
             }
         }
 
-        while (i < left) {
-            a.set(k++, l.get(j++));
+        while (i <= mid) {
+            temp.add(a.get(i++));
         }
 
-        while (j < right) {
-            a.set(k++, r.get(j++));
+        while (j <= right) {
+            temp.add(a.get(j++));
+        }
+
+        for (int x = left; x <= right; x++) {
+            a.set(x, temp.get(x - left));
         }
     }
 }
