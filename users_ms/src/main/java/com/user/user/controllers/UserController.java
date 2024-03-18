@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -32,11 +33,13 @@ public class UserController {
 
     // POST
     @PostMapping
+    @CrossOrigin
     public ResponseEntity<ResponseMessage> registerUser(@RequestBody UserDTO dto) {
         return service.register(dto);
     }
 
     @PostMapping("login")
+    @CrossOrigin
     public ResponseEntity<ResponseMessage> login(@RequestBody UserDTO dto) {
         try {
             return service.login(dto);
@@ -47,6 +50,7 @@ public class UserController {
 
     // GET
     @GetMapping("/{id}")
+    @CrossOrigin
     public ResponseEntity<ResponseMessage> getUserById(@PathVariable UUID id) {
         return personaService.getPersonaByUserId(id);
     }
@@ -58,6 +62,7 @@ public class UserController {
 
     // PATCH
     @PatchMapping("/change-password/{id}")
+    @CrossOrigin
     public ResponseEntity<ResponseMessage> changePassword(@PathVariable UUID id, @RequestBody ChangePasswordDTO dto) {
         try {
             return service.changePassword(id, dto);
@@ -68,6 +73,7 @@ public class UserController {
 
     // DELETE
     @DeleteMapping("/{id}")
+    @CrossOrigin
     public ResponseEntity<ResponseMessage> deleteUser(@PathVariable UUID id, @RequestBody String password) {
         try {
             return service.deleteUser(id, password);

@@ -1,0 +1,334 @@
+openapi: 3.0.0
+info:
+  title: Nimbus - Usuários
+  description: >-
+    Micro-serviço responsável pelo gerenciamento de dados relacionados aos
+    usuários do sistema Nimbus
+  version: 1.0.5
+servers:
+  - url: http://localhost:3000
+    description: Servidor local porta 3000
+paths:
+  /users:
+    post:
+      tags:
+        - Users
+      summary: Insere um novo usuário.
+      description: Registro novo usuário e atleta/treinador.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/schemas/UserAthlete"
+            example:
+              email: melissa@mail.com
+              password: Melissa123@
+              athlete:
+                firstName: Melissa
+                lastName: Cavalcante
+                birthDate: 2004-10-07
+                phone: null
+                picture: null
+                category: sub-20
+                isStarting: true
+          Treinador:
+            schema:
+              $ref: "#components/schemas/UserCoach"
+            example:
+              email: yago@mail.com
+              password: Yago213@
+              coach:
+                firstName: Yago
+                lastName: Silva
+                birthDate: 2003-07-09
+                phone: null
+                picture: null
+      responses:
+        200:
+          description: ID do usuário inserido
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Cadastro realizado
+                serverMessage: null
+                data: 875f6a77-4743-4330-b88b-3f29aac28191
+        400:
+          description: -Email e/ou senha inválidos, tipo de usuário não permitido ou não informado, credenciais de atleta ou treinador inválidos.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              examples:
+                Credenciais de usuário Invalidas:
+                  value:
+                    clientMessage: Verifique suas credenciais de usuário.
+                    serverMessage: Email inválido, Senha inválida.
+                    data: null
+                Tipo de usuário Invalido:
+                  value:
+                    clientMessage: Tipo de usuário não permitido ou não informado.
+                    serverMessage: null
+                    data: null
+                Credenciais de atleta inválidas:
+                  value:
+                    clientMessage: Verifique suas credenciais de atleta.
+                    serverMessage: Campo categoria é obrigatório, Campo titular é obrigatório.
+                    data: null
+                Credenciais de treinador inválidas:
+                  value:
+                    clientMessage: Verifique suas credenciais de treinador.
+                    serverMessage: null
+                    data: null
+        409:
+          description: Email já utilizado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Email já utilizado.
+                serverMessage: null
+                data: null
+
+  /users/login:
+    post:
+      tags:
+        - Users
+      summary: Retorna usuário por email e senha.
+      description: Busca usuário por email e senha. Retorna o tipo e id do usuário.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              example:
+                email: melissa@mail.com
+                password: Melissa123@
+      responses:
+        200:
+          description: Login realizado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              examples:
+                Treinador:
+                  value:
+                    clientMessage: Login realizado.
+                    serverMessage: Coach
+                    data: c834cbcc-1b88-4315-8126-3eac0c298695
+                Atleta:
+                  value:
+                    clientMessage: Login realizado.
+                    serverMessage: Athlete
+                    data: 09f856c5-c88a-426d-a5eb-b0a42d65d3b5
+        404:
+          description: Usuário não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Usuário não encontrado.
+                serverMessage: null
+                data: null
+
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Retorna informações do usuário
+      description: Retorna informações de persona do usuário por seu ID.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do usuário.
+      responses:
+        200:
+          description: Usuário encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: null
+                serverMessage: null
+                data:
+                  firstName: Melissa
+                  lastName: Cavalcante
+                  birthDate: 2004-10-07
+                  phone: 8424456233
+                  picture: null
+        404:
+          description: Usuário não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Informações de usuário não encontradas
+                serverMessage: null
+                data: null
+    delete:
+      tags:
+        - Users
+      summary: Deleta um usuário.
+      description: Deleta um usuário e desassocia este usuário com seu registro de atleta/treinador.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do usuário.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+            example: "Melissa123@"
+      responses:
+        200:
+          description: Usuário deletado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Usuário deletado.
+                serverMessage: null
+                data: null
+
+  /users/change-password/{id}:
+    patch:
+      tags:
+        - Users
+      summary: Atualiza senha do usuário
+      description: Atualiza senha do usuário confirmando a senha antiga.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do usuário.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              oldPassword: "Melissa123@"
+              newPassword: "Melissa@123"
+      responses:
+        200:
+          description: Senha de usuário atualizada.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Senha alterada com sucesso.
+                serverMessage: null
+                data: null
+        404:
+          description: Usuário não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: "Usuário não encontrado com id: {id}"
+                serverMessage: null
+                data: null
+
+tags:
+  - name: Users
+
+components:
+  schemas:
+    ResponseMessage:
+      type: object
+      properties:
+        clientMessage:
+          type: string
+        serverMessage:
+          type: string
+        data:
+          type: object
+
+    UserAthlete:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        athlete:
+          $ref: "#/components/schemas/Athlete"
+
+    UserCoach:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        coach:
+          $ref: "#/components/schemas/Coach"
+
+    Athlete:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+        phone:
+          type: string
+        picture:
+          type: string
+        category:
+          type: string
+        isStarting:
+          type: boolean
+
+    Coach:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+        phone:
+          type: string
+        picture:
+          type: string
+
+    Persona:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+        phone:
+          type: string
+        picture:
+          type: string
