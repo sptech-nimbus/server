@@ -34,7 +34,7 @@ public class TeamController {
         try {
             return service.register(dto);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
+            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
         }
     }
 
