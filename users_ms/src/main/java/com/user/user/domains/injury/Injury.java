@@ -55,6 +55,4 @@ public class Injury {
                 "athlete=" + athlete + '\'' +
                 "}";
     }
-
-    
 }

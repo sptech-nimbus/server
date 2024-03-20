@@ -251,9 +251,253 @@ paths:
                 clientMessage: "Usuário não encontrado com id: {id}"
                 serverMessage: null
                 data: null
+        409:
+          description: Senha fora dos padrões.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Senha fora dos padrões.
+                serverMessage: null
+                data: null
+        400:
+          description: Antiga senha incorreta.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Antiga senha incorreta.
+                serverMessage: null
+                data: null
+
+  /coaches/{id}:
+    put:
+      tags:
+        - Coaches
+      summary: Atualiza informações de treinador.
+      description: Atualiza informações de persona relacionada a treinador.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do usuário.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/schemas/Coach"
+            example:
+              firstName: Mel
+              lastName: Rodrigues
+              birthDate: 2004-04-09
+              phone: 11910434007
+              picture: null
+      responses:
+        200:
+          description: Senha de usuário atualizada.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Treinador atualizado com sucesso.
+                serverMessage: null
+                data: null
+        500:
+          description: Erro genérico de servidor
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Erro ao atualizar treinador.
+                serverMessage: error message
+                data: null
+
+  /athletes/{id}:
+    put:
+      tags:
+        - Athletes
+      summary: Atualiza informações de atleta.
+      description: Atualiza informações de persona relacionada a atleta.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do usuário.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/schemas/Athlete"
+            example:
+              firstName: Mel
+              lastName: Rodrigues
+              birthDate: 2004-04-09
+              phone: 11910434007
+              picture: null
+      responses:
+        200:
+          description: Senha de usuário atualizada.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Treinador atualizado com sucesso.
+                serverMessage: null
+                data: null
+        500:
+          description: Erro genérico de servidor
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Erro ao atualizar atleta.
+                serverMessage: error message
+                data: null
+
+  /injuries:
+    post:
+      tags:
+        - Injuries
+      summary: Insere um novo registro de lesão.
+      description: Insere um novo registro de lesão de atleta.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/schemas/Injury"
+            example:
+              type: Deslocamento no ombro direito.
+              inicialDate: 2024-03-20
+              finalDate: 2024-03-27
+              athlete:
+                id: ""
+      responses:
+        200:
+          description: Lesão inserida.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Registro de lesão inserida.
+                serverMessage: null
+                data:
+                  type: Deslocamento no ombro direito.
+                  inicialDate: 2024-03-20
+                  finalDate: 2024-03-27
+        500:
+          description: Erro genérico de servidor.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: error message
+                serverMessage: null
+                data: null
+
+  /injuries/{id}:
+    get:
+      tags:
+        - Injuries
+      summary: Atualiza informações de lesão de atleta.
+      description: Atualiza informações lesão de relacionada a atleta.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do atleta.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/schemas/Injury"
+            example:
+              type: Deslocamento no cotovelo direito.
+              inicialDate: 2024-03-21
+              finalDate: 2024-03-31
+              athlete:
+                id: ""
+      responses:
+        200:
+          description: Lesão inserida.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Lesão atualizada.
+                serverMessage: null
+                data: null
+        404:
+          description: "Lesão não encontrada."
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: "Lesão não encontrada com o id: {id}."
+                serverMessage: null
+                data: null
+    delete:
+      tags:
+        - Injuries
+      summary: Atualiza informações de lesão de atleta.
+      description: Atualiza informações lesão de relacionada a atleta.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do atleta.
+      responses:
+        200:
+          description: Registro de lesão deletado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Registro de lesão deletada.
+                serverMessage: null
+                data: null
+        404:
+          description: "Lesão não encontrada."
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: "Lesão não encontrada com o id: {id}."
+                serverMessage: null
+                data: null
+        500:
+          description: Erro genérico de servidor.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Erro ao deletar registro de lesão.
+                serverMessage: null
+                data: null
 
 tags:
   - name: Users
+  - name: Coaches
 
 components:
   schemas:
@@ -332,3 +576,18 @@ components:
           type: string
         picture:
           type: string
+
+    Injury:
+      type: object
+      properties:
+        type:
+          type: string
+        inicialDate:
+          type: string
+        finalDate:
+          type: string
+        athlete:
+          type: object
+          properties:
+            id:
+              type: string

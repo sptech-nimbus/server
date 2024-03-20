@@ -49,7 +49,7 @@ public class InjuryService {
         try {
             repo.delete(injuryFound);
         } catch (Exception e) {
-            return ResponseEntity.status(409)
+            return ResponseEntity.status(500)
                     .body(new ResponseMessage("Erro ao deletar registro de lesão", e.getMessage()));
         }
         return ResponseEntity.status(200)
