@@ -19,24 +19,22 @@ import com.user.user.domains.team.TeamDTO;
 import com.user.user.exceptions.ResourceNotFoundException;
 import com.user.user.repositories.AthleteRepository;
 import com.user.user.repositories.CoachRepository;
-import com.user.user.repositories.InjuryRepository;
 import com.user.user.repositories.TeamRepository;
 import com.user.user.utils.Sorts;
 
 @SuppressWarnings("rawtypes")
 @Service
 public class TeamService {
-    @Autowired
-    TeamRepository repo;
+    private final TeamRepository repo;
+    private final CoachRepository coachRepo;
+    private final AthleteRepository athleteRepo;
 
     @Autowired
-    CoachRepository coachRepo;
-
-    @Autowired
-    AthleteRepository athleteRepo;
-
-    @Autowired
-    InjuryRepository injuryRepo;
+    public TeamService(TeamRepository repo, CoachRepository coachRepo, AthleteRepository athleteRepo) {
+        this.repo = repo;
+        this.coachRepo = coachRepo;
+        this.athleteRepo = athleteRepo;
+    }
 
     public ResponseEntity<ResponseMessage> register(TeamDTO dto) {
         List<String> fieldsErrors = checkFields(dto);

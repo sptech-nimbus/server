@@ -18,8 +18,13 @@ import com.user.user.repositories.CoachRepository;
 @SuppressWarnings("rawtypes")
 @Service
 public class CoachService extends PersonaService implements _persona<CoachDTO> {
+    private final CoachRepository repo;
+
     @Autowired
-    private CoachRepository repo;
+    public CoachService(CoachRepository repo) {
+        super(null, repo);
+        this.repo = repo;
+    }
 
     public ResponseEntity<ResponseMessage> register(CoachDTO dto, User user) {
         Coach newCoach = new Coach();

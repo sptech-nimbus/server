@@ -21,8 +21,12 @@ import com.user.user.services.InjuryService;
 @RestController
 @RequestMapping("injuries")
 public class InjuryController {
+    private final InjuryService service;
+
     @Autowired
-    InjuryService service;
+    public InjuryController(InjuryService service) {
+        this.service = service;
+    }
 
     // POST
     @PostMapping

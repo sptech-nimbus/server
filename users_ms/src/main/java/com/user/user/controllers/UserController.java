@@ -25,11 +25,15 @@ import com.user.user.services.UserService;
 @RestController
 @RequestMapping("users")
 public class UserController {
-    @Autowired
-    private UserService service;
+    private final UserService service;
+
+    private final PersonaService personaService;
 
     @Autowired
-    private PersonaService personaService;
+    public UserController(UserService userService, PersonaService personaService) {
+        this.personaService = personaService;
+        this.service = userService;
+    }
 
     // POST
     @PostMapping

@@ -25,8 +25,12 @@ import com.user.user.services.TeamService;
 @RestController
 @RequestMapping("teams")
 public class TeamController {
+    private final TeamService service;
+
     @Autowired
-    TeamService service;
+    public TeamController(TeamService service) {
+        this.service = service;
+    }
 
     // POST
     @PostMapping

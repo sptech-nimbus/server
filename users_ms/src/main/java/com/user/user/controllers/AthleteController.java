@@ -21,8 +21,12 @@ import com.user.user.services.AthleteService;
 @RestController
 @RequestMapping("athletes")
 public class AthleteController {
+    private final AthleteService service;
+
     @Autowired
-    AthleteService service;
+    public AthleteController(AthleteService service) {
+        this.service = service;
+    }
 
     // GET
     @GetMapping("ms-get-athlete/{id}")
