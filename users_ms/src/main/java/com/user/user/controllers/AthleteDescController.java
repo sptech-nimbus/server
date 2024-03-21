@@ -21,8 +21,12 @@ import com.user.user.services.AthleteDescService;
 @RestController
 @RequestMapping("athlete-descs")
 public class AthleteDescController {
+    private final AthleteDescService service;
+
     @Autowired
-    AthleteDescService service;
+    public AthleteDescController(AthleteDescService service) {
+        this.service = service;
+    }
 
     // POST
     @PostMapping

@@ -16,8 +16,12 @@ import com.user.user.repositories.InjuryRepository;
 @SuppressWarnings("rawtypes")
 @Service
 public class InjuryService {
+    private final InjuryRepository repo;
+
     @Autowired
-    InjuryRepository repo;
+    public InjuryService(InjuryRepository repo) {
+        this.repo = repo;
+    }
 
     public ResponseEntity<ResponseMessage> register(InjuryDTO dto) {
         Injury newInjury = new Injury();

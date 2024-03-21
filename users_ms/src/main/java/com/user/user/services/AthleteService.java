@@ -19,8 +19,13 @@ import com.user.user.repositories.AthleteRepository;
 @SuppressWarnings("rawtypes")
 @Service
 public class AthleteService extends PersonaService implements _persona<AthleteDTO> {
+    private final AthleteRepository repo;
+
     @Autowired
-    private AthleteRepository repo;
+    public AthleteService(AthleteRepository repo) {
+        super(repo, null);
+        this.repo = repo;
+    }
 
     public ResponseEntity<ResponseMessage> register(AthleteDTO dto, User user) {
         Athlete newAthlete = new Athlete();

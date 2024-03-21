@@ -18,11 +18,15 @@ import com.user.user.repositories.CoachRepository;
 @Service
 public class PersonaService {
 
-    @Autowired
-    private AthleteRepository athleteRepo;
+    private final AthleteRepository athleteRepo;
+
+    private final CoachRepository coachRepo;
 
     @Autowired
-    private CoachRepository coachRepo;
+    public PersonaService(AthleteRepository athleteRepo, CoachRepository coachRepo) {
+        this.athleteRepo = athleteRepo;
+        this.coachRepo = coachRepo;
+    }
 
     public ResponseEntity<ResponseMessage> getPersonaByUserId(UUID id) {
         Persona personaFound = athleteRepo.findAthleteByUserId(id);

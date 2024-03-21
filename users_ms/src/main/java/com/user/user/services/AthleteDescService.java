@@ -17,11 +17,15 @@ import com.user.user.repositories.AthleteRepository;
 @SuppressWarnings("rawtypes")
 @Service
 public class AthleteDescService {
-    @Autowired
-    AthleteDescRepository repo;
+    private final AthleteDescRepository repo;
+
+    private final AthleteRepository athleteRepo;
 
     @Autowired
-    AthleteRepository athleteRepo;
+    public AthleteDescService(AthleteDescRepository repo, AthleteRepository athleteRepo) {
+        this.repo = repo;
+        this.athleteRepo = athleteRepo;
+    }
 
     public ResponseEntity<ResponseMessage> register(AthleteDescDTO dto) {
         athleteRepo.findById(dto.athlete().getId())

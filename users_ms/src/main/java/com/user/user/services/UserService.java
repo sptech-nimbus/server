@@ -21,14 +21,16 @@ import com.user.user.repositories.UserRepository;
 @SuppressWarnings("rawtypes")
 @Service
 public class UserService {
-    @Autowired
-    private UserRepository repo;
+    private final UserRepository repo;
+    private final CoachService coachService;
+    private final AthleteService athleteService;
 
     @Autowired
-    private CoachService coachService;
-
-    @Autowired
-    private AthleteService athleteService;
+    public UserService(UserRepository repo, CoachService coachService, AthleteService athleteService) {
+        this.repo = repo;
+        this.coachService = coachService;
+        this.athleteService = athleteService;
+    }
 
     public ResponseEntity<ResponseMessage> register(UserDTO dto) {
         List<String> credencialsErrors = checkAllUserCredencials(dto);

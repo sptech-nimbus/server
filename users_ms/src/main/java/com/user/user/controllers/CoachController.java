@@ -21,8 +21,12 @@ import com.user.user.services.CoachService;
 @RestController
 @RequestMapping("coaches")
 public class CoachController {
+    private final CoachService service;
+
     @Autowired
-    CoachService service;
+    public CoachController(CoachService service) {
+        this.service = service;
+    }
 
     // GET
     @GetMapping("/ms-get-coach/{id}")
