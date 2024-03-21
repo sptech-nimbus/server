@@ -12,19 +12,23 @@ import org.springframework.stereotype.Service;
 import com.user.user.domains.athlete.Athlete;
 import com.user.user.domains.athlete.AthleteDTO;
 import com.user.user.domains.responseMessage.ResponseMessage;
+import com.user.user.domains.team.Team;
 import com.user.user.domains.user.User;
 import com.user.user.exceptions.ResourceNotFoundException;
 import com.user.user.repositories.AthleteRepository;
+import com.user.user.repositories.TeamRepository;
 
 @SuppressWarnings("rawtypes")
 @Service
 public class AthleteService extends PersonaService implements _persona<AthleteDTO> {
     private final AthleteRepository repo;
+    private final TeamRepository teamRepo;
 
     @Autowired
-    public AthleteService(AthleteRepository repo) {
+    public AthleteService(AthleteRepository repo, TeamRepository teamRepo) {
         super(repo, null);
         this.repo = repo;
+        this.teamRepo = teamRepo;
     }
 
     public ResponseEntity<ResponseMessage> register(AthleteDTO dto, User user) {
@@ -77,6 +81,21 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
         }
 
         return ResponseEntity.ok(new ResponseMessage("Atleta atualizado com sucesso"));
+    }
+
+    public ResponseEntity<ResponseMessage> registerAthleteToTeam(UUID id, Team team) {
+        System.out.println(team.getId());
+        Team teamFound = teamRepo.findById(team.getId()).orElseThrow(() -> new ResourceNotFoundException("Time", id));
+
+        Athlete athleteFound = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Atleta", id));
+
+        athleteFound.setTeam(teamFound);
+
+        repo.save(athleteFound);
+
+        return ResponseEntity.status(200).body(new ResponseMessage(
+                "Atleta " + athleteFound.getLastName() + " cadastrado no time"));
     }
 
     public List<String> checkAthleteCredentials(String category, Boolean isStarting) {
