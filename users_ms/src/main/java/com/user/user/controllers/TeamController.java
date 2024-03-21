@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.user.user.domains.athlete.Athlete;
 import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.domains.team.Team;
 import com.user.user.domains.team.TeamDTO;
@@ -77,26 +76,24 @@ public class TeamController {
         return service.getAthletesByAgeAsc(id);
     }
 
-    // PATCH
-    @PatchMapping("register-athlete/{id}")
-    public ResponseEntity<ResponseMessage> registerAthleteOnTeam(@PathVariable UUID id,
-            @RequestBody Athlete athlete) {
-        try {
-            return service.registerAthleteToTeam(id, athlete);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
-        }
-    }
-
     // PUT
     @PutMapping("/{id}")
     public ResponseEntity<ResponseMessage> putTeamById(@PathVariable UUID id, @RequestBody TeamDTO team) {
         try {
             return service.putTeamById(id, team);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
+            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ResponseMessage<>(e.getMessage()));
+            return ResponseEntity.status(500).body(new ResponseMessage(e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseMessage> deleteTeamById(@PathVariable UUID id, @RequestBody String coachPassword) {
+        try {
+            return service.deleteTeam(id, coachPassword);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
         }
     }
 }

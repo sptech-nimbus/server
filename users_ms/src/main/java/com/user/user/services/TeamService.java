@@ -56,20 +56,6 @@ public class TeamService {
         return ResponseEntity.ok(new ResponseMessage<Team>(newTeam));
     }
 
-    public ResponseEntity<ResponseMessage> registerAthleteToTeam(UUID id, Athlete athlete) {
-        Team teamFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
-
-        Athlete athleteFound = athleteRepo.findById(athlete.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Atleta", athlete.getId()));
-
-        athleteFound.setTeam(teamFound);
-
-        athleteRepo.save(athleteFound);
-
-        return ResponseEntity.status(200).body(new ResponseMessage(
-                "Atleta " + athleteFound.getLastName() + " cadastrado no time"));
-    }
-
     public ResponseEntity<ResponseMessage> getTeamById(UUID id) {
         return ResponseEntity.ok(new ResponseMessage<Team>(repo.findById(id).get()));
     }
@@ -125,6 +111,20 @@ public class TeamService {
         Sorts.mergeSortAthletesByAgeAsc(athletes, 0, athletes.size() - 1);
 
         return ResponseEntity.status(200).body(new ResponseMessage<List<Athlete>>(athletes));
+    }
+
+    public ResponseEntity<ResponseMessage> deleteTeam(UUID id, String coachPassword) {
+        Team teamFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
+
+        if (!teamFound.getCoach().getUser().getPassword().equals(coachPassword)) {
+            return ResponseEntity.status(401).body(new ResponseMessage("Senha incorreta"));
+        }
+
+        athleteRepo.findByTeamId(id).stream().forEach(athlete -> athlete.setTeam(null));
+
+        repo.delete(teamFound);
+
+        return ResponseEntity.status(200).body(new ResponseMessage("Time excluído com sucesso"));
     }
 
     public List<String> checkFields(TeamDTO dto) {
