@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.events.events.domains.coach.Coach;
 import com.events.events.domains.game.GameDTO;
 import com.events.events.domains.responseMessage.ResponseMessage;
-import com.events.events.domains.team.Team;
+import com.events.events.exceptions.ResourceNotFoundException;
 import com.events.events.services.GameService;
 
 @SuppressWarnings("rawtypes")
@@ -42,7 +42,11 @@ public class GameController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<ResponseMessage> cancelGameById(@PathVariable UUID id, @RequestBody Team team) {
-        return service.cancelGameById(id, team);
+    public ResponseEntity<ResponseMessage> cancelGameById(@PathVariable UUID id, @RequestBody Coach coach) {
+        try {
+            return service.cancelGameById(id, coach);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+        }
     }
 }
