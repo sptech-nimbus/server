@@ -495,6 +495,36 @@ paths:
                 serverMessage: null
                 data: null
 
+  /teams:
+    post:
+      tags:
+        - Teams
+      summary: Insere um novo time.
+      description: Insere registro de novo time.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/schemas/Team"
+            example:
+              category: sub-20
+              picture: null
+              local: Rua das araras
+              name: Dragões de gelo
+              coach:
+                id: ""
+      responses:
+        200:
+          description: Time registrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Time registrado.
+                serverMessage: null
+                data: null
+
 tags:
   - name: Users
   - name: Coaches
@@ -587,6 +617,23 @@ components:
         finalDate:
           type: string
         athlete:
+          type: object
+          properties:
+            id:
+              type: string
+
+    Team:
+      type: object
+      properties:
+        category:
+          type: string
+        picture:
+          type: string
+        local:
+          type: string
+        name:
+          type: string
+        coach:
           type: object
           properties:
             id:
