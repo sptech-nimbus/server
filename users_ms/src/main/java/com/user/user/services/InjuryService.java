@@ -3,7 +3,6 @@ package com.user.user.services;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,6 @@ import com.user.user.repositories.InjuryRepository;
 public class InjuryService {
     private final InjuryRepository repo;
 
-    @Autowired
     public InjuryService(InjuryRepository repo) {
         this.repo = repo;
     }

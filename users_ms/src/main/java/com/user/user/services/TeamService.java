@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +28,6 @@ public class TeamService {
     private final CoachRepository coachRepo;
     private final AthleteRepository athleteRepo;
 
-    @Autowired
     public TeamService(TeamRepository repo, CoachRepository coachRepo, AthleteRepository athleteRepo) {
         this.repo = repo;
         this.coachRepo = coachRepo;

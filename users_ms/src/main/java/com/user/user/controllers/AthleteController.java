@@ -2,7 +2,6 @@ package com.user.user.controllers;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,7 +24,6 @@ import com.user.user.services.AthleteService;
 public class AthleteController {
     private final AthleteService service;
 
-    @Autowired
     public AthleteController(AthleteService service) {
         this.service = service;
     }

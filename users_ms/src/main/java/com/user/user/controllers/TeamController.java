@@ -3,7 +3,6 @@ package com.user.user.controllers;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +25,6 @@ import com.user.user.services.TeamService;
 public class TeamController {
     private final TeamService service;
 
-    @Autowired
     public TeamController(TeamService service) {
         this.service = service;
     }
