@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +23,6 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
     private final AthleteRepository repo;
     private final TeamRepository teamRepo;
 
-    @Autowired
     public AthleteService(AthleteRepository repo, TeamRepository teamRepo) {
         super(repo, null);
         this.repo = repo;

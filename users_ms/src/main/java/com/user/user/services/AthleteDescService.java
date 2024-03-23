@@ -3,7 +3,6 @@ package com.user.user.services;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +20,6 @@ public class AthleteDescService {
 
     private final AthleteRepository athleteRepo;
 
-    @Autowired
     public AthleteDescService(AthleteDescRepository repo, AthleteRepository athleteRepo) {
         this.repo = repo;
         this.athleteRepo = athleteRepo;

@@ -3,7 +3,6 @@ package com.user.user.services;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,6 @@ public class PersonaService {
 
     private final CoachRepository coachRepo;
 
-    @Autowired
     public PersonaService(AthleteRepository athleteRepo, CoachRepository coachRepo) {
         this.athleteRepo = athleteRepo;
         this.coachRepo = coachRepo;

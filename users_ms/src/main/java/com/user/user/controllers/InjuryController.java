@@ -2,7 +2,6 @@ package com.user.user.controllers;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +22,6 @@ import com.user.user.services.InjuryService;
 public class InjuryController {
     private final InjuryService service;
 
-    @Autowired
     public InjuryController(InjuryService service) {
         this.service = service;
     }

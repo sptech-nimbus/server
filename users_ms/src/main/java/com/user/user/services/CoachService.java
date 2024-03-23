@@ -3,7 +3,6 @@ package com.user.user.services;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +19,6 @@ import com.user.user.repositories.CoachRepository;
 public class CoachService extends PersonaService implements _persona<CoachDTO> {
     private final CoachRepository repo;
 
-    @Autowired
     public CoachService(CoachRepository repo) {
         super(null, repo);
         this.repo = repo;

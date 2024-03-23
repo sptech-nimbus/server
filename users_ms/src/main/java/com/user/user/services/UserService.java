@@ -6,7 +6,6 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,6 @@ public class UserService {
     private final CoachService coachService;
     private final AthleteService athleteService;
 
-    @Autowired
     public UserService(UserRepository repo, CoachService coachService, AthleteService athleteService) {
         this.repo = repo;
         this.coachService = coachService;
