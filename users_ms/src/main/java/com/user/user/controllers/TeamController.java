@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.user.user.domains.responseMessage.ResponseMessage;
+import com.user.user.domains.team.ChangeTeamOwnerDTO;
 import com.user.user.domains.team.Team;
 import com.user.user.domains.team.TeamDTO;
 import com.user.user.exceptions.ResourceNotFoundException;
@@ -86,6 +88,13 @@ public class TeamController {
         }
     }
 
+    // PATCH
+    @PatchMapping("change-owner-request/{id}")
+    public ResponseEntity<ResponseMessage> changeTeamOwner(@PathVariable UUID id, @RequestBody ChangeTeamOwnerDTO dto) {
+        return service.changeTeamOwner(id, dto);
+    }
+
+    // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseMessage> deleteTeamById(@PathVariable UUID id, @RequestBody String coachPassword) {
         try {

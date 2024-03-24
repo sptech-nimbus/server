@@ -12,13 +12,17 @@ import org.springframework.stereotype.Service;
 import com.user.user.domains.athlete.Athlete;
 import com.user.user.domains.athlete.InjuredAthleteDTO;
 import com.user.user.domains.injury.Injury;
+import com.user.user.domains.operationCodes.OperationCode;
 import com.user.user.domains.responseMessage.ResponseMessage;
+import com.user.user.domains.team.ChangeTeamOwnerDTO;
 import com.user.user.domains.team.Team;
 import com.user.user.domains.team.TeamDTO;
 import com.user.user.exceptions.ResourceNotFoundException;
 import com.user.user.repositories.AthleteRepository;
 import com.user.user.repositories.CoachRepository;
+import com.user.user.repositories.OperationCodeRepository;
 import com.user.user.repositories.TeamRepository;
+import com.user.user.utils.CodeGenerator;
 import com.user.user.utils.Sorts;
 
 @SuppressWarnings("rawtypes")
@@ -27,11 +31,14 @@ public class TeamService {
     private final TeamRepository repo;
     private final CoachRepository coachRepo;
     private final AthleteRepository athleteRepo;
+    private final OperationCodeRepository operationCodeRepo;
 
-    public TeamService(TeamRepository repo, CoachRepository coachRepo, AthleteRepository athleteRepo) {
+    public TeamService(TeamRepository repo, CoachRepository coachRepo, AthleteRepository athleteRepo,
+            OperationCodeRepository operationCodeRepo) {
         this.repo = repo;
         this.coachRepo = coachRepo;
         this.athleteRepo = athleteRepo;
+        this.operationCodeRepo = operationCodeRepo;
     }
 
     public ResponseEntity<ResponseMessage> register(TeamDTO dto) {
@@ -109,6 +116,19 @@ public class TeamService {
         Sorts.mergeSortAthletesByAgeAsc(athletes, 0, athletes.size() - 1);
 
         return ResponseEntity.status(200).body(new ResponseMessage<List<Athlete>>(athletes));
+    }
+
+    public ResponseEntity<ResponseMessage> changeTeamOwner(UUID id, ChangeTeamOwnerDTO dto) {
+        String code = CodeGenerator.codeGen(6, true);
+
+        try {
+            operationCodeRepo.save(new OperationCode("Change team owner", code, dto.expirationDate(),
+                    dto.mainUser(), dto.relatedUser()));
+        } catch (Exception e) {
+            return ResponseEntity.status(409).body(new ResponseMessage("Erro ao enviar código", e.getMessage()));
+        }
+
+        return ResponseEntity.status(200).body(new ResponseMessage("Código de troca posse de time: " + code, code));
     }
 
     public ResponseEntity<ResponseMessage> deleteTeam(UUID id, String coachPassword) {
