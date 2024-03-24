@@ -34,7 +34,7 @@ public class OperationCode {
     private String operation;
 
     @Column(name = "code", nullable = false)
-    private String   code;
+    private String code;
 
     @Column(name = "expiration_date", nullable = false)
     private LocalDateTime expirationDate;
@@ -46,6 +46,14 @@ public class OperationCode {
     @JoinColumn(name = "related_user_id", referencedColumnName = "user_id")
     @ManyToOne
     private User relatedUser;
+
+    public OperationCode(String operation, String code, LocalDateTime expirationDate, User mainUser, User relatedUser) {
+        this.operation = operation;
+        this.code = code;
+        this.expirationDate = expirationDate;
+        this.mainUser = mainUser;
+        this.relatedUser = relatedUser;
+    }
 
     @Override
     public String toString() {
