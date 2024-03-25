@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.user.user.domains.email.EmailDTO;
 import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.domains.user.ChangePasswordDTO;
 import com.user.user.domains.user.User;
@@ -23,11 +24,14 @@ public class UserService {
     private final UserRepository repo;
     private final CoachService coachService;
     private final AthleteService athleteService;
+    private final EmailService emailService;
 
-    public UserService(UserRepository repo, CoachService coachService, AthleteService athleteService) {
+    public UserService(UserRepository repo, CoachService coachService, AthleteService athleteService,
+            EmailService emailService) {
         this.repo = repo;
         this.coachService = coachService;
         this.athleteService = athleteService;
+        this.emailService = emailService;
     }
 
     public ResponseEntity<ResponseMessage> register(UserDTO dto) {
@@ -80,8 +84,13 @@ public class UserService {
 
         String userType = userFound.getAthlete() != null ? "Athlete" : "Coach";
 
-        return ResponseEntity
-                .status(200)
+        try {
+            emailService.sendEmail(new EmailDTO("eduardo.msantos803@sptech.school.com", "teste", "testando"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ResponseMessage("Erro ao mandar email", e.getMessage()));
+        }
+
+        return ResponseEntity.status(200)
                 .body(new ResponseMessage<UUID>("Login realizado.", userType, userFound.getId()));
     }
 
