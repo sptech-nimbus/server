@@ -2,7 +2,6 @@ package com.events.events.controllers;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +22,11 @@ import com.events.events.services.GameService;
 @RestController
 @RequestMapping("games")
 public class GameController {
-    @Autowired
-    GameService service;
+    private final GameService service;
+
+    public GameController(GameService service) {
+        this.service = service;
+    }
 
     @PostMapping
     public ResponseEntity<ResponseMessage> registerGame(@RequestBody GameDTO dto) {

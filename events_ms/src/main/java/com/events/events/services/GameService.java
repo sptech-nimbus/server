@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -20,14 +19,16 @@ import com.events.events.repositories.GameRepository;
 @SuppressWarnings("rawtypes")
 @Service
 public class GameService {
-    @Autowired
-    GameRepository repo;
+    private final GameRepository repo;
+    private final RestTemplateService<Team> teamService;
+    private final RestTemplateService<Coach> coachService;
 
-    @Autowired
-    RestTemplateService<Team> teamService;
-
-    @Autowired
-    RestTemplateService<Coach> coachService;
+    public GameService(GameRepository repo, RestTemplateService<Team> teamService,
+            RestTemplateService<Coach> coachService) {
+        this.repo = repo;
+        this.teamService = teamService;
+        this.coachService = coachService;
+    }
 
     public ResponseEntity<ResponseMessage> register(GameDTO dto) {
         Game newGame = new Game(dto);

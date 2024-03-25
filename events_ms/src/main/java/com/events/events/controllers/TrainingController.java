@@ -1,6 +1,5 @@
 package com.events.events.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,8 +14,11 @@ import com.events.events.services.TrainingService;
 @RestController
 @RequestMapping("trainings")
 public class TrainingController {
-    @Autowired
-    TrainingService service;
+    private final TrainingService service;
+
+    public TrainingController(TrainingService service) {
+        this.service = service;
+    }
 
     @PostMapping
     public ResponseEntity<ResponseMessage> registerTraining(@RequestBody TrainingDTO dto) {
