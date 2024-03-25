@@ -11,10 +11,12 @@ import org.springframework.stereotype.Service;
 
 import com.user.user.domains.athlete.Athlete;
 import com.user.user.domains.athlete.InjuredAthleteDTO;
+import com.user.user.domains.coach.Coach;
 import com.user.user.domains.injury.Injury;
 import com.user.user.domains.operationCodes.OperationCode;
 import com.user.user.domains.responseMessage.ResponseMessage;
-import com.user.user.domains.team.ChangeTeamOwnerDTO;
+import com.user.user.domains.team.ChangeTeamOwnerAcceptDTO;
+import com.user.user.domains.team.ChangeTeamOwnerRequestDTO;
 import com.user.user.domains.team.Team;
 import com.user.user.domains.team.TeamDTO;
 import com.user.user.exceptions.ResourceNotFoundException;
@@ -118,7 +120,7 @@ public class TeamService {
         return ResponseEntity.status(200).body(new ResponseMessage<List<Athlete>>(athletes));
     }
 
-    public ResponseEntity<ResponseMessage> changeTeamOwner(UUID id, ChangeTeamOwnerDTO dto) {
+    public ResponseEntity<ResponseMessage> changeTeamOwnerRequest(UUID id, ChangeTeamOwnerRequestDTO dto) {
         String code = CodeGenerator.codeGen(6, true);
 
         try {
@@ -129,6 +131,28 @@ public class TeamService {
         }
 
         return ResponseEntity.status(200).body(new ResponseMessage("Código de troca posse de time: " + code, code));
+    }
+
+    public ResponseEntity<ResponseMessage> changeTeamOwnerAccept(UUID id, ChangeTeamOwnerAcceptDTO dto) {
+        OperationCode operationCodeFound = operationCodeRepo.findByCode(dto.code())
+                .orElseThrow(() -> new ResourceNotFoundException("Código", null));
+
+        if (dto.date().isAfter(operationCodeFound.getExpirationDate())) {
+            return ResponseEntity.status(401).body(new ResponseMessage("Código expirado"));
+        }
+
+        Team teamFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
+
+        Coach coachFound = coachRepo.findCoachByUserId(operationCodeFound.getRelatedUser().getId())
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Treinador", operationCodeFound.getRelatedUser().getId()));
+
+        teamFound.setCoach(coachFound);
+
+        repo.save(teamFound);
+
+        return ResponseEntity.status(200).body(new ResponseMessage(
+                "Posse do time " + teamFound.getName() + " passado para o treinador " + coachFound.getLastName()));
     }
 
     public ResponseEntity<ResponseMessage> deleteTeam(UUID id, String coachPassword) {

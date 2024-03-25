@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.user.user.domains.responseMessage.ResponseMessage;
-import com.user.user.domains.team.ChangeTeamOwnerDTO;
+import com.user.user.domains.team.ChangeTeamOwnerAcceptDTO;
+import com.user.user.domains.team.ChangeTeamOwnerRequestDTO;
 import com.user.user.domains.team.Team;
 import com.user.user.domains.team.TeamDTO;
 import com.user.user.exceptions.ResourceNotFoundException;
@@ -90,8 +91,18 @@ public class TeamController {
 
     // PATCH
     @PatchMapping("change-owner-request/{id}")
-    public ResponseEntity<ResponseMessage> changeTeamOwner(@PathVariable UUID id, @RequestBody ChangeTeamOwnerDTO dto) {
-        return service.changeTeamOwner(id, dto);
+    public ResponseEntity<ResponseMessage> changeTeamOwnerRequest(@PathVariable UUID id,
+            @RequestBody ChangeTeamOwnerRequestDTO dto) {
+        return service.changeTeamOwnerRequest(id, dto);
+    }
+
+    @PatchMapping("change-team-owner-by-code/{id}")
+    public ResponseEntity<ResponseMessage> changeTeamOwnerAccept(@PathVariable UUID id, @RequestBody ChangeTeamOwnerAcceptDTO dto) {
+        try {
+            return service.changeTeamOwnerAccept(id, dto);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage("Código inválido"));
+        }
     }
 
     // DELETE
