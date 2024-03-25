@@ -2,7 +2,6 @@ package com.events.events.controllers;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,20 +22,23 @@ import com.events.events.services.GameService;
 @RestController
 @RequestMapping("games")
 public class GameController {
-    @Autowired
-    GameService service;
+    private final GameService service;
+
+    public GameController(GameService service) {
+        this.service = service;
+    }
 
     @PostMapping
     public ResponseEntity<ResponseMessage> registerGame(@RequestBody GameDTO dto) {
         return service.register(dto);
     }
 
-    @GetMapping("/{teamId}")
+    @GetMapping("{teamId}")
     public ResponseEntity<ResponseMessage> getGamesFromTeamId(@PathVariable UUID teamId) {
         return service.getGamesFromTeamId(teamId);
     }
 
-    @PatchMapping("/confirm-game/{id}")
+    @PatchMapping("confirm-game/{id}")
     public ResponseEntity<ResponseMessage> confirmGame(@PathVariable UUID id, @RequestBody Coach coach) {
         return service.confirmGame(id, coach);
     }

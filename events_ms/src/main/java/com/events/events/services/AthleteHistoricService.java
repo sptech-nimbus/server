@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +17,13 @@ import com.events.events.repositories.AthleteHistoricRepository;
 @SuppressWarnings("rawtypes")
 @Service
 public class AthleteHistoricService {
-    @Autowired
-    AthleteHistoricRepository repo;
+    private final AthleteHistoricRepository repo;
+    private final RestTemplateService<Athlete> athleteService;
 
-    @Autowired
-    RestTemplateService<Athlete> athleteService;
+    public AthleteHistoricService(AthleteHistoricRepository repo, RestTemplateService<Athlete> athleteService) {
+        this.repo = repo;
+        this.athleteService = athleteService;
+    }
 
     public ResponseEntity<ResponseMessage> register(AthleteHistoricDTO dto) {
         Athlete athleteFound;

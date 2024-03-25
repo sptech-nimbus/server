@@ -3,7 +3,6 @@ package com.events.events.services;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,8 +15,11 @@ import com.events.events.repositories.TrainingRepository;
 @SuppressWarnings("rawtypes")
 @Service
 public class TrainingService {
-    @Autowired
-    TrainingRepository repo;
+    private final TrainingRepository repo;
+
+    public TrainingService(TrainingRepository repo) {
+        this.repo = repo;
+    }
 
     public ResponseEntity<ResponseMessage> register(TrainingDTO dto) {
         if (!checkTrainingDontExists(dto.teamId(), dto.inicialDateTime(), dto.finalDateTime()))
