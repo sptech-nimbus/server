@@ -30,7 +30,7 @@ public class PersonaService {
         Persona personaFound = athleteRepo.findAthleteByUserId(id);
 
         if (personaFound == null) {
-            personaFound = coachRepo.findCoachByUserId(id);
+            personaFound = coachRepo.findCoachByUserId(id).get();
         }
 
         if (personaFound == null) {
@@ -45,7 +45,7 @@ public class PersonaService {
         Persona personaFound = athleteRepo.findAthleteByUserId(id);
 
         if (personaFound == null) {
-            personaFound = coachRepo.findCoachByUserId(id);
+            personaFound = coachRepo.findCoachByUserId(id).get();
         }
 
         if (personaFound == null) {
