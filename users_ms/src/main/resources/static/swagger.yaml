@@ -330,7 +330,7 @@ paths:
           schema:
             type: string
           required: true
-          description: Id(UUID) do usuário.
+          description: Id(UUID) do atleta.
       requestBody:
         content:
           application/json:
@@ -362,6 +362,51 @@ paths:
               example:
                 clientMessage: Erro ao atualizar atleta.
                 serverMessage: error message
+                data: null
+
+  /athletes/register-team/{id}:
+    patch:
+      tags:
+        - Athletes
+      summary: Registra o atleta em um time.
+      description: Registra o atleta em um time.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do atleta.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+            example:
+              id: ""
+      responses:
+        404:
+          description: Atleta não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: "Atleta não encontrado com o id: {id}."
+                serverMessage: null
+                data: null
+        200:
+          description: Atleta cadastrado no time.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Atleta {lastName} cadatrado no time.
+                serverMessage: null
                 data: null
 
   /injuries:
