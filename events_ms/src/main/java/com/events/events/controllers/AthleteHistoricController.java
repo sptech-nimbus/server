@@ -31,7 +31,7 @@ public class AthleteHistoricController {
     }
 
     // GET
-    @GetMapping("/from-athlete/{athleteId}")
+    @GetMapping("from-athlete/{athleteId}")
     public ResponseEntity<ResponseMessage> getAthleteHistoricByAthleteId(@PathVariable UUID athleteId) {
         return service.getAthleteHistoricsByAthleteId(athleteId);
     }

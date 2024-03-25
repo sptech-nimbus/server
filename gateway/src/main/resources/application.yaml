@@ -1,0 +1,28 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: teams
+          uri: http://localhost:3000
+          predicates:
+            - Path=/teams/**
+        - id: users
+          uri: http://localhost:3000
+          predicates:
+            - Path=/users/**
+        - id: injuries
+          uri: http://localhost:3000
+          predicates:
+            - Path=/injuries/**
+        - id: athlete-descs
+          uri: http://localhost:3000
+          predicates:
+            - Path=/athlete-descs/**
+        - id: athletes
+          uri: http://localhost:3000
+          predicates:
+            - Path=/athletes/**
+        - id: coaches
+          uri: http://localhost:3000
+          predicates:
+            - Path=/coaches/**

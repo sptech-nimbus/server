@@ -33,12 +33,12 @@ public class GameController {
         return service.register(dto);
     }
 
-    @GetMapping("/{teamId}")
+    @GetMapping("{teamId}")
     public ResponseEntity<ResponseMessage> getGamesFromTeamId(@PathVariable UUID teamId) {
         return service.getGamesFromTeamId(teamId);
     }
 
-    @PatchMapping("/confirm-game/{id}")
+    @PatchMapping("confirm-game/{id}")
     public ResponseEntity<ResponseMessage> confirmGame(@PathVariable UUID id, @RequestBody Coach coach) {
         return service.confirmGame(id, coach);
     }
