@@ -57,6 +57,19 @@ public class TrainingService {
         return ResponseEntity.status(200).body(new ResponseMessage<Training>(trainingFound));
     }
 
+    public ResponseEntity<ResponseMessage> deleteTraining(UUID id) {
+        Training trainingFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Treino", id));
+
+        try {
+            repo.delete(trainingFound);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ResponseMessage("Erro ao deletar treino", e.getMessage()));
+        }
+
+        return ResponseEntity.status(200).body(new ResponseMessage("Treino deletado"));
+
+    }
+
     public Boolean checkTrainingDontExists(TrainingDTO dto) {
         return !repo.findTrainingByTeamAndDate(dto.teamId(), dto.inicialDateTime(), dto.finalDateTime()).isPresent();
     }
