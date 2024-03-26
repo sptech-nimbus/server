@@ -124,7 +124,7 @@ public class TeamService {
         String code = CodeGenerator.codeGen(6, true);
 
         try {
-            operationCodeRepo.save(new OperationCode("Change team owner", code, dto.expirationDate(),
+            operationCodeRepo.save(new OperationCode("change-team-owner", code, dto.expirationDate(),
                     dto.mainUser(), dto.relatedUser()));
         } catch (Exception e) {
             return ResponseEntity.status(409).body(new ResponseMessage("Erro ao enviar código", e.getMessage()));
