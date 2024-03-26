@@ -111,21 +111,26 @@ public class UserService {
 
         try {
 
-            String emailContent = "<div style=\"display: flex; justify-content: center; background-color: #FFEAE0; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;\">"
+            String emailContent = "<style>\r\n" + //
+                    "@import url('https://fonts.cdnfonts.com/css/catamaran');\r\n" + //
+                    "</style>" 
+                    + "<div style=\"display: flex; justify-content: center; background-color: #c9c9c9; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;\">"
                     + "<div style=\"background-color: #131313; width: 40%; color: #FFEAE0\">"
-                    + "<img style=\"margin-top: 15px; width: 529px; height: 200px;\" src=\"\" alt=\"\">"
-                    + "<div style=\"border-top: 2px solid #FF7425;\"></div>"
+                    + "<div style=\"margin-left: 95px; margin-top: 15px;\">"
+                    + "<img style=\"width: 150px; height: 80px;\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/dev/users_ms/src/main/java/com/user/user/utils/img/logo-email.png\" alt=\"\">"
+                    + "</div>"
+                    + "<div style=\"border-top: 2px solid #FF7425; margin-top: 15px;\"></div>"
                     + "<div style=\"margin-left: 20%; width: 80%;\">"
-                    + "<h3 style=\"font-size: 20px;\">Olá, <b>" + personaFound.getFirstName() + " "
+                    + "<h3 style=\"font-size: 20px; font-family: 'Catamaran', sans-serif;\" >Olá, <b>" + personaFound.getFirstName() + " "
                     + personaFound.getLastName() + "!</b></h3><br>"
                     + "</div>"
-                    + "<div style=\"margin-left: 8%; width: 90%;\">"
-                    + "<h4 style=\"font-size: 18px;\">Reconhecemos sua tentativa de mudança de senha. Caso realmente seja o caso, utilize o código abaixo para fazer a mudança de sua senha.</h4><br>"
+                    + "<div style=\"margin-left: 5%; width: 90%;\">"
+                    + "<h4 style=\"font-size: 18px; font-family: 'Catamaran', sans-serif;\">Reconhecemos sua tentativa de mudança de senha. Caso realmente seja o caso, utilize o código abaixo para fazer a mudança de sua senha.</h4><br>"
                     + "</div>"
                     + "<div style=\"display: flex; justify-content: center; align-items: center; margin-left: 5%; width: 300px; height: 100px; border: 3px solid #FF7425 ;\">"
                     + "<h2>" + recuperationCode + "</h2>"
                     + "</div>"
-                    + "<img style=\"width: 529px; height: 350px;\" src=\"./user/utils/img/footer.jpg\" alt=\"\">"
+                    + "<img style=\"margin-top: 30px; width: 318px; height: 150px; margin-left: 17px\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/dev/users_ms/src/main/java/com/user/user/utils/img/footer-email.png\" alt=\"\">"
                     + "</div>"
                     + "</div>";
 
