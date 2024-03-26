@@ -27,7 +27,7 @@ public class PersonaService {
     }
 
     public ResponseEntity<ResponseMessage> getPersonaByUserId(UUID id) {
-        Persona personaFound = athleteRepo.findAthleteByUserId(id);
+        Persona personaFound = athleteRepo.findAthleteByUserId(id).get();
 
         if (personaFound == null) {
             personaFound = coachRepo.findCoachByUserId(id).get();
@@ -42,7 +42,7 @@ public class PersonaService {
     }
 
     public ResponseEntity<ResponseMessage> getChatUserByUserId(UUID id) {
-        Persona personaFound = athleteRepo.findAthleteByUserId(id);
+        Persona personaFound = athleteRepo.findAthleteByUserId(id).get();
 
         if (personaFound == null) {
             personaFound = coachRepo.findCoachByUserId(id).get();

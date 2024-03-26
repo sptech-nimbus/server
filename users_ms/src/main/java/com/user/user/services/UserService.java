@@ -11,12 +11,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.user.user.domains.email.EmailDTO;
+import com.user.user.domains.persona.Persona;
 import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.domains.user.ChangePasswordDTO;
 import com.user.user.domains.user.User;
 import com.user.user.domains.user.UserDTO;
 import com.user.user.exceptions.ResourceNotFoundException;
 import com.user.user.repositories.UserRepository;
+import com.user.user.utils.CodeGenerator;
 
 @SuppressWarnings("rawtypes")
 @Service
@@ -84,14 +86,29 @@ public class UserService {
 
         String userType = userFound.getAthlete() != null ? "Athlete" : "Coach";
 
+        return ResponseEntity.status(200)
+                .body(new ResponseMessage<UUID>("Login realizado.", userType, userFound.getId()));
+    }
+
+    public ResponseEntity<ResponseMessage> changePasswordRequest(UUID id) {
+        User userFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
+
+        Persona personaFound = userFound.getAthlete().equals(null) ? userFound.getCoach() : userFound.getAthlete();
+
         try {
-            emailService.sendEmail(new EmailDTO("eduardo.msantos803@sptech.school.com", "teste", "testando"));
+            emailService.sendHtmlEmail(new EmailDTO(userFound.getEmail(),
+                    "Código recuperação de senha",
+                    "<h3>Olá <b>" + personaFound.getFirstName() + " " + personaFound.getLastName()
+                            + "!</b></h3><br>" +
+                            "<h4>Reconhecemos sua tentativa de mudança de senha. Caso realmente for o caso, utilize o código abaixo para fazer a mudança de sua senha.</h4><br>"
+                            +
+                            "<h2>" + CodeGenerator.codeGen(6, true) + "</h2>"));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ResponseMessage("Erro ao mandar email", e.getMessage()));
         }
 
         return ResponseEntity.status(200)
-                .body(new ResponseMessage<UUID>("Login realizado.", userType, userFound.getId()));
+                .body(new ResponseMessage("Verifique seu email com o código de verificação para recuperação de senha"));
     }
 
     public ResponseEntity<ResponseMessage> changePassword(UUID id, ChangePasswordDTO dto) {
