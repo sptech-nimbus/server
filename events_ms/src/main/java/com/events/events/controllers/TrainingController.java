@@ -3,6 +3,7 @@ package com.events.events.controllers;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,6 +37,16 @@ public class TrainingController {
     public ResponseEntity<ResponseMessage> putTraining(@PathVariable UUID id, @RequestBody TrainingDTO dto) {
         try {
             return service.putTraining(id, dto);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+        }
+    }
+
+    // DELETE
+    @DeleteMapping("{id}")
+    public ResponseEntity<ResponseMessage> deleteTraining(@PathVariable UUID id) {
+        try {
+            return service.deleteTraining(id);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
         }
