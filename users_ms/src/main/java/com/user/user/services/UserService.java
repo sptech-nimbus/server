@@ -11,12 +11,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.user.user.domains.email.EmailDTO;
+import com.user.user.domains.operationCodes.OperationCode;
 import com.user.user.domains.persona.Persona;
 import com.user.user.domains.responseMessage.ResponseMessage;
 import com.user.user.domains.user.ChangePasswordDTO;
+import com.user.user.domains.user.ChangePasswordRequestDTO;
 import com.user.user.domains.user.User;
 import com.user.user.domains.user.UserDTO;
 import com.user.user.exceptions.ResourceNotFoundException;
+import com.user.user.repositories.OperationCodeRepository;
 import com.user.user.repositories.UserRepository;
 import com.user.user.utils.CodeGenerator;
 
@@ -27,13 +30,15 @@ public class UserService {
     private final CoachService coachService;
     private final AthleteService athleteService;
     private final EmailService emailService;
+    private final OperationCodeRepository operationCodeRepo;
 
     public UserService(UserRepository repo, CoachService coachService, AthleteService athleteService,
-            EmailService emailService) {
+            EmailService emailService, OperationCodeRepository operationCodeRepo) {
         this.repo = repo;
         this.coachService = coachService;
         this.athleteService = athleteService;
         this.emailService = emailService;
+        this.operationCodeRepo = operationCodeRepo;
     }
 
     public ResponseEntity<ResponseMessage> register(UserDTO dto) {
@@ -90,10 +95,20 @@ public class UserService {
                 .body(new ResponseMessage<UUID>("Login realizado.", userType, userFound.getId()));
     }
 
-    public ResponseEntity<ResponseMessage> changePasswordRequest(UUID id) {
-        User userFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
+    public ResponseEntity<ResponseMessage> changePasswordRequest(ChangePasswordRequestDTO dto) {
+        User userFound = repo.findById(dto.id()).orElseThrow(() -> new ResourceNotFoundException("Usuário", dto.id()));
 
         Persona personaFound = userFound.getAthlete().equals(null) ? userFound.getCoach() : userFound.getAthlete();
+
+        String recuperationCode = CodeGenerator.codeGen(6, true);
+
+        try {
+            operationCodeRepo.save(
+                    new OperationCode("change-password", recuperationCode, dto.expirationDate().plusHours(2), userFound,
+                            null));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ResponseMessage("Erro ao cadastrar código", e.getMessage()));
+        }
 
         try {
             emailService.sendHtmlEmail(new EmailDTO(userFound.getEmail(),
@@ -102,7 +117,7 @@ public class UserService {
                             + "!</b></h3><br>" +
                             "<h4>Reconhecemos sua tentativa de mudança de senha. Caso realmente for o caso, utilize o código abaixo para fazer a mudança de sua senha.</h4><br>"
                             +
-                            "<h2>" + CodeGenerator.codeGen(6, true) + "</h2>"));
+                            "<h2>" + recuperationCode + "</h2>"));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ResponseMessage("Erro ao mandar email", e.getMessage()));
         }
