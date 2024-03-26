@@ -97,7 +97,7 @@ public class UserService {
     public ResponseEntity<ResponseMessage> changePasswordRequest(ChangePasswordRequestDTO dto) {
         User userFound = repo.findById(dto.id()).orElseThrow(() -> new ResourceNotFoundException("Usuário", dto.id()));
 
-        Persona personaFound = userFound.getAthlete().equals(null) ? userFound.getCoach() : userFound.getAthlete();
+        Persona personaFound = userFound.getAthlete() == null ? userFound.getCoach() : userFound.getAthlete();
 
         String recuperationCode = CodeGenerator.codeGen(6, true);
 
@@ -110,13 +110,33 @@ public class UserService {
         }
 
         try {
-            emailService.sendHtmlEmail(new EmailDTO(userFound.getEmail(),
-                    "Código recuperação de senha",
-                    "<h3>Olá <b>" + personaFound.getFirstName() + " " + personaFound.getLastName()
-                            + "!</b></h3><br>" +
-                            "<h4>Reconhecemos sua tentativa de mudança de senha. Caso realmente for o caso, utilize o código abaixo para fazer a mudança de sua senha.</h4><br>"
-                            +
-                            "<h2>" + recuperationCode + "</h2>"));
+
+            String emailContent = "<style>\r\n" + //
+                    "@import url('https://fonts.cdnfonts.com/css/catamaran');\r\n" + //
+                    "</style>" 
+                    + "<div style=\"display: flex; justify-content: center; background-color: #c9c9c9; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;\">"
+                    + "<div style=\"background-color: #131313; width: 40%; color: #FFEAE0\">"
+                    + "<div style=\"margin-left: 90px; margin-top: 15px;\">"
+                    + "<img style=\"width: 180px; height: 150px;\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/dev/users_ms/src/main/java/com/user/user/utils/img/logo-email.png\" alt=\"\">"
+                    + "</div>"
+                    + "<div style=\"border-top: 2px solid #FF7425; margin-top: 15px;\"></div>"
+                    + "<div style=\"margin-left: 17%; width: 95%;\">"
+                    + "<h3 style=\"font-size: 20px; font-family: 'Catamaran', sans-serif;\" >Olá, <b>" + personaFound.getFirstName() + " "
+                    + personaFound.getLastName() + "!</b></h3><br>"
+                    + "</div>"
+                    + "<div style=\"margin-left: 5%; width: 95%;\">"
+                    + "<h4 style=\"font-size: 16px; font-family: 'Catamaran', sans-serif;\">Reconhecemos sua tentativa de mudança de senha. Caso realmente seja o caso, utilize o código abaixo para fazer a mudança de sua senha.</h4><br>"
+                    + "</div>"
+                    + "<div style=\"display: flex; justify-content: center; align-items: center; margin-left: 5%; width: 300px; height: 100px; border: 3px solid #FF7425 ;\">"
+                    + "<h2>" + recuperationCode + "</h2>"
+                    + "</div>"
+                    + "<img style=\"margin-top: 20px; width: 318px; height: 150px; margin-left: 17px\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/dev/users_ms/src/main/java/com/user/user/utils/img/footer-email.png\" alt=\"\">"
+                    + "</div>"
+                    + "</div>";
+
+            emailService
+                    .sendHtmlEmail(new EmailDTO(userFound.getEmail(), "Código de recuperação de senha", emailContent));
+
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ResponseMessage("Erro ao mandar email", e.getMessage()));
         }
@@ -140,7 +160,7 @@ public class UserService {
             return ResponseEntity.status(400).body(new ResponseMessage("Antiga senha incorreta."));
         }
 
-        return ResponseEntity.ok(new ResponseMessage("Senha alterada com sucesso."));
+        return ResponseEntity.status(200).body(new ResponseMessage("Senha alterada com sucesso."));
     }
 
     public ResponseEntity<ResponseMessage> deleteUser(UUID id, String password) {
@@ -157,7 +177,11 @@ public class UserService {
                 throw new ResourceNotFoundException("Atleta", userFound.getAthlete().getId());
             }
         } else {
-            coachService.removeUserFromCoach(userFound.getCoach().getId());
+            try {
+                coachService.removeUserFromCoach(userFound.getCoach().getId());
+            } catch (ResourceNotFoundException e) {
+                throw new ResourceNotFoundException("Atleta", userFound.getCoach().getId());
+            }
         }
 
         repo.delete(userFound);

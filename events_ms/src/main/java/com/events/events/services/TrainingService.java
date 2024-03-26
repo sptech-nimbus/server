@@ -1,15 +1,16 @@
 package com.events.events.services;
 
-import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.events.events.domains.responseMessage.ResponseMessage;
 import com.events.events.domains.training.Training;
 import com.events.events.domains.training.TrainingDTO;
+import com.events.events.exceptions.ResourceNotFoundException;
 import com.events.events.repositories.TrainingRepository;
 
 @SuppressWarnings("rawtypes")
@@ -22,23 +23,48 @@ public class TrainingService {
     }
 
     public ResponseEntity<ResponseMessage> register(TrainingDTO dto) {
-        if (!checkTrainingDontExists(dto.teamId(), dto.inicialDateTime(), dto.finalDateTime()))
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ResponseMessage<>("Treino já cadastrado para este horário"));
+        if (!checkTrainingDontExists(dto))
+            return ResponseEntity.status(409)
+                    .body(new ResponseMessage("Treino já cadastrado para este horário"));
+
+        Training newTraining = new Training(dto);
 
         try {
-            Training newTraining = new Training(dto);
-
             repo.save(newTraining);
-
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage<Training>(newTraining));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage<>("Erro ao cadastrar treino", e.getMessage()));
+            return ResponseEntity.status(500)
+                    .body(new ResponseMessage("Erro ao cadastrar treino", e.getMessage()));
         }
+
+        return ResponseEntity.status(200).body(new ResponseMessage<Training>(newTraining));
     }
 
-    public Boolean checkTrainingDontExists(UUID teamId, LocalDateTime inicialDatetime, LocalDateTime finalDatetime) {
-        return !repo.findTrainingByTeamAndDate(teamId, inicialDatetime, finalDatetime).isPresent();
+    public ResponseEntity<ResponseMessage> putTraining(UUID id, TrainingDTO dto) {
+        if (!checkTrainingDontExists(dto, id))
+            return ResponseEntity.status(409)
+                    .body(new ResponseMessage("Treino já cadastrado para este horário"));
+
+        Training trainingFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Treino", id));
+
+        BeanUtils.copyProperties(dto, trainingFound);
+
+        try {
+            repo.save(trainingFound);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(new ResponseMessage("Erro ao atualizar treino", e.getMessage()));
+        }
+
+        return ResponseEntity.status(200).body(new ResponseMessage<Training>(trainingFound));
+    }
+
+    public Boolean checkTrainingDontExists(TrainingDTO dto) {
+        return !repo.findTrainingByTeamAndDate(dto.teamId(), dto.inicialDateTime(), dto.finalDateTime()).isPresent();
+    }
+
+    public Boolean checkTrainingDontExists(TrainingDTO dto, UUID id) {
+        Optional<Training> trainingFinal = repo.findTrainingByTeamAndDate(dto.teamId(), dto.inicialDateTime(),
+                dto.finalDateTime());
+
+        return !trainingFinal.isPresent() || trainingFinal.get().getId().equals(id);
     }
 }
