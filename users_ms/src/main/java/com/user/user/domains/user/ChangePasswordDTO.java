@@ -1,4 +1,4 @@
 package com.user.user.domains.user;
 
-public record ChangePasswordDTO(String oldPassword, String newPassword) {
+public record ChangePasswordDTO(String code, String oldPassword, String newPassword) {
 }
