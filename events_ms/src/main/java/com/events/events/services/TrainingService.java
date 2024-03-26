@@ -4,6 +4,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +42,17 @@ public class TrainingService {
         return ResponseEntity.status(200).body(new ResponseMessage<Training>(newTraining));
     }
 
+    public ResponseEntity<ResponseMessage> getTrainingsPageByTeamId(UUID teamId, Integer page, Integer elements) {
+        Pageable pageable = PageRequest.of(page, elements);
+
+        Page<Training> trainingsFound = repo.findAllByTeam(teamId, pageable);
+
+        if (!trainingsFound.hasContent())
+            return ResponseEntity.status(204).body(new ResponseMessage("Time sem treinos marcados"));
+
+        return ResponseEntity.status(200).body(new ResponseMessage<Page<Training>>(trainingsFound));
+    }
+
     public ResponseEntity<ResponseMessage> putTraining(UUID id, TrainingDTO dto) {
         if (!checkTrainingDontExists(dto, id))
             return ResponseEntity.status(409)
@@ -67,7 +81,6 @@ public class TrainingService {
         }
 
         return ResponseEntity.status(200).body(new ResponseMessage("Treino deletado"));
-
     }
 
     public Boolean checkTrainingDontExists(TrainingDTO dto) {
