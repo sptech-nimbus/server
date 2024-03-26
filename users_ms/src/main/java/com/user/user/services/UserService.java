@@ -19,7 +19,6 @@ import com.user.user.domains.user.ChangePasswordRequestDTO;
 import com.user.user.domains.user.User;
 import com.user.user.domains.user.UserDTO;
 import com.user.user.exceptions.ResourceNotFoundException;
-import com.user.user.repositories.OperationCodeRepository;
 import com.user.user.repositories.UserRepository;
 import com.user.user.utils.CodeGenerator;
 
@@ -30,15 +29,15 @@ public class UserService {
     private final CoachService coachService;
     private final AthleteService athleteService;
     private final EmailService emailService;
-    private final OperationCodeRepository operationCodeRepo;
+    private final OperationCodeService operationCodeService;
 
     public UserService(UserRepository repo, CoachService coachService, AthleteService athleteService,
-            EmailService emailService, OperationCodeRepository operationCodeRepo) {
+            EmailService emailService, OperationCodeService operationCodeService) {
         this.repo = repo;
         this.coachService = coachService;
         this.athleteService = athleteService;
         this.emailService = emailService;
-        this.operationCodeRepo = operationCodeRepo;
+        this.operationCodeService = operationCodeService;
     }
 
     public ResponseEntity<ResponseMessage> register(UserDTO dto) {
@@ -103,7 +102,7 @@ public class UserService {
         String recuperationCode = CodeGenerator.codeGen(6, true);
 
         try {
-            operationCodeRepo.save(
+            operationCodeService.insertCode(
                     new OperationCode("change-password", recuperationCode, dto.expirationDate().plusHours(2), userFound,
                             null));
         } catch (Exception e) {
