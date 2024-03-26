@@ -93,16 +93,29 @@ public class UserService {
     public ResponseEntity<ResponseMessage> changePasswordRequest(UUID id) {
         User userFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
 
-        Persona personaFound = userFound.getAthlete().equals(null) ? userFound.getCoach() : userFound.getAthlete();
+        Persona personaFound = userFound.getAthlete() == null ? userFound.getCoach() : userFound.getAthlete();
 
         try {
-            emailService.sendHtmlEmail(new EmailDTO(userFound.getEmail(),
-                    "Código recuperação de senha",
-                    "<h3>Olá <b>" + personaFound.getFirstName() + " " + personaFound.getLastName()
-                            + "!</b></h3><br>" +
-                            "<h4>Reconhecemos sua tentativa de mudança de senha. Caso realmente for o caso, utilize o código abaixo para fazer a mudança de sua senha.</h4><br>"
-                            +
-                            "<h2>" + CodeGenerator.codeGen(6, true) + "</h2>"));
+            String emailContent = "<div style=\"display: flex; justify-content: center; background-color: #FFEAE0; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;\">"
+                    + "<div style=\"background-color: #131313; width: 40%; color: #FFEAE0\">"
+                    + "<img style=\"margin-top: 15px; width: 529px; height: 200px;\" src=\"\" alt=\"\">"
+                    + "<div style=\"border-top: 2px solid #FF7425;\"></div>"
+                    + "<div style=\"margin-left: 20%; width: 80%;\">"
+                    + "<h3 style=\"font-size: 20px;\">Olá, <b>" + personaFound.getFirstName() + " "
+                    + personaFound.getLastName() + "!</b></h3><br>"
+                    + "</div>"
+                    + "<div style=\"margin-left: 8%; width: 90%;\">"
+                    + "<h4 style=\"font-size: 18px;\">Reconhecemos sua tentativa de mudança de senha. Caso realmente seja o caso, utilize o código abaixo para fazer a mudança de sua senha.</h4><br>"
+                    + "</div>"
+                    + "<div style=\"display: flex; justify-content: center; align-items: center; margin-left: 5%; width: 300px; height: 100px; border: 3px solid #FF7425 ;\">"
+                    + "<h2>" + CodeGenerator.codeGen(6, true) + "</h2>"
+                    + "</div>"
+                    + "<img style=\"width: 529px; height: 350px;\" src=\"./user/utils/img/footer.jpg\" alt=\"\">"
+                    + "</div>"
+                    + "</div>";
+
+            emailService
+                    .sendHtmlEmail(new EmailDTO(userFound.getEmail(), "Código de recuperação de senha", emailContent));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ResponseMessage("Erro ao mandar email", e.getMessage()));
         }
