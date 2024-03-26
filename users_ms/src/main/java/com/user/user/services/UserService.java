@@ -155,7 +155,7 @@ public class UserService {
             return ResponseEntity.status(400).body(new ResponseMessage("Antiga senha incorreta."));
         }
 
-        return ResponseEntity.ok(new ResponseMessage("Senha alterada com sucesso."));
+        return ResponseEntity.status(200).body(new ResponseMessage("Senha alterada com sucesso."));
     }
 
     public ResponseEntity<ResponseMessage> deleteUser(UUID id, String password) {
@@ -172,7 +172,11 @@ public class UserService {
                 throw new ResourceNotFoundException("Atleta", userFound.getAthlete().getId());
             }
         } else {
-            coachService.removeUserFromCoach(userFound.getCoach().getId());
+            try {
+                coachService.removeUserFromCoach(userFound.getCoach().getId());
+            } catch (ResourceNotFoundException e) {
+                throw new ResourceNotFoundException("Atleta", userFound.getCoach().getId());
+            }
         }
 
         repo.delete(userFound);
