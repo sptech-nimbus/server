@@ -28,21 +28,25 @@ public class GameController {
         this.service = service;
     }
 
+    // POST
     @PostMapping
     public ResponseEntity<ResponseMessage> registerGame(@RequestBody GameDTO dto) {
         return service.register(dto);
     }
 
+    // GET
     @GetMapping("{teamId}")
     public ResponseEntity<ResponseMessage> getGamesFromTeamId(@PathVariable UUID teamId) {
         return service.getGamesFromTeamId(teamId);
     }
 
+    // PATCH
     @PatchMapping("confirm-game/{id}")
     public ResponseEntity<ResponseMessage> confirmGame(@PathVariable UUID id, @RequestBody Coach coach) {
         return service.confirmGame(id, coach);
     }
 
+    // DELETE
     @DeleteMapping("{id}")
     public ResponseEntity<ResponseMessage> cancelGameById(@PathVariable UUID id, @RequestBody Coach coach) {
         try {

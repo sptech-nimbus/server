@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -62,5 +64,18 @@ public class AthleteHistoricService {
                     .body(new ResponseMessage("Nenhum histórico do atleta de id " + athleteId));
 
         return ResponseEntity.status(200).body(new ResponseMessage<List<AthleteHistoric>>(athleteHistoricFound));
+    }
+
+    public ResponseEntity<ResponseMessage> getAthleteHistoricsPageByAthleteId(UUID athleteId, Integer page,
+            Integer elements) {
+        Page<AthleteHistoric> athleteHistoricsFound = repo.findAllByAthleteId(athleteId,
+                PageRequest.of(page, elements));
+
+        if (athleteHistoricsFound.isEmpty()) {
+            return ResponseEntity.status(204)
+                    .body(new ResponseMessage("Nenhum histórico do atleta de id " + athleteId));
+        }
+
+        return ResponseEntity.status(200).body(new ResponseMessage<Page<AthleteHistoric>>(athleteHistoricsFound));
     }
 }

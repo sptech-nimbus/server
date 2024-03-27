@@ -35,4 +35,10 @@ public class AthleteHistoricController {
     public ResponseEntity<ResponseMessage> getAthleteHistoricByAthleteId(@PathVariable UUID athleteId) {
         return service.getAthleteHistoricsByAthleteId(athleteId);
     }
+
+    @GetMapping("from-athlete/{athleteId}/{page}/{elements}")
+    public ResponseEntity<ResponseMessage> getAthleteHistoricPageByAthleteId(@PathVariable UUID athleteId,
+            @PathVariable Integer page, @PathVariable Integer elements) {
+        return service.getAthleteHistoricsPageByAthleteId(athleteId, page, elements);
+    }
 }
