@@ -78,4 +78,15 @@ public class AthleteHistoricService {
 
         return ResponseEntity.status(200).body(new ResponseMessage<Page<AthleteHistoric>>(athleteHistoricsFound));
     }
+
+    public ResponseEntity<ResponseMessage> putAhlteteHistoric(UUID id, AthleteHistoricDTO dto) {
+        AthleteHistoric athleteHistoricFound = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Histórico de atleta", id));
+
+        BeanUtils.copyProperties(dto, athleteHistoricFound);
+
+        repo.save(athleteHistoricFound);
+
+        return ResponseEntity.status(200).body(new ResponseMessage("Histórico de atleta atualizado"));
+    }
 }
