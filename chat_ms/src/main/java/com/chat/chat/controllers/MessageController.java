@@ -26,10 +26,10 @@ public class MessageController {
     @Autowired
     private MessageService service;
 
-    @PostMapping(consumes = "application/json")
+    @PostMapping
     @CrossOrigin
-    @SendTo("/topic/{teamId}")
-    @MessageMapping("/send-message/{teamId}")
+    @SendTo("/chat/{teamId}")
+    @MessageMapping("/send-message/{teamId}")   
     public ResponseEntity<ResponseMessage> registerMessage(@RequestBody MessageDTO dto,
             @DestinationVariable UUID teamId) {
         return service.register(dto, teamId);

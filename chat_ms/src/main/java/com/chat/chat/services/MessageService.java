@@ -27,6 +27,7 @@ public class MessageService {
 
     public ResponseEntity<ResponseMessage> register(MessageDTO dto, UUID teamId) {
         Message newMessage = new Message(dto, teamId);
+        
         if (newMessage.getDate() == null)
             newMessage.setDate(LocalDateTime.now());
 

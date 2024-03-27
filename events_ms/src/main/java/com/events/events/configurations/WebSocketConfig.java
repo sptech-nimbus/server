@@ -1,4 +1,4 @@
-package com.chat.chat.configurations;
+package com.events.events.configurations;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
@@ -10,16 +10,16 @@ import org.springframework.web.socket.messaging.SessionConnectEvent;
 
 @Configuration
 @EnableWebSocketMessageBroker
-public class WebSocketConfigurer implements WebSocketMessageBrokerConfigurer {
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/chat");
+        config.enableSimpleBroker("/events");
         config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws-messages").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/events").setAllowedOriginPatterns("*").withSockJS();
     }
 
     @EventListener
