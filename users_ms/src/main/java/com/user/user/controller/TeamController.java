@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.user.user.domain.responseMessage.ResponseMessage;
@@ -53,9 +55,9 @@ public class TeamController {
         return service.getTeamById(id);
     }
 
-    @GetMapping("/active-injuries/{id}/{nowDate}")
+    @GetMapping("/active-injuries/{id}")
     public ResponseEntity<ResponseMessage> getActiveInjuriesOnTeam(@PathVariable UUID id,
-            @PathVariable LocalDate nowDate) {
+            @RequestParam LocalDate nowDate) {
         try {
             return service.getActiveInjuriesOnTeam(id, nowDate);
         } catch (ResourceNotFoundException e) {

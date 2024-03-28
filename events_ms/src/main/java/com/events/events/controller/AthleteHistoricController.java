@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.events.events.domain.athleteHistoric.AthleteHistoricDTO;
@@ -37,9 +38,9 @@ public class AthleteHistoricController {
         return service.getAthleteHistoricsByAthleteId(athleteId);
     }
 
-    @GetMapping("from-athlete/{athleteId}/{page}/{elements}")
+    @GetMapping("from-athlete/{athleteId}")
     public ResponseEntity<ResponseMessage> getAthleteHistoricPageByAthleteId(@PathVariable UUID athleteId,
-            @PathVariable Integer page, @PathVariable Integer elements) {
+            @RequestParam Integer page, @RequestParam Integer elements) {
         return service.getAthleteHistoricsPageByAthleteId(athleteId, page, elements);
     }
 

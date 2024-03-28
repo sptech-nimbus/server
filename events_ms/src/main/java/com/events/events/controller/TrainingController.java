@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.events.events.domain.responseMessage.ResponseMessage;
@@ -33,12 +34,9 @@ public class TrainingController {
         return service.register(dto);
     }
 
-    // GET
-    @GetMapping("{teamId}/{page}/{elements}")
+    @GetMapping("{teamId}")
     public ResponseEntity<ResponseMessage> getTrainingsPageByTeamId(@PathVariable UUID teamId,
-            @PathVariable Integer page, @PathVariable Integer elements) {
-        return service.getTrainingsPageByTeamId(teamId, page, elements);
-    }
+            @RequestParam Integer page, @RequestParam Integer elements) {
 
     // PUT
     @PutMapping("{id}")
