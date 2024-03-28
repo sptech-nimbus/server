@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.user.user.domain.responseMessage.ResponseMessage;
@@ -28,7 +26,6 @@ public class OperationCodeController {
 
     @GetMapping("validate-code")
     public ResponseEntity<ResponseMessage> validateCode(@RequestParam String code, @RequestParam LocalDateTime date) {
-
         try {
             return service.getCode(code, date);
         } catch (ResourceNotFoundException e) {

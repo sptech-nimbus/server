@@ -3,9 +3,6 @@ package com.events.events.controller;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -33,9 +30,7 @@ public class GameController {
 
     // POST
     @PostMapping
-    @SendTo("/events/{teamId}")
-    @MessageMapping("/register-game/{teamId}")
-    public ResponseEntity<ResponseMessage> registerGame(@RequestBody GameDTO dto, @DestinationVariable UUID teamId) {
+    public ResponseEntity<ResponseMessage> registerGame(@RequestBody GameDTO dto) {
         return service.register(dto);
     }
 

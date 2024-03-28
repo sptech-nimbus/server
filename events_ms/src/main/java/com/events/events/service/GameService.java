@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.events.events.domain.coach.Coach;
@@ -22,12 +23,14 @@ public class GameService {
     private final GameRepository repo;
     private final RestTemplateService<Team> teamService;
     private final RestTemplateService<Coach> coachService;
+    private final SimpMessagingTemplate wsMsgTemplate;
 
     public GameService(GameRepository repo, RestTemplateService<Team> teamService,
-            RestTemplateService<Coach> coachService) {
+            RestTemplateService<Coach> coachService, SimpMessagingTemplate wsMsgTemplate) {
         this.repo = repo;
         this.teamService = teamService;
         this.coachService = coachService;
+        this.wsMsgTemplate = wsMsgTemplate;
     }
 
     public ResponseEntity<ResponseMessage> register(GameDTO dto) {
@@ -78,12 +81,12 @@ public class GameService {
             return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(500)
-                    .body(new ResponseMessage(e.getMessage()));
+                    .body(new ResponseMessage("Serviço de usuários fora do ar no momento.", e.getMessage()));
         }
 
         if (coachFound.getTeams().stream().anyMatch(t -> t.getId().equals(game.getChallenged()))) {
             if (game.getConfirmed()) {
-                return ResponseEntity.status(409).body(new ResponseMessage<>("Jogo já confirmado"));
+                return ResponseEntity.status(409).body(new ResponseMessage("Jogo já confirmado"));
             }
 
             game.setConfirmed(true);
@@ -94,7 +97,13 @@ public class GameService {
                     .body(new ResponseMessage("Apenas o time desafiado pode confirmar um jogo"));
         }
 
-        return ResponseEntity.status(200).body(new ResponseMessage("Jogo confirmado"));
+        ResponseMessage<Game> responseMessage = new ResponseMessage<Game>(
+                "Jogo confirmado para " + game.getInicialDateTime() + "-" + game.getFinalDateTime(), game);
+
+        wsMsgTemplate.convertAndSend("/events/" + game.getChallenged(), responseMessage);
+        wsMsgTemplate.convertAndSend("/events/" + game.getChallenger(), responseMessage);
+
+        return ResponseEntity.status(200).body(responseMessage);
     }
 
     public ResponseEntity<ResponseMessage> cancelGameById(UUID id, Coach coach) {
