@@ -37,6 +37,8 @@ public class TrainingController {
     @GetMapping("{teamId}")
     public ResponseEntity<ResponseMessage> getTrainingsPageByTeamId(@PathVariable UUID teamId,
             @RequestParam Integer page, @RequestParam Integer elements) {
+        return service.getTrainingsPageByTeamId(teamId, page, elements);
+    }
 
     // PUT
     @PutMapping("{id}")
