@@ -1,5 +1,6 @@
 package com.user.user.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
@@ -33,6 +34,15 @@ public class InjuryService {
         }
 
         return ResponseEntity.status(200).body(new ResponseMessage<Injury>(newInjury));
+    }
+
+    public ResponseEntity<ResponseMessage> getByAthleteId(UUID athleteId) {
+        List<Injury> injuriesFound = repo.findByAthlete(athleteId);
+
+        if (injuriesFound.isEmpty())
+            return ResponseEntity.status(204).body(new ResponseMessage("Atleta sem registros de lesões"));
+
+        return ResponseEntity.status(200).body(new ResponseMessage<List<Injury>>(injuriesFound));
     }
 
     public ResponseEntity<ResponseMessage> putInjury(UUID id, InjuryDTO dto) {
