@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -30,6 +31,12 @@ public class InjuryController {
     @PostMapping
     public ResponseEntity<ResponseMessage> registerInjury(@RequestBody InjuryDTO dto) {
         return service.register(dto);
+    }
+
+    // GET
+    @GetMapping("from-athlete/{athleteId}")
+    public ResponseEntity<ResponseMessage> getByAthleteId(@PathVariable UUID athleteId) {
+        return service.getByAthleteId(athleteId);
     }
 
     // PUT
