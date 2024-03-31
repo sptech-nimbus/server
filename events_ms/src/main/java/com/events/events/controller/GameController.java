@@ -43,7 +43,11 @@ public class GameController {
     // PATCH
     @PatchMapping("confirm-game/{id}")
     public ResponseEntity<ResponseMessage> confirmGame(@PathVariable UUID id, @RequestBody Coach coach) {
-        return service.confirmGame(id, coach);
+        try {
+            return service.confirmGame(id, coach);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+        }
     }
 
     // DELETE
