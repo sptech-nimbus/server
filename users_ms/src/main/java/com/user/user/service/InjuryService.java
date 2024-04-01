@@ -7,19 +7,23 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.user.user.domain.athlete.Athlete;
 import com.user.user.domain.injury.Injury;
 import com.user.user.domain.injury.InjuryDTO;
 import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.exception.ResourceNotFoundException;
+import com.user.user.repository.AthleteRepository;
 import com.user.user.repository.InjuryRepository;
 
 @SuppressWarnings("rawtypes")
 @Service
 public class InjuryService {
     private final InjuryRepository repo;
+    private final AthleteRepository athleteRepo;
 
-    public InjuryService(InjuryRepository repo) {
+    public InjuryService(InjuryRepository repo, AthleteRepository athleteRepo) {
         this.repo = repo;
+        this.athleteRepo = athleteRepo;
     }
 
     public ResponseEntity<ResponseMessage> register(InjuryDTO dto) {
@@ -37,7 +41,9 @@ public class InjuryService {
     }
 
     public ResponseEntity<ResponseMessage> getByAthleteId(UUID athleteId) {
-        List<Injury> injuriesFound = repo.findByAthlete(athleteId);
+        Athlete athleteFound = athleteRepo.findById(athleteId).orElseThrow(() -> new ResourceNotFoundException("Atleta", athleteId));
+
+        List<Injury> injuriesFound = repo.findAllByAthlete(athleteFound);
 
         if (injuriesFound.isEmpty())
             return ResponseEntity.status(204).body(new ResponseMessage("Atleta sem registros de lesões"));
