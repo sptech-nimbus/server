@@ -3,12 +3,15 @@ package com.events.events.domain.gameResult;
 import java.util.UUID;
 
 import com.events.events.domain.game.Game;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +28,9 @@ public class GameResult {
     @Column(name = "game_result_id")
     private UUID id;
 
-    @Column(name = "game_id")
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "game_id", referencedColumnName = "game_id")
     private Game game;
 
     @Column(name = "challenger_points")
@@ -33,4 +38,7 @@ public class GameResult {
 
     @Column(name = "challenged_points")
     private Integer challengedPoints;
+
+    @Column(name = "confirmed")
+    private Boolean confirmed;
 }

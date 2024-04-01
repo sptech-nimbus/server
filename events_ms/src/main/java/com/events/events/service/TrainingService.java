@@ -91,12 +91,12 @@ public class TrainingService {
     }
 
     public Boolean checkTrainingDontExists(TrainingDTO dto) {
-        return !repo.findByTeamIdAndFinalDateTimeBetween(dto.teamId(), dto.inicialDateTime(), dto.finalDateTime())
+        return !repo.findByTeamAndFinalDateTimeBetween(dto.teamId(), dto.inicialDateTime(), dto.finalDateTime())
                 .isPresent();
     }
 
     public Boolean checkTrainingDontExists(TrainingDTO dto, UUID id) {
-        Optional<Training> trainingFinal = repo.findByTeamIdAndFinalDateTimeBetween(dto.teamId(), dto.inicialDateTime(),
+        Optional<Training> trainingFinal = repo.findByTeamAndFinalDateTimeBetween(dto.teamId(), dto.inicialDateTime(),
                 dto.finalDateTime());
 
         return !trainingFinal.isPresent() || trainingFinal.get().getId().equals(id);
