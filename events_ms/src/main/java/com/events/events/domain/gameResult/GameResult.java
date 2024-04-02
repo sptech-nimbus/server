@@ -41,4 +41,10 @@ public class GameResult {
 
     @Column(name = "confirmed")
     private Boolean confirmed;
+
+    @Override
+    public String toString() {
+        return "\n  GameResult [id=" + id + ", \ngame=" + game + ", \nchallengerPoints=" + challengerPoints
+                + ", \nchallengedPoints=" + challengedPoints + ", \nconfirmed=" + confirmed + "]";
+    }
 }

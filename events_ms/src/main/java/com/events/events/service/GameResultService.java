@@ -2,22 +2,28 @@ package com.events.events.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.events.events.domain.coach.Coach;
 import com.events.events.domain.gameResult.GameResult;
 import com.events.events.domain.gameResult.GameResultDTO;
+import com.events.events.domain.graphs.WinsFromTeamDTO;
 import com.events.events.domain.responseMessage.ResponseMessage;
+import com.events.events.exception.ResourceNotFoundException;
 import com.events.events.repository.GameResultRepository;
 
 @Service
 public class GameResultService {
     private final GameResultRepository repo;
+    private final RestTemplateService<Coach> coachService;
 
-    public GameResultService(GameResultRepository repo) {
+    public GameResultService(GameResultRepository repo, RestTemplateService<Coach> coachService) {
         this.repo = repo;
+        this.coachService = coachService;
     }
 
     public ResponseEntity<ResponseMessage<GameResult>> register(GameResultDTO dto) {
@@ -31,9 +37,61 @@ public class GameResultService {
 
         BeanUtils.copyProperties(dto, gameResult);
 
+        gameResult.setConfirmed(false);
+
         repo.save(gameResult);
 
         return ResponseEntity.status(201).body(new ResponseMessage<GameResult>(gameResult));
+    }
+
+    public ResponseEntity<ResponseMessage<WinsFromTeamDTO>> getWinsByTeam(UUID teamId, Integer matches) {
+        List<GameResult> gameResultsFound = repo.findGameResultsByTeamWithLimit(teamId, matches);
+
+        if(gameResultsFound.isEmpty())
+            return ResponseEntity.status(204).body(new ResponseMessage<WinsFromTeamDTO>("Sem resultados de jogos encontrados"));
+
+        Integer teamWins = 0;
+
+        for (GameResult gameResult : gameResultsFound) {
+            if (gameResult.getChallengedPoints() > gameResult.getChallengerPoints()
+                    && gameResult.getGame().getChallenged().equals(teamId)
+                    ||
+                    gameResult.getChallengerPoints() > gameResult.getChallengedPoints()
+                            && gameResult.getGame().getChallenger().equals(teamId)) {
+                teamWins++;
+            }
+        }
+
+        WinsFromTeamDTO winsFromTeamDTO = new WinsFromTeamDTO(teamWins, gameResultsFound.size() - teamWins);
+
+        return ResponseEntity.status(200).body(new ResponseMessage<WinsFromTeamDTO>(winsFromTeamDTO));
+    }
+
+    public ResponseEntity<ResponseMessage<GameResult>> confirmGameResult(UUID id, Coach coach) {
+        Coach coachFound;
+
+        try {
+            coachFound = coachService.getTemplateById("3000", "coaches/ms-get-coach", coach.getId(), Coach.class);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage<GameResult>(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ResponseMessage<GameResult>(e.getMessage()));
+        }
+
+        GameResult gameResult = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Resultado de jogo", id));
+
+        if (!coachFound.getTeams().stream()
+                .anyMatch(team -> team.getId().equals(gameResult.getGame().getChallenged()))) {
+            return ResponseEntity.status(409).body(new ResponseMessage<GameResult>(
+                    "Apenas o treinador do time desafiado pode confirmar um resultado"));
+        }
+
+        gameResult.setConfirmed(true);
+
+        repo.save(gameResult);
+
+        return ResponseEntity.status(200).body(new ResponseMessage<GameResult>(gameResult));
     }
 
     public List<String> validateDTO(GameResultDTO dto) {

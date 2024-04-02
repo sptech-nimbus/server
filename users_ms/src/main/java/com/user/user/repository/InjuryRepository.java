@@ -5,8 +5,9 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.user.user.domain.athlete.Athlete;
 import com.user.user.domain.injury.Injury;
 
 public interface InjuryRepository extends JpaRepository<Injury, UUID> {
-    List<Injury> findByAthlete(UUID athleteId);
+    List<Injury> findAllByAthlete(Athlete athlete);
 }
