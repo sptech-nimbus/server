@@ -17,7 +17,6 @@ import com.events.events.domain.team.Team;
 import com.events.events.exception.ResourceNotFoundException;
 import com.events.events.repository.GameRepository;
 
-@SuppressWarnings("rawtypes")
 @Service
 public class GameService {
     private final GameRepository repo;
@@ -33,7 +32,7 @@ public class GameService {
         this.wsMsgTemplate = wsMsgTemplate;
     }
 
-    public ResponseEntity<ResponseMessage> register(GameDTO dto) {
+    public ResponseEntity<ResponseMessage<Game>> register(GameDTO dto) {
         Game newGame = new Game(dto);
 
         repo.save(newGame);
@@ -41,7 +40,7 @@ public class GameService {
         return ResponseEntity.status(200).body(new ResponseMessage<Game>(newGame));
     }
 
-    public ResponseEntity<ResponseMessage> getGamesFromTeamId(UUID teamId) {
+    public ResponseEntity<ResponseMessage<List<GameWithTeams>>> getGamesFromTeamId(UUID teamId) {
         List<Game> games = repo.findGamesByChallengerOrChallenged(teamId, teamId);
 
         List<GameWithTeams> gamesWithTeams = new ArrayList<>();
@@ -57,10 +56,11 @@ public class GameService {
                     gamesWithTeams.add(gameWithTeams);
                 } catch (ResourceNotFoundException e) {
                     return ResponseEntity.status(404)
-                            .body(new ResponseMessage(e.getMessage()));
+                            .body(new ResponseMessage<List<GameWithTeams>>(e.getMessage()));
                 } catch (Exception e) {
                     return ResponseEntity.status(500)
-                            .body(new ResponseMessage("Serviço de usuários fora do ar no momento", e.getMessage()));
+                            .body(new ResponseMessage<List<GameWithTeams>>("Serviço de usuários fora do ar no momento",
+                                    e.getMessage()));
                 }
             }
 
@@ -68,25 +68,25 @@ public class GameService {
         }
 
         return ResponseEntity.status(204)
-                .body(new ResponseMessage("Nenhum jogo encontrado"));
+                .body(new ResponseMessage<List<GameWithTeams>>("Nenhum jogo encontrado"));
     }
 
-    public ResponseEntity<ResponseMessage> confirmGame(UUID id, Coach coach) {
+    public ResponseEntity<ResponseMessage<Game>> confirmGame(UUID id, Coach coach) {
         Game game = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Jogo", id));
         Coach coachFound;
 
         try {
             coachFound = coachService.getTemplateById("3000", "coaches/ms-get-coach", coach.getId(), Coach.class);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+            return ResponseEntity.status(404).body(new ResponseMessage<Game>(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(500)
-                    .body(new ResponseMessage("Serviço de usuários fora do ar no momento.", e.getMessage()));
+                    .body(new ResponseMessage<Game>("Serviço de usuários fora do ar no momento.", e.getMessage()));
         }
 
         if (coachFound.getTeams().stream().anyMatch(t -> t.getId().equals(game.getChallenged()))) {
             if (game.getConfirmed()) {
-                return ResponseEntity.status(409).body(new ResponseMessage("Jogo já confirmado"));
+                return ResponseEntity.status(409).body(new ResponseMessage<Game>("Jogo já confirmado"));
             }
 
             game.setConfirmed(true);
@@ -94,7 +94,7 @@ public class GameService {
             repo.save(game);
         } else {
             return ResponseEntity.status(400)
-                    .body(new ResponseMessage("Apenas o time desafiado pode confirmar um jogo"));
+                    .body(new ResponseMessage<Game>("Apenas o time desafiado pode confirmar um jogo"));
         }
 
         ResponseMessage<Game> responseMessage = new ResponseMessage<Game>(
@@ -106,27 +106,27 @@ public class GameService {
         return ResponseEntity.status(200).body(responseMessage);
     }
 
-    public ResponseEntity<ResponseMessage> cancelGameById(UUID id, Coach coach) {
+    public ResponseEntity<ResponseMessage<Game>> cancelGameById(UUID id, Coach coach) {
         Game game = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Jogo", id));
         Coach coachFound;
 
         try {
             coachFound = coachService.getTemplateById("3000", "coaches/ms-get-coach", coach.getId(), Coach.class);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+            return ResponseEntity.status(404).body(new ResponseMessage<Game>(e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ResponseMessage(e.getMessage()));
+            return ResponseEntity.status(500).body(new ResponseMessage<Game>(e.getMessage()));
         }
 
         if (coachFound.getTeams().stream()
                 .anyMatch(team -> team.getId().equals(game.getChallenged())
                         || team.getId().equals(game.getChallenger()))) {
             return ResponseEntity.status(409)
-                    .body(new ResponseMessage("Apenas o treinador de um dos times do jogo pode cancela-lo"));
+                    .body(new ResponseMessage<Game>("Apenas o treinador de um dos times do jogo pode cancela-lo"));
         }
 
         repo.delete(game);
 
-        return ResponseEntity.status(200).body(new ResponseMessage("Jogo cancelado"));
+        return ResponseEntity.status(200).body(new ResponseMessage<Game>("Jogo cancelado"));
     }
 }
