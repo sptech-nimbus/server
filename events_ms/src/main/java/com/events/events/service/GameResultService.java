@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.events.events.domain.coach.Coach;
+import com.events.events.domain.game.Game;
 import com.events.events.domain.gameResult.GameResult;
 import com.events.events.domain.gameResult.GameResultDTO;
 import com.events.events.domain.graphs.WinsFromTeamDTO;
@@ -47,8 +48,9 @@ public class GameResultService {
     public ResponseEntity<ResponseMessage<WinsFromTeamDTO>> getWinsByTeam(UUID teamId, Integer matches) {
         List<GameResult> gameResultsFound = repo.findGameResultsByTeamWithLimit(teamId, matches);
 
-        if(gameResultsFound.isEmpty())
-            return ResponseEntity.status(204).body(new ResponseMessage<WinsFromTeamDTO>("Sem resultados de jogos encontrados"));
+        if (gameResultsFound.isEmpty())
+            return ResponseEntity.status(204)
+                    .body(new ResponseMessage<WinsFromTeamDTO>("Sem resultados de jogos encontrados"));
 
         Integer teamWins = 0;
 
@@ -65,6 +67,21 @@ public class GameResultService {
         WinsFromTeamDTO winsFromTeamDTO = new WinsFromTeamDTO(teamWins, gameResultsFound.size() - teamWins);
 
         return ResponseEntity.status(200).body(new ResponseMessage<WinsFromTeamDTO>(winsFromTeamDTO));
+    }
+
+    public ResponseEntity<ResponseMessage<List<Game>>> getNotConfirmedResultsGamesByTeamId(UUID teamId) {
+        List<GameResult> gameResultsFound = repo.findByGameChallengedAndConfirmedFalse(teamId);
+
+        if (gameResultsFound.isEmpty())
+            return ResponseEntity.status(204).body(new ResponseMessage<List<Game>>("Sem resultados a confirmar"));
+
+        List<Game> games = new ArrayList<>();
+
+        for (GameResult gameResult : gameResultsFound) {
+            games.add(gameResult.getGame());
+        }
+
+        return ResponseEntity.status(200).body(new ResponseMessage<List<Game>>(games));
     }
 
     public ResponseEntity<ResponseMessage<GameResult>> confirmGameResult(UUID id, Coach coach) {

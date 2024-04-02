@@ -1,5 +1,6 @@
 package com.events.events.controller;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.events.events.domain.coach.Coach;
+import com.events.events.domain.game.Game;
 import com.events.events.domain.gameResult.GameResult;
 import com.events.events.domain.gameResult.GameResultDTO;
 import com.events.events.domain.graphs.WinsFromTeamDTO;
@@ -39,6 +41,11 @@ public class GameResultController {
     public ResponseEntity<ResponseMessage<WinsFromTeamDTO>> getWinsByTeam(@PathVariable UUID teamId,
             @RequestParam Integer matches) {
         return service.getWinsByTeam(teamId, matches);
+    }
+
+    @GetMapping("not-confirmed-results/{teamId}")
+    public ResponseEntity<ResponseMessage<List<Game>>> getNotConfirmedResultsByTeamId(@PathVariable UUID teamId) {
+        return service.getNotConfirmedResultsGamesByTeamId(teamId);
     }
 
     // PATCH
