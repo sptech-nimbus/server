@@ -4,9 +4,13 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.events.events.domain.game.Game;
 
-public interface GameRepository extends JpaRepository<Game, UUID>  {
+public interface GameRepository extends JpaRepository<Game, UUID> {
     List<Game> findGamesByChallengerOrChallenged(UUID challenger, UUID challenged);
+
+    @Query(value = "select g.* from game g where challenger_id = ?1 or challenged_id = ?1 limit ?2", nativeQuery = true)
+    List<Game> findGamesByChallengerChallengedWithTop(UUID teamId, Integer matches);
 }

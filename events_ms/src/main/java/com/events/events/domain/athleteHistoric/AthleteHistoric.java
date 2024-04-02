@@ -108,7 +108,6 @@ public class AthleteHistoric {
                 "threePointsAttemped=" + threePointsAttemped + '\'' +
                 "twoPointsConverted=" + twoPointsConverted + '\'' +
                 "twoPointsAttemped=" + twoPointsAttemped + '\'' +
-                "game=" + game + '\'' +
                 "training=" + training + '\'' +
                 "}";
     }

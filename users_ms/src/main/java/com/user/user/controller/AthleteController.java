@@ -30,11 +30,11 @@ public class AthleteController {
 
     // GET
     @GetMapping("ms-get-athlete/{id}")
-    public ResponseEntity<Athlete> getAthleteForMs(@PathVariable UUID id) {
+    public Athlete getAthleteForMs(@PathVariable UUID id) throws ResourceNotFoundException {
         try {
-            return service.getAthleteForMs(id);
+            return service.getAthleteForMs(id).getBody();
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).build();
+            throw new ResourceNotFoundException("atleta", id);  
         }
     }
 

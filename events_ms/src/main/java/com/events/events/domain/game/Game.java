@@ -77,7 +77,6 @@ public class Game {
                 "local=" + local + '\'' +
                 "challenger=" + challenger + '\'' +
                 "challenged=" + challenged + '\'' +
-                "athletesHistorics=" + athletesHistorics + '\'' +
                 "}";
     }
 
