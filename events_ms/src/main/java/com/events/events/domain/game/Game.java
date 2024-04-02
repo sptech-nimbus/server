@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.events.events.domain.athleteHistoric.AthleteHistoric;
 import com.events.events.domain.gameResult.GameResult;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,6 +51,7 @@ public class Game {
     @Column(name = "challenged_id", nullable = false)
     private UUID challenged;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "game")
     private List<AthleteHistoric> athletesHistorics;
 
