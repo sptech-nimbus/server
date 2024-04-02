@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.events.events.domain.coach.Coach;
@@ -15,19 +16,28 @@ import com.events.events.domain.gameResult.GameResultDTO;
 import com.events.events.domain.graphs.WinsFromTeamDTO;
 import com.events.events.domain.responseMessage.ResponseMessage;
 import com.events.events.exception.ResourceNotFoundException;
+import com.events.events.repository.GameRepository;
 import com.events.events.repository.GameResultRepository;
 
 @Service
 public class GameResultService {
     private final GameResultRepository repo;
+    private final GameRepository gameRepo;
     private final RestTemplateService<Coach> coachService;
+    private final SimpMessagingTemplate wsMsgTemplate;
 
-    public GameResultService(GameResultRepository repo, RestTemplateService<Coach> coachService) {
+    public GameResultService(GameResultRepository repo, RestTemplateService<Coach> coachService,
+            SimpMessagingTemplate wsMsgTemplate, GameRepository gameRepo) {
         this.repo = repo;
+        this.gameRepo = gameRepo;
         this.coachService = coachService;
+        this.wsMsgTemplate = wsMsgTemplate;
     }
 
     public ResponseEntity<ResponseMessage<GameResult>> register(GameResultDTO dto) {
+        Game gameFound = gameRepo.findById(dto.game().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Time", dto.game().getId()));
+
         List<String> validateErrors = validateDTO(dto);
 
         if (!validateErrors.isEmpty()) {
@@ -41,6 +51,12 @@ public class GameResultService {
         gameResult.setConfirmed(false);
 
         repo.save(gameResult);
+
+        wsMsgTemplate.convertAndSend("/events/" + gameFound.getChallenged(),
+                new ResponseMessage<GameResult>(
+                        "O resultado do jogo de data final " + gameFound.getFinalDateTime()
+                                + " teve o resultado cadastrado. Confira este resultado e confirme.",
+                        gameResult));
 
         return ResponseEntity.status(201).body(new ResponseMessage<GameResult>(gameResult));
     }
