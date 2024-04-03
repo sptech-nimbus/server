@@ -120,6 +120,7 @@ public class UserService {
         return ResponseEntity.status(200)
                 .body(new ResponseMessage<UserTokenDTO>("Login realizado.", userType,
                         new UserTokenDTO(userFound.getId(), token)));
+
     }
 
     public ResponseEntity<ResponseMessage> changePasswordRequest(ChangePasswordRequestDTO dto) {

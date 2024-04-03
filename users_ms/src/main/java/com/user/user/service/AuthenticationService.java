@@ -14,7 +14,6 @@ import com.user.user.repository.UserRepository;
 
 @Service
 public class AuthenticationService implements UserDetailsService {
-
     @Autowired
     private UserRepository userRepository;
 
@@ -28,5 +27,4 @@ public class AuthenticationService implements UserDetailsService {
 
         return new UserDetailsDTO(userOpt.get());
     }
-
 }
