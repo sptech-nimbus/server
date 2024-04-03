@@ -59,7 +59,7 @@ public class UserController {
             return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
         }
     }
-
+    
     // GET
     @GetMapping("/{id}")
     @CrossOrigin

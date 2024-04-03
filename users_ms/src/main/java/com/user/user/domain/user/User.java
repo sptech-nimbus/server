@@ -1,6 +1,11 @@
 package com.user.user.domain.user;
 
+
+import java.util.Collection;
 import java.util.UUID;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.user.user.domain.athlete.Athlete;
 import com.user.user.domain.coach.Coach;
@@ -13,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -49,4 +55,5 @@ public class User {
                 "password=" + password +
                 "}";
     }
+
 }
