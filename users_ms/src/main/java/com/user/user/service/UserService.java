@@ -108,7 +108,7 @@ public class UserService {
 
         final Authentication auth = this.authenticationManager.authenticate(credentials);
 
-        User userFound = repo.findByEmailAndPassword(dto.email(), dto.password())
+        User userFound = repo.findByEmail(dto.email())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário", null));
 
         String userType = userFound.getAthlete() != null ? "Athlete" : "Coach";
