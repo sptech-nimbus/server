@@ -17,7 +17,6 @@ import com.events.events.domain.training.TrainingDTO;
 import com.events.events.exception.ResourceNotFoundException;
 import com.events.events.repository.TrainingRepository;
 
-@SuppressWarnings("rawtypes")
 @Service
 public class TrainingService {
     private final TrainingRepository repo;
@@ -28,10 +27,10 @@ public class TrainingService {
         this.wsMsgTemplate = wsMsgTemplate;
     }
 
-    public ResponseEntity<ResponseMessage> register(TrainingDTO dto) {
+    public ResponseEntity<ResponseMessage<Training>> register(TrainingDTO dto) {
         if (!checkTrainingDontExists(dto))
             return ResponseEntity.status(409)
-                    .body(new ResponseMessage("Treino já cadastrado para este horário"));
+                    .body(new ResponseMessage<Training>("Treino já cadastrado para este horário"));
 
         Training newTraining = new Training(dto);
 
@@ -39,31 +38,32 @@ public class TrainingService {
             repo.save(newTraining);
         } catch (Exception e) {
             return ResponseEntity.status(500)
-                    .body(new ResponseMessage("Erro ao cadastrar treino", e.getMessage()));
+                    .body(new ResponseMessage<Training>("Erro ao cadastrar treino", e.getMessage()));
         }
 
-        ResponseMessage response = new ResponseMessage<Training>(newTraining);
+        ResponseMessage<Training> response = new ResponseMessage<Training>(newTraining);
 
         wsMsgTemplate.convertAndSend("/events/" + newTraining.getTeam(), response);
 
         return ResponseEntity.status(200).body(response);
     }
 
-    public ResponseEntity<ResponseMessage> getTrainingsPageByTeamId(UUID teamId, Integer page, Integer elements) {
+    public ResponseEntity<ResponseMessage<Page<Training>>> getTrainingsPageByTeamId(UUID teamId, Integer page,
+            Integer elements) {
         Pageable pageable = PageRequest.of(page, elements);
 
         Page<Training> trainingsFound = repo.findAllByTeam(teamId, pageable);
 
         if (!trainingsFound.hasContent())
-            return ResponseEntity.status(204).body(new ResponseMessage("Time sem treinos marcados"));
+            return ResponseEntity.status(204).body(new ResponseMessage<Page<Training>>("Time sem treinos marcados"));
 
         return ResponseEntity.status(200).body(new ResponseMessage<Page<Training>>(trainingsFound));
     }
 
-    public ResponseEntity<ResponseMessage> putTraining(UUID id, TrainingDTO dto) {
+    public ResponseEntity<ResponseMessage<Training>> putTraining(UUID id, TrainingDTO dto) {
         if (!checkTrainingDontExists(dto, id))
             return ResponseEntity.status(409)
-                    .body(new ResponseMessage("Treino já cadastrado para este horário"));
+                    .body(new ResponseMessage<Training>("Treino já cadastrado para este horário"));
 
         Training trainingFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Treino", id));
 
@@ -72,31 +72,33 @@ public class TrainingService {
         try {
             repo.save(trainingFound);
         } catch (Exception e) {
-            return ResponseEntity.status(400).body(new ResponseMessage("Erro ao atualizar treino", e.getMessage()));
+            return ResponseEntity.status(400)
+                    .body(new ResponseMessage<Training>("Erro ao atualizar treino", e.getMessage()));
         }
 
         return ResponseEntity.status(200).body(new ResponseMessage<Training>(trainingFound));
     }
 
-    public ResponseEntity<ResponseMessage> deleteTraining(UUID id) {
+    public ResponseEntity<ResponseMessage<Training>> deleteTraining(UUID id) {
         Training trainingFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Treino", id));
 
         try {
             repo.delete(trainingFound);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ResponseMessage("Erro ao deletar treino", e.getMessage()));
+            return ResponseEntity.status(500)
+                    .body(new ResponseMessage<Training>("Erro ao deletar treino", e.getMessage()));
         }
 
-        return ResponseEntity.status(200).body(new ResponseMessage("Treino deletado"));
+        return ResponseEntity.status(200).body(new ResponseMessage<Training>("Treino deletado"));
     }
 
     public Boolean checkTrainingDontExists(TrainingDTO dto) {
-        return !repo.findByTeamIdAndFinalDateTimeBetween(dto.teamId(), dto.inicialDateTime(), dto.finalDateTime())
+        return !repo.findByTeamAndFinalDateTimeBetween(dto.teamId(), dto.inicialDateTime(), dto.finalDateTime())
                 .isPresent();
     }
 
     public Boolean checkTrainingDontExists(TrainingDTO dto, UUID id) {
-        Optional<Training> trainingFinal = repo.findByTeamIdAndFinalDateTimeBetween(dto.teamId(), dto.inicialDateTime(),
+        Optional<Training> trainingFinal = repo.findByTeamAndFinalDateTimeBetween(dto.teamId(), dto.inicialDateTime(),
                 dto.finalDateTime());
 
         return !trainingFinal.isPresent() || trainingFinal.get().getId().equals(id);

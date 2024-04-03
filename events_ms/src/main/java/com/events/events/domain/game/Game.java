@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.UUID;
 
 import com.events.events.domain.athleteHistoric.AthleteHistoric;
+import com.events.events.domain.gameResult.GameResult;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -48,8 +51,12 @@ public class Game {
     @Column(name = "challenged_id", nullable = false)
     private UUID challenged;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "game")
     private List<AthleteHistoric> athletesHistorics;
+
+    @OneToOne(mappedBy = "game")
+    private GameResult gameResult;
 
     public Game(GameDTO dto) {
         this.setChallenged(dto.challenged());
@@ -70,9 +77,7 @@ public class Game {
                 "local=" + local + '\'' +
                 "challenger=" + challenger + '\'' +
                 "challenged=" + challenged + '\'' +
-                "athletesHistorics=" + athletesHistorics + '\'' +
                 "}";
     }
 
-    
 }

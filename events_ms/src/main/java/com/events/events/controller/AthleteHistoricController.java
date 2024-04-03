@@ -1,7 +1,9 @@
 package com.events.events.controller;
 
+import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.events.events.domain.athleteHistoric.AthleteHistoric;
 import com.events.events.domain.athleteHistoric.AthleteHistoricDTO;
 import com.events.events.domain.responseMessage.ResponseMessage;
 import com.events.events.service.AthleteHistoricService;
 
-@SuppressWarnings("rawtypes")
 @RestController
 @RequestMapping("athlete-historics")
 public class AthleteHistoricController {
@@ -28,25 +30,27 @@ public class AthleteHistoricController {
 
     // POST
     @PostMapping
-    public ResponseEntity<ResponseMessage> postAthleteHistoric(@RequestBody AthleteHistoricDTO dto) {
+    public ResponseEntity<ResponseMessage<AthleteHistoric>> postAthleteHistoric(@RequestBody AthleteHistoricDTO dto) {
         return service.register(dto);
     }
 
     // GET
     @GetMapping("from-athlete/{athleteId}")
-    public ResponseEntity<ResponseMessage> getAthleteHistoricByAthleteId(@PathVariable UUID athleteId) {
+    public ResponseEntity<ResponseMessage<List<AthleteHistoric>>> getAthleteHistoricByAthleteId(
+            @PathVariable UUID athleteId) {
         return service.getAthleteHistoricsByAthleteId(athleteId);
     }
 
     @GetMapping("page-from-athlete/{athleteId}")
-    public ResponseEntity<ResponseMessage> getAthleteHistoricPageByAthleteId(@PathVariable UUID athleteId,
+    public ResponseEntity<ResponseMessage<Page<AthleteHistoric>>> getAthleteHistoricPageByAthleteId(
+            @PathVariable UUID athleteId,
             @RequestParam Integer page, @RequestParam Integer elements) {
         return service.getAthleteHistoricsPageByAthleteId(athleteId, page, elements);
     }
 
     // PUT
     @PutMapping("{id}")
-    public ResponseEntity<ResponseMessage> putAthleteHistoric(@PathVariable UUID id,
+    public ResponseEntity<ResponseMessage<AthleteHistoric>> putAthleteHistoric(@PathVariable UUID id,
             @RequestBody AthleteHistoricDTO dto) {
         return service.putAhlteteHistoric(id, dto);
     }
