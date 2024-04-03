@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.events.events.domain.athleteHistoric.AthleteHistoric;
 import com.events.events.domain.athleteHistoric.AthleteHistoricDTO;
 import com.events.events.domain.responseMessage.ResponseMessage;
+import com.events.events.exception.ResourceNotFoundException;
 import com.events.events.service.AthleteHistoricService;
 
 @RestController
@@ -53,5 +55,15 @@ public class AthleteHistoricController {
     public ResponseEntity<ResponseMessage<AthleteHistoric>> putAthleteHistoric(@PathVariable UUID id,
             @RequestBody AthleteHistoricDTO dto) {
         return service.putAhlteteHistoric(id, dto);
+    }
+
+    // DELETE
+    @DeleteMapping("{id}")
+    public ResponseEntity<ResponseMessage<?>> deleteAthleteHistoric(@PathVariable UUID id) {
+        try {
+            return service.deleteAhleteHistoric(id);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(204).body(new ResponseMessage<>(e.getMessage()));
+        }
     }
 }

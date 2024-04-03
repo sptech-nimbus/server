@@ -91,4 +91,13 @@ public class AthleteHistoricService {
 
         return ResponseEntity.status(200).body(new ResponseMessage<AthleteHistoric>("Histórico de atleta atualizado"));
     }
+
+    public ResponseEntity<ResponseMessage<?>> deleteAhleteHistoric(UUID id) {
+        AthleteHistoric athleteHistoricFound = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Histórico de atleta", id));
+
+        repo.delete(athleteHistoricFound);
+
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Histórico de atleta deletado"));
+    }
 }
