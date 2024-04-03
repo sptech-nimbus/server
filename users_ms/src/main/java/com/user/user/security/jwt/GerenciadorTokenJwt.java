@@ -13,17 +13,16 @@ import io.jsonwebtoken.Claims;
 import java.util.function.Function;
 import java.util.Date;
 
-
 public class GerenciadorTokenJwt {
 
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.validty}")
+    @Value("${jwt.validity}")
     private long jwtTokentValidit;
 
     public String getUsernameFromToken(final String token) {
-       return getClaimForToken(token, Claims::getSubject);
+        return getClaimForToken(token, Claims::getSubject);
     }
 
     public Date getExpirationDateFromToken(final String token) {
@@ -40,18 +39,17 @@ public class GerenciadorTokenJwt {
                 .setExpiration(new Date(System.currentTimeMillis() + jwtTokentValidit * 1_000)).compact();
     }
 
-    public <T> T getClaimForToken(String token, Function<Claims, T> claimsResolver){
+    public <T> T getClaimForToken(String token, Function<Claims, T> claimsResolver) {
         Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
-
 
     public boolean validateToken(String token, UserDetails userDetails) {
         String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    public boolean isTokenExpired(String token){
+    public boolean isTokenExpired(String token) {
         Date expirationDate = getExpirationDateFromToken(token);
         return expirationDate.before(new Date(System.currentTimeMillis()));
     }
@@ -63,9 +61,8 @@ public class GerenciadorTokenJwt {
                 .parseClaimsJws(token).getBody();
     }
 
-    private SecretKey parseSecret(){
+    private SecretKey parseSecret() {
         return Keys.hmacShaKeyFor(this.secret.getBytes(StandardCharsets.UTF_8));
     }
-
 
 }
