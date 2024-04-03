@@ -8,6 +8,16 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
+import com.user.user.service.AuthenticationService;
+
+public class AutenticacaoProvider implements AuthenticationProvider {
+
+    private final AuthenticationService userAuthenticatioService;
+    private final PasswordEncoder passwordEncoder;
+
+    public AutenticacaoProvider(AuthenticationService userAuthenticatioService, PasswordEncoder passwordEncoder) {
+
 import com.user.user.service.AuthenticatioService;
 
 public class AutenticacaoProvider implements AuthenticationProvider {
@@ -17,6 +27,7 @@ public class AutenticacaoProvider implements AuthenticationProvider {
 
 
     public AutenticacaoProvider(AuthenticatioService userAuthenticatioService, PasswordEncoder passwordEncoder) {
+
         this.userAuthenticatioService = userAuthenticatioService;
         this.passwordEncoder = passwordEncoder;
     }

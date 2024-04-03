@@ -13,7 +13,6 @@ import com.events.events.domain.coach.Coach;
 import com.events.events.domain.game.Game;
 import com.events.events.domain.gameResult.GameResult;
 import com.events.events.domain.gameResult.GameResultDTO;
-import com.events.events.domain.graphs.WinsFromTeamDTO;
 import com.events.events.domain.responseMessage.ResponseMessage;
 import com.events.events.exception.ResourceNotFoundException;
 import com.events.events.repository.GameRepository;
@@ -59,30 +58,6 @@ public class GameResultService {
                         gameResult));
 
         return ResponseEntity.status(201).body(new ResponseMessage<GameResult>(gameResult));
-    }
-
-    public ResponseEntity<ResponseMessage<WinsFromTeamDTO>> getWinsByTeam(UUID teamId, Integer matches) {
-        List<GameResult> gameResultsFound = repo.findGameResultsByTeamWithLimit(teamId, matches);
-
-        if (gameResultsFound.isEmpty())
-            return ResponseEntity.status(204)
-                    .body(new ResponseMessage<WinsFromTeamDTO>("Sem resultados de jogos encontrados"));
-
-        Integer teamWins = 0;
-
-        for (GameResult gameResult : gameResultsFound) {
-            if (gameResult.getChallengedPoints() > gameResult.getChallengerPoints()
-                    && gameResult.getGame().getChallenged().equals(teamId)
-                    ||
-                    gameResult.getChallengerPoints() > gameResult.getChallengedPoints()
-                            && gameResult.getGame().getChallenger().equals(teamId)) {
-                teamWins++;
-            }
-        }
-
-        WinsFromTeamDTO winsFromTeamDTO = new WinsFromTeamDTO(teamWins, gameResultsFound.size() - teamWins);
-
-        return ResponseEntity.status(200).body(new ResponseMessage<WinsFromTeamDTO>(winsFromTeamDTO));
     }
 
     public ResponseEntity<ResponseMessage<List<Game>>> getNotConfirmedResultsGamesByTeamId(UUID teamId) {

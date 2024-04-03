@@ -8,6 +8,11 @@ import java.util.regex.Pattern;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.user.user.domain.email.EmailDTO;
@@ -18,8 +23,10 @@ import com.user.user.domain.user.ChangePasswordDTO;
 import com.user.user.domain.user.ChangePasswordRequestDTO;
 import com.user.user.domain.user.User;
 import com.user.user.domain.user.UserDTO;
+import com.user.user.domain.user.authentication.dto.UserTokenDTO;
 import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.repository.UserRepository;
+import com.user.user.security.jwt.GerenciadorTokenJwt;
 import com.user.user.util.CodeGenerator;
 
 @SuppressWarnings("rawtypes")
@@ -30,14 +37,21 @@ public class UserService {
     private final AthleteService athleteService;
     private final EmailService emailService;
     private final OperationCodeService operationCodeService;
+    private final PasswordEncoder encoder;
+    private final GerenciadorTokenJwt gerenciadorTokenJwt;
+    private final AuthenticationManager authenticationManager;
 
     public UserService(UserRepository repo, CoachService coachService, AthleteService athleteService,
-            EmailService emailService, OperationCodeService operationCodeService) {
+            EmailService emailService, OperationCodeService operationCodeService, PasswordEncoder encoder,
+            GerenciadorTokenJwt gerenciadorTokenJwt, AuthenticationManager authenticationManager) {
         this.repo = repo;
         this.coachService = coachService;
         this.athleteService = athleteService;
         this.emailService = emailService;
         this.operationCodeService = operationCodeService;
+        this.encoder = encoder;
+        this.gerenciadorTokenJwt = gerenciadorTokenJwt;
+        this.authenticationManager = authenticationManager;
     }
 
     public ResponseEntity<ResponseMessage> register(UserDTO dto) {
@@ -56,6 +70,10 @@ public class UserService {
         User newUser = new User();
 
         BeanUtils.copyProperties(dto, newUser);
+
+        String cryptPassword = encoder.encode(newUser.getPassword());
+
+        newUser.setPassword(cryptPassword);
 
         repo.save(newUser);
 
@@ -85,13 +103,23 @@ public class UserService {
     }
 
     public ResponseEntity<ResponseMessage> login(UserDTO dto) {
-        User userFound = repo.findByEmailAndPassword(dto.email(), dto.password())
+        final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(dto.email(),
+                dto.password());
+
+        final Authentication auth = this.authenticationManager.authenticate(credentials);
+
+        User userFound = repo.findByEmail(dto.email())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário", null));
 
         String userType = userFound.getAthlete() != null ? "Athlete" : "Coach";
 
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        final String token = gerenciadorTokenJwt.generateToken(auth);
+
         return ResponseEntity.status(200)
-                .body(new ResponseMessage<UUID>("Login realizado.", userType, userFound.getId()));
+                .body(new ResponseMessage<UserTokenDTO>("Login realizado.", userType,
+                        new UserTokenDTO(userFound.getId(), token)));
     }
 
     public ResponseEntity<ResponseMessage> changePasswordRequest(ChangePasswordRequestDTO dto) {
@@ -113,7 +141,7 @@ public class UserService {
 
             String emailContent = "<style>\r\n" + //
                     "@import url('https://fonts.cdnfonts.com/css/catamaran');\r\n" + //
-                    "</style>" 
+                    "</style>"
                     + "<div style=\"display: flex; justify-content: center; background-color: #c9c9c9; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;\">"
                     + "<div style=\"background-color: #131313; width: 40%; color: #FFEAE0\">"
                     + "<div style=\"margin-left: 86px; margin-top: 15px;\">"
@@ -121,7 +149,8 @@ public class UserService {
                     + "</div>"
                     + "<div style=\"border-top: 2px solid #FF7425; margin-top: 15px;\"></div>"
                     + "<div style=\"margin-left: 17%; width: 95%;\">"
-                    + "<h3 style=\"font-size: 20px; font-family: 'Catamaran', sans-serif;\" >Olá, <b>" + personaFound.getFirstName() + " "
+                    + "<h3 style=\"font-size: 20px; font-family: 'Catamaran', sans-serif;\" >Olá, <b>"
+                    + personaFound.getFirstName() + " "
                     + personaFound.getLastName() + "!</b></h3><br>"
                     + "</div>"
                     + "<div style=\"margin-left: 5%; width: 95%;\">"
