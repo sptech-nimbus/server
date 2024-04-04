@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.user.user.domain.athleteDesc.AthleteDesc;
 import com.user.user.domain.athleteDesc.AthleteDescDTO;
 import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.service.AthleteDescService;
 
-@SuppressWarnings("rawtypes")
 @RestController
 @RequestMapping("athlete-descs")
 public class AthleteDescController {
@@ -28,32 +28,32 @@ public class AthleteDescController {
 
     // POST
     @PostMapping
-    public ResponseEntity<ResponseMessage> registerAthleteDesc(@RequestBody AthleteDescDTO dto) {
+    public ResponseEntity<ResponseMessage<AthleteDesc>> registerAthleteDesc(@RequestBody AthleteDescDTO dto) {
         try {
             return service.register(dto);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
     }
 
     // GET
     @GetMapping("/{athleteId}")
-    public ResponseEntity<ResponseMessage> getAthleteDescsByAthleteId(@PathVariable UUID athleteId) {
+    public ResponseEntity<ResponseMessage<AthleteDesc>> getAthleteDescsByAthleteId(@PathVariable UUID athleteId) {
         try {
             return service.getAthleteDescsByAthleteId(athleteId);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
     }
 
     // PUT
     @PutMapping("/{athleteId}")
-    public ResponseEntity<ResponseMessage> putAthleteDescByAthleteId(@PathVariable UUID athleteId,
+    public ResponseEntity<ResponseMessage<?>> putAthleteDescByAthleteId(@PathVariable UUID athleteId,
             @RequestBody AthleteDescDTO dto) {
         try {
             return service.putAthleteDescByAthleteId(athleteId, dto);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
     }
 }

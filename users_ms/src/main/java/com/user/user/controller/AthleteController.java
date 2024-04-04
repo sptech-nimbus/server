@@ -18,7 +18,6 @@ import com.user.user.domain.team.Team;
 import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.service.AthleteService;
 
-@SuppressWarnings("rawtypes")
 @RestController
 @RequestMapping("athletes")
 public class AthleteController {
@@ -34,28 +33,28 @@ public class AthleteController {
         try {
             return service.getAthleteForMs(id).getBody();
         } catch (ResourceNotFoundException e) {
-            throw new ResourceNotFoundException("atleta", id);  
+            throw new ResourceNotFoundException("atleta", id);
         }
     }
 
     // PUT
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseMessage> putAthlete(@PathVariable UUID id, @RequestBody AthleteDTO dto) {
+    public ResponseEntity<ResponseMessage<?>> putAthlete(@PathVariable UUID id, @RequestBody AthleteDTO dto) {
         try {
             return service.putPersona(id, dto);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
     }
 
     // PATCH
     @PatchMapping("register-team/{id}")
-    public ResponseEntity<ResponseMessage> registerAthleteOnTeam(@PathVariable UUID id,
+    public ResponseEntity<ResponseMessage<?>> registerAthleteOnTeam(@PathVariable UUID id,
             @RequestBody Team team) {
         try {
             return service.registerAthleteToTeam(id, team);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
     }
 }

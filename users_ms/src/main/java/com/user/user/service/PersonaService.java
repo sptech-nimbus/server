@@ -13,7 +13,6 @@ import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.repository.AthleteRepository;
 import com.user.user.repository.CoachRepository;
 
-@SuppressWarnings("rawtypes")
 @Service
 public class PersonaService {
 
@@ -26,7 +25,7 @@ public class PersonaService {
         this.coachRepo = coachRepo;
     }
 
-    public ResponseEntity<ResponseMessage> getPersonaByUserId(UUID id) {
+    public ResponseEntity<ResponseMessage<Persona>> getPersonaByUserId(UUID id) {
         Persona personaFound = athleteRepo.findAthleteByUserId(id).get();
 
         if (personaFound == null) {
@@ -41,7 +40,7 @@ public class PersonaService {
         return ResponseEntity.ok(new ResponseMessage<Persona>(personaFound));
     }
 
-    public ResponseEntity<ResponseMessage> getChatUserByUserId(UUID id) {
+    public ResponseEntity<ResponseMessage<ChatUserDTO>> getChatUserByUserId(UUID id) {
         Persona personaFound = athleteRepo.findAthleteByUserId(id).get();
 
         if (personaFound == null) {

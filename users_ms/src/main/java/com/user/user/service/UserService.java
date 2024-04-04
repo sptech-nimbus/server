@@ -29,7 +29,6 @@ import com.user.user.repository.UserRepository;
 import com.user.user.security.jwt.GerenciadorTokenJwt;
 import com.user.user.util.CodeGenerator;
 
-@SuppressWarnings("rawtypes")
 @Service
 public class UserService {
     private final UserRepository repo;
@@ -54,17 +53,17 @@ public class UserService {
         this.authenticationManager = authenticationManager;
     }
 
-    public ResponseEntity<ResponseMessage> register(UserDTO dto) {
+    public ResponseEntity<ResponseMessage<UUID>> register(UserDTO dto) {
         List<String> credencialsErrors = checkAllUserCredencials(dto);
 
         if (!credencialsErrors.isEmpty()) {
             return ResponseEntity.status(400)
-                    .body(new ResponseMessage("Verifique suas credenciais de usuário.",
+                    .body(new ResponseMessage<>("Verifique suas credenciais de usuário.",
                             String.join(", ", credencialsErrors)));
         }
 
         if (repo.findByEmail(dto.email()).isPresent()) {
-            return ResponseEntity.status(409).body(new ResponseMessage("Email já utilizado."));
+            return ResponseEntity.status(409).body(new ResponseMessage<>("Email já utilizado."));
         }
 
         User newUser = new User();
@@ -78,7 +77,7 @@ public class UserService {
         repo.save(newUser);
 
         if (dto.coach() != null) {
-            ResponseEntity<ResponseMessage> coachResponseEntity = coachService.register(dto.coach(), newUser);
+            ResponseEntity<ResponseMessage<UUID>> coachResponseEntity = coachService.register(dto.coach(), newUser);
 
             if (!coachResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
                 repo.delete(newUser);
@@ -86,7 +85,8 @@ public class UserService {
                 return coachResponseEntity;
             }
         } else if (dto.athlete() != null) {
-            ResponseEntity<ResponseMessage> athleteResponseEntity = athleteService.register(dto.athlete(), newUser);
+            ResponseEntity<ResponseMessage<UUID>> athleteResponseEntity = athleteService.register(dto.athlete(),
+                    newUser);
 
             if (!athleteResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
                 repo.delete(newUser);
@@ -95,14 +95,14 @@ public class UserService {
             }
         } else {
             return ResponseEntity.status(400)
-                    .body(new ResponseMessage("Tipo de usuário não permitido ou não informado."));
+                    .body(new ResponseMessage<>("Tipo de usuário não permitido ou não informado."));
         }
 
         return ResponseEntity
                 .status(200).body(new ResponseMessage<UUID>("Cadastro realizado", newUser.getId()));
     }
 
-    public ResponseEntity<ResponseMessage> login(UserDTO dto) {
+    public ResponseEntity<ResponseMessage<UserTokenDTO>> login(UserDTO dto) {
         final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(dto.email(),
                 dto.password());
 
@@ -123,7 +123,7 @@ public class UserService {
 
     }
 
-    public ResponseEntity<ResponseMessage> changePasswordRequest(ChangePasswordRequestDTO dto) {
+    public ResponseEntity<ResponseMessage<?>> changePasswordRequest(ChangePasswordRequestDTO dto) {
         User userFound = repo.findById(dto.id()).orElseThrow(() -> new ResourceNotFoundException("Usuário", dto.id()));
 
         Persona personaFound = userFound.getAthlete() == null ? userFound.getCoach() : userFound.getAthlete();
@@ -135,7 +135,7 @@ public class UserService {
                     new OperationCode("change-password", recuperationCode, dto.expirationDate().plusHours(2), userFound,
                             null));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ResponseMessage("Erro ao cadastrar código", e.getMessage()));
+            return ResponseEntity.status(500).body(new ResponseMessage<>("Erro ao cadastrar código", e.getMessage()));
         }
 
         try {
@@ -168,14 +168,15 @@ public class UserService {
                     .sendHtmlEmail(new EmailDTO(userFound.getEmail(), "Código de recuperação de senha", emailContent));
 
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ResponseMessage("Erro ao mandar email", e.getMessage()));
+            return ResponseEntity.status(500).body(new ResponseMessage<>("Erro ao mandar email", e.getMessage()));
         }
 
         return ResponseEntity.status(200)
-                .body(new ResponseMessage("Verifique seu email com o código de verificação para recuperação de senha"));
+                .body(new ResponseMessage<>(
+                        "Verifique seu email com o código de verificação para recuperação de senha"));
     }
 
-    public ResponseEntity<ResponseMessage> changePassword(UUID id, ChangePasswordDTO dto) {
+    public ResponseEntity<ResponseMessage<?>> changePassword(UUID id, ChangePasswordDTO dto) {
         User userFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
 
         if (userFound.getPassword().equals(dto.oldPassword())) {
@@ -184,20 +185,20 @@ public class UserService {
 
                 repo.save(userFound);
             } else {
-                return ResponseEntity.status(409).body(new ResponseMessage("Senha fora dos padrões."));
+                return ResponseEntity.status(409).body(new ResponseMessage<>("Senha fora dos padrões."));
             }
         } else {
-            return ResponseEntity.status(400).body(new ResponseMessage("Antiga senha incorreta."));
+            return ResponseEntity.status(400).body(new ResponseMessage<>("Antiga senha incorreta."));
         }
 
-        return ResponseEntity.status(200).body(new ResponseMessage("Senha alterada com sucesso."));
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Senha alterada com sucesso."));
     }
 
-    public ResponseEntity<ResponseMessage> deleteUser(UUID id, String password) {
+    public ResponseEntity<ResponseMessage<?>> deleteUser(UUID id, String password) {
         User userFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
 
         if (!String.valueOf(userFound.getPassword()).equals(password)) {
-            return ResponseEntity.status(400).body(new ResponseMessage("Senha incorreta."));
+            return ResponseEntity.status(400).body(new ResponseMessage<>("Senha incorreta."));
         }
 
         if (userFound.getAthlete() != null) {
@@ -216,7 +217,7 @@ public class UserService {
 
         repo.delete(userFound);
 
-        return ResponseEntity.status(200).body(new ResponseMessage("Usuário deletado."));
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Usuário deletado."));
     }
 
     public List<String> checkAllUserCredencials(UserDTO dto) {

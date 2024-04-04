@@ -15,7 +15,6 @@ import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.repository.AthleteRepository;
 import com.user.user.repository.InjuryRepository;
 
-@SuppressWarnings("rawtypes")
 @Service
 public class InjuryService {
     private final InjuryRepository repo;
@@ -26,7 +25,7 @@ public class InjuryService {
         this.athleteRepo = athleteRepo;
     }
 
-    public ResponseEntity<ResponseMessage> register(InjuryDTO dto) {
+    public ResponseEntity<ResponseMessage<Injury>> register(InjuryDTO dto) {
         Injury newInjury = new Injury();
 
         BeanUtils.copyProperties(dto, newInjury);
@@ -34,43 +33,44 @@ public class InjuryService {
         try {
             repo.save(newInjury);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ResponseMessage(e.getMessage()));
+            return ResponseEntity.status(500).body(new ResponseMessage<>(e.getMessage()));
         }
 
         return ResponseEntity.status(200).body(new ResponseMessage<Injury>(newInjury));
     }
 
-    public ResponseEntity<ResponseMessage> getByAthleteId(UUID athleteId) {
-        Athlete athleteFound = athleteRepo.findById(athleteId).orElseThrow(() -> new ResourceNotFoundException("Atleta", athleteId));
+    public ResponseEntity<ResponseMessage<List<Injury>>> getByAthleteId(UUID athleteId) {
+        Athlete athleteFound = athleteRepo.findById(athleteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Atleta", athleteId));
 
         List<Injury> injuriesFound = repo.findAllByAthlete(athleteFound);
 
         if (injuriesFound.isEmpty())
-            return ResponseEntity.status(204).body(new ResponseMessage("Atleta sem registros de lesões"));
+            return ResponseEntity.status(204).body(new ResponseMessage<>("Atleta sem registros de lesões"));
 
         return ResponseEntity.status(200).body(new ResponseMessage<List<Injury>>(injuriesFound));
     }
 
-    public ResponseEntity<ResponseMessage> putInjury(UUID id, InjuryDTO dto) {
+    public ResponseEntity<ResponseMessage<?>> putInjury(UUID id, InjuryDTO dto) {
         Injury injuryFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Lesão", id));
 
         BeanUtils.copyProperties(dto, injuryFound);
 
         repo.save(injuryFound);
 
-        return ResponseEntity.status(200).body(new ResponseMessage("Lesão atualizada"));
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Lesão atualizada"));
     }
 
-    public ResponseEntity<ResponseMessage> deleteInjury(UUID id) {
+    public ResponseEntity<ResponseMessage<?>> deleteInjury(UUID id) {
         Injury injuryFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Lesão", id));
 
         try {
             repo.delete(injuryFound);
         } catch (Exception e) {
             return ResponseEntity.status(500)
-                    .body(new ResponseMessage("Erro ao deletar registro de lesão", e.getMessage()));
+                    .body(new ResponseMessage<>("Erro ao deletar registro de lesão", e.getMessage()));
         }
         return ResponseEntity.status(200)
-                .body(new ResponseMessage("Registro de lesão deletado"));
+                .body(new ResponseMessage<>("Registro de lesão deletado"));
     }
 }

@@ -17,7 +17,6 @@ import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.repository.AthleteRepository;
 import com.user.user.repository.TeamRepository;
 
-@SuppressWarnings("rawtypes")
 @Service
 public class AthleteService extends PersonaService implements _persona<AthleteDTO> {
     private final AthleteRepository repo;
@@ -29,7 +28,7 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
         this.teamRepo = teamRepo;
     }
 
-    public ResponseEntity<ResponseMessage> register(AthleteDTO dto, User user) {
+    public ResponseEntity<ResponseMessage<UUID>> register(AthleteDTO dto, User user) {
         Athlete newAthlete = new Athlete();
 
         BeanUtils.copyProperties(dto, newAthlete);
@@ -49,14 +48,14 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
                 .body(new ResponseMessage<UUID>("Cadastro realizado", newAthlete.getId()));
     }
 
-    public ResponseEntity<ResponseMessage> removeUserFromAthlete(UUID id) {
+    public ResponseEntity<ResponseMessage<?>> removeUserFromAthlete(UUID id) {
         Athlete athleteFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Atleta", id));
 
         athleteFound.setUser(null);
 
         repo.save(athleteFound);
 
-        return ResponseEntity.ok(new ResponseMessage("Usuário desvinculado de atleta"));
+        return ResponseEntity.ok(new ResponseMessage<>("Usuário desvinculado de atleta"));
     }
 
     public ResponseEntity<Athlete> getAthleteForMs(UUID id) {
@@ -66,7 +65,7 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
     }
 
     @Override
-    public ResponseEntity<ResponseMessage> putPersona(UUID id, AthleteDTO dto) {
+    public ResponseEntity<ResponseMessage<?>> putPersona(UUID id, AthleteDTO dto) {
         Athlete athleteFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Atleta", id));
 
         BeanUtils.copyProperties(dto, athleteFound);
@@ -75,13 +74,13 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
             repo.save(athleteFound);
         } catch (Exception e) {
             return ResponseEntity.status(500)
-                    .body(new ResponseMessage("Erro ao atualizar atleta.", e.getMessage()));
+                    .body(new ResponseMessage<>("Erro ao atualizar atleta.", e.getMessage()));
         }
 
-        return ResponseEntity.ok(new ResponseMessage("Atleta atualizado com sucesso"));
+        return ResponseEntity.ok(new ResponseMessage<>("Atleta atualizado com sucesso"));
     }
 
-    public ResponseEntity<ResponseMessage> registerAthleteToTeam(UUID id, Team team) {
+    public ResponseEntity<ResponseMessage<?>> registerAthleteToTeam(UUID id, Team team) {
         System.out.println(team.getId());
         Team teamFound = teamRepo.findById(team.getId()).orElseThrow(() -> new ResourceNotFoundException("Time", id));
 
@@ -92,7 +91,7 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
 
         repo.save(athleteFound);
 
-        return ResponseEntity.status(200).body(new ResponseMessage(
+        return ResponseEntity.status(200).body(new ResponseMessage<>(
                 "Atleta " + athleteFound.getLastName() + " cadastrado no time"));
     }
 

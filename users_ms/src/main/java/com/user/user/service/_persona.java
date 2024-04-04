@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 
 import com.user.user.domain.responseMessage.ResponseMessage;
 
-@SuppressWarnings("rawtypes")
 public interface _persona<T> {
-    ResponseEntity<ResponseMessage> putPersona(UUID id, T dto);
+    ResponseEntity<ResponseMessage<?>> putPersona(UUID id, T dto);
 }

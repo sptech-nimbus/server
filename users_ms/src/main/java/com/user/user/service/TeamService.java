@@ -27,7 +27,6 @@ import com.user.user.repository.TeamRepository;
 import com.user.user.util.CodeGenerator;
 import com.user.user.util.Sorts;
 
-@SuppressWarnings("rawtypes")
 @Service
 public class TeamService {
     private final TeamRepository repo;
@@ -43,7 +42,7 @@ public class TeamService {
         this.operationCodeRepo = operationCodeRepo;
     }
 
-    public ResponseEntity<ResponseMessage> register(TeamDTO dto) {
+    public ResponseEntity<ResponseMessage<Team>> register(TeamDTO dto) {
         List<String> fieldsErrors = checkFields(dto);
 
         if (!fieldsErrors.isEmpty()) {
@@ -63,11 +62,12 @@ public class TeamService {
         return ResponseEntity.ok(new ResponseMessage<Team>(newTeam));
     }
 
-    public ResponseEntity<ResponseMessage> getTeamById(UUID id) {
+    public ResponseEntity<ResponseMessage<Team>> getTeamById(UUID id) {
         return ResponseEntity.ok(new ResponseMessage<Team>(repo.findById(id).get()));
     }
 
-    public ResponseEntity<ResponseMessage> getActiveInjuriesOnTeam(UUID id, LocalDate nowDate) {
+    public ResponseEntity<ResponseMessage<List<InjuredAthleteDTO>>> getActiveInjuriesOnTeam(UUID id,
+            LocalDate nowDate) {
         Team team = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
 
         List<InjuredAthleteDTO> injuredAthletes = new ArrayList<>();
@@ -90,7 +90,7 @@ public class TeamService {
         return ResponseEntity.ok(new ResponseMessage<List<InjuredAthleteDTO>>(injuredAthletes));
     }
 
-    public ResponseEntity<ResponseMessage> putTeamById(UUID id, TeamDTO dto) {
+    public ResponseEntity<ResponseMessage<?>> putTeamById(UUID id, TeamDTO dto) {
         Team team = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
 
         BeanUtils.copyProperties(dto, team);
@@ -110,7 +110,7 @@ public class TeamService {
         return ResponseEntity.status(200).body(teamFound);
     }
 
-    public ResponseEntity<ResponseMessage> getAthletesByAgeAsc(UUID id) {
+    public ResponseEntity<ResponseMessage<List<Athlete>>> getAthletesByAgeAsc(UUID id) {
         Team teamFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
 
         List<Athlete> athletes = teamFound.getAthletes();
@@ -120,25 +120,25 @@ public class TeamService {
         return ResponseEntity.status(200).body(new ResponseMessage<List<Athlete>>(athletes));
     }
 
-    public ResponseEntity<ResponseMessage> changeTeamOwnerRequest(UUID id, ChangeTeamOwnerRequestDTO dto) {
+    public ResponseEntity<ResponseMessage<?>> changeTeamOwnerRequest(UUID id, ChangeTeamOwnerRequestDTO dto) {
         String code = CodeGenerator.codeGen(6, true);
 
         try {
             operationCodeRepo.save(new OperationCode("change-team-owner", code, dto.expirationDate(),
                     dto.mainUser(), dto.relatedUser()));
         } catch (Exception e) {
-            return ResponseEntity.status(409).body(new ResponseMessage("Erro ao enviar código", e.getMessage()));
+            return ResponseEntity.status(409).body(new ResponseMessage<>("Erro ao enviar código", e.getMessage()));
         }
 
-        return ResponseEntity.status(200).body(new ResponseMessage("Código de troca posse de time: " + code, code));
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Código de troca posse de time: " + code, code));
     }
 
-    public ResponseEntity<ResponseMessage> changeTeamOwnerAccept(UUID id, ChangeTeamOwnerAcceptDTO dto) {
+    public ResponseEntity<ResponseMessage<?>> changeTeamOwnerAccept(UUID id, ChangeTeamOwnerAcceptDTO dto) {
         OperationCode operationCodeFound = operationCodeRepo.findByCode(dto.code())
                 .orElseThrow(() -> new ResourceNotFoundException("Código", null));
 
         if (dto.date().isAfter(operationCodeFound.getExpirationDate())) {
-            return ResponseEntity.status(401).body(new ResponseMessage("Código expirado"));
+            return ResponseEntity.status(401).body(new ResponseMessage<>("Código expirado"));
         }
 
         Team teamFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
@@ -151,22 +151,22 @@ public class TeamService {
 
         repo.save(teamFound);
 
-        return ResponseEntity.status(200).body(new ResponseMessage(
+        return ResponseEntity.status(200).body(new ResponseMessage<>(
                 "Posse do time " + teamFound.getName() + " passado para o treinador " + coachFound.getLastName()));
     }
 
-    public ResponseEntity<ResponseMessage> deleteTeam(UUID id, String coachPassword) {
+    public ResponseEntity<ResponseMessage<?>> deleteTeam(UUID id, String coachPassword) {
         Team teamFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
 
         if (!teamFound.getCoach().getUser().getPassword().equals(coachPassword)) {
-            return ResponseEntity.status(401).body(new ResponseMessage("Senha incorreta"));
+            return ResponseEntity.status(401).body(new ResponseMessage<>("Senha incorreta"));
         }
 
         athleteRepo.findByTeamId(id).stream().forEach(athlete -> athlete.setTeam(null));
 
         repo.delete(teamFound);
 
-        return ResponseEntity.status(200).body(new ResponseMessage("Time excluído com sucesso"));
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Time excluído com sucesso"));
     }
 
     public List<String> checkFields(TeamDTO dto) {
@@ -187,7 +187,7 @@ public class TeamService {
         return errors;
     }
 
-    public ResponseEntity<ResponseMessage> getAllTeams() {
+    public ResponseEntity<ResponseMessage<List<Team>>> getAllTeams() {
         return ResponseEntity.status(200).body(new ResponseMessage<List<Team>>(repo.findAll()));
     }
 }

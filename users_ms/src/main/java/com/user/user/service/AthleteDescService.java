@@ -13,7 +13,6 @@ import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.repository.AthleteDescRepository;
 import com.user.user.repository.AthleteRepository;
 
-@SuppressWarnings("rawtypes")
 @Service
 public class AthleteDescService {
     private final AthleteDescRepository repo;
@@ -25,7 +24,7 @@ public class AthleteDescService {
         this.athleteRepo = athleteRepo;
     }
 
-    public ResponseEntity<ResponseMessage> register(AthleteDescDTO dto) {
+    public ResponseEntity<ResponseMessage<AthleteDesc>> register(AthleteDescDTO dto) {
         athleteRepo.findById(dto.athlete().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Atleta", dto.athlete().getId()));
 
@@ -38,14 +37,14 @@ public class AthleteDescService {
         return ResponseEntity.status(200).body(new ResponseMessage<AthleteDesc>(newAthleteDesc));
     }
 
-    public ResponseEntity<ResponseMessage> getAthleteDescsByAthleteId(UUID athleteId) {
+    public ResponseEntity<ResponseMessage<AthleteDesc>> getAthleteDescsByAthleteId(UUID athleteId) {
         AthleteDesc athleteDesc = repo.findByAthleteId(athleteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Informações de atleta", athleteId));
 
         return ResponseEntity.status(200).body(new ResponseMessage<AthleteDesc>(athleteDesc));
     }
 
-    public ResponseEntity<ResponseMessage> putAthleteDescByAthleteId(UUID athleteId, AthleteDescDTO dto) {
+    public ResponseEntity<ResponseMessage<?>> putAthleteDescByAthleteId(UUID athleteId, AthleteDescDTO dto) {
         AthleteDesc athleteDesc = repo.findByAthleteId(athleteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Informações de atleta", athleteId));
 
@@ -53,6 +52,6 @@ public class AthleteDescService {
 
         repo.save(athleteDesc);
 
-        return ResponseEntity.status(200).body(new ResponseMessage("Informações de atleta atualizadas"));
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Informações de atleta atualizadas"));
     }
 }
