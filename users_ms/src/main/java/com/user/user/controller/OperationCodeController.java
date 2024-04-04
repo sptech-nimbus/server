@@ -16,7 +16,6 @@ import com.user.user.service.OperationCodeService;
 
 @RestController
 @RequestMapping("codes")
-@SuppressWarnings("rawtypes")
 public class OperationCodeController {
     private final OperationCodeService service;
 
@@ -25,11 +24,12 @@ public class OperationCodeController {
     }
 
     @GetMapping("validate-code")
-    public ResponseEntity<ResponseMessage> validateCode(@RequestParam String code, @RequestParam LocalDateTime date) {
+    public ResponseEntity<ResponseMessage<?>> validateCode(@RequestParam String code,
+            @RequestParam LocalDateTime date) {
         try {
             return service.getCode(code, date);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(401).body(new ResponseMessage("Código não encontrado"));
+            return ResponseEntity.status(401).body(new ResponseMessage<>("Código não encontrado"));
         }
     }
 }

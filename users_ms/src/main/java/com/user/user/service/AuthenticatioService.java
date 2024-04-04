@@ -11,18 +11,12 @@ import com.user.user.domain.user.User;
 import com.user.user.domain.user.authentication.dto.UserDetailsDTO;
 import com.user.user.repository.UserRepository;
 
-
-
 @Service
-public class AuthenticatioService implements UserDetailsService{
-
-    private final UserService userService;
+public class AuthenticatioService implements UserDetailsService {
     private final UserRepository userRepository;
 
-
     public AuthenticatioService(UserService userService, UserRepository userRepository) {
-        this.userService = userService;
-         this.userRepository = userRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -30,19 +24,10 @@ public class AuthenticatioService implements UserDetailsService{
         Optional<User> userOpt = userRepository.findByEmail(username);
 
         if (userOpt.isEmpty()) {
-            throw new UsernameNotFoundException(String.format("Usuário: %s não encontrado" ,username));
+            throw new UsernameNotFoundException(String.format("Usuário: %s não encontrado", username));
         }
 
         return new UserDetailsDTO(userOpt.get());
     }
 
-
-    
-
-
-    
-
-
-    
-    
 }

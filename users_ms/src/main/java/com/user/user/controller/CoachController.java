@@ -16,7 +16,6 @@ import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.service.CoachService;
 
-@SuppressWarnings("rawtypes")
 @RestController
 @RequestMapping("coaches")
 public class CoachController {
@@ -38,11 +37,11 @@ public class CoachController {
 
     // PUT
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseMessage> putCoach(@PathVariable UUID id, @RequestBody CoachDTO dto) {
+    public ResponseEntity<ResponseMessage<?>> putCoach(@PathVariable UUID id, @RequestBody CoachDTO dto) {
         try {
             return service.putPersona(id, dto);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage(e.getMessage()));
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
     }
 }

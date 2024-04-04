@@ -14,7 +14,6 @@ import com.user.user.domain.user.User;
 import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.repository.CoachRepository;
 
-@SuppressWarnings("rawtypes")
 @Service
 public class CoachService extends PersonaService implements _persona<CoachDTO> {
     private final CoachRepository repo;
@@ -24,7 +23,7 @@ public class CoachService extends PersonaService implements _persona<CoachDTO> {
         this.repo = repo;
     }
 
-    public ResponseEntity<ResponseMessage> register(CoachDTO dto, User user) {
+    public ResponseEntity<ResponseMessage<UUID>> register(CoachDTO dto, User user) {
         Coach newCoach = new Coach();
 
         BeanUtils.copyProperties(dto, newCoach);
@@ -33,7 +32,7 @@ public class CoachService extends PersonaService implements _persona<CoachDTO> {
 
         if (!checkPersonaCredencials(newCoach)) {
             return ResponseEntity.status(400)
-                    .body(new ResponseMessage("Verifique suas credenciais de treinador"));
+                    .body(new ResponseMessage<>("Verifique suas credenciais de treinador"));
         }
 
         repo.save(newCoach);
@@ -43,14 +42,14 @@ public class CoachService extends PersonaService implements _persona<CoachDTO> {
                 .body(new ResponseMessage<UUID>("Cadastro realizado", newCoach.getId()));
     }
 
-    public ResponseEntity<ResponseMessage> removeUserFromCoach(UUID id) {
+    public ResponseEntity<ResponseMessage<?>> removeUserFromCoach(UUID id) {
         Coach coachFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Treinador", id));
 
         coachFound.setUser(null);
 
         repo.save(coachFound);
 
-        return ResponseEntity.status(200).body(new ResponseMessage("Usuário desvinculado de Treinador"));
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Usuário desvinculado de Treinador"));
     }
 
     public ResponseEntity<sCoachDTO> getCoachById(UUID id) {
@@ -60,7 +59,7 @@ public class CoachService extends PersonaService implements _persona<CoachDTO> {
     }
 
     @Override
-    public ResponseEntity<ResponseMessage> putPersona(UUID id, CoachDTO dto) {
+    public ResponseEntity<ResponseMessage<?>> putPersona(UUID id, CoachDTO dto) {
         Coach coachFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Treinador", id));
 
         BeanUtils.copyProperties(dto, coachFound);
@@ -69,9 +68,9 @@ public class CoachService extends PersonaService implements _persona<CoachDTO> {
             repo.save(coachFound);
         } catch (Exception e) {
             return ResponseEntity.status(500)
-                    .body(new ResponseMessage("Erro ao atualizar treinador.", e.getMessage()));
+                    .body(new ResponseMessage<>("Erro ao atualizar treinador.", e.getMessage()));
         }
 
-        return ResponseEntity.status(200).body(new ResponseMessage("Treinador atualizado com sucesso"));
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Treinador atualizado com sucesso"));
     }
 }
