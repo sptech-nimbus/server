@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.user.user.domain.persona.ChatUserDTO;
 import com.user.user.domain.persona.Persona;
 import com.user.user.domain.responseMessage.ResponseMessage;
+import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.repository.AthleteRepository;
 import com.user.user.repository.CoachRepository;
 
@@ -40,21 +41,18 @@ public class PersonaService {
         return ResponseEntity.ok(new ResponseMessage<Persona>(personaFound));
     }
 
-    public ResponseEntity<ResponseMessage<ChatUserDTO>> getChatUserByUserId(UUID id) {
-        Persona personaFound = athleteRepo.findAthleteByUserId(id).get();
+    public ResponseEntity<ChatUserDTO> getChatUserByUserId(UUID id) throws ResourceNotFoundException {
+        Persona personaFound = athleteRepo.findAthleteByUserId(id).get() != null
+                ? athleteRepo.findAthleteByUserId(id).get()
+                : coachRepo.findCoachByUserId(id).get();
 
         if (personaFound == null) {
-            personaFound = coachRepo.findCoachByUserId(id).get();
-        }
-
-        if (personaFound == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ResponseMessage<>("Informações de usuário não encontradas"));
+            throw new ResourceNotFoundException("Informações de atleta", id);
         }
 
         ChatUserDTO chatUser = new ChatUserDTO(personaFound);
 
-        return ResponseEntity.ok(new ResponseMessage<ChatUserDTO>(chatUser));
+        return ResponseEntity.status(200).body(chatUser);
     }
 
     public Boolean checkPersonaCredencials(Persona persona) {

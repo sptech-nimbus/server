@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.user.user.config.security.jwt.GerenciadorTokenJwt;
 import com.user.user.domain.email.EmailDTO;
 import com.user.user.domain.operationCodes.OperationCode;
 import com.user.user.domain.persona.Persona;
@@ -26,7 +27,6 @@ import com.user.user.domain.user.UserDTO;
 import com.user.user.domain.user.authentication.dto.UserTokenDTO;
 import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.repository.UserRepository;
-import com.user.user.security.jwt.GerenciadorTokenJwt;
 import com.user.user.util.CodeGenerator;
 
 @Service

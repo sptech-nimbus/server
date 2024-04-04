@@ -1,4 +1,4 @@
-package com.user.user.security.jwt;
+package com.user.user.config.security.jwt;
 
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;

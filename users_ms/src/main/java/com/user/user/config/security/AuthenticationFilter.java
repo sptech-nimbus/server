@@ -1,4 +1,4 @@
-package com.user.user.security;
+package com.user.user.config.security;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.user.user.security.jwt.GerenciadorTokenJwt;
+import com.user.user.config.security.jwt.GerenciadorTokenJwt;
 import com.user.user.service.AuthenticationService;
 
 import io.jsonwebtoken.ExpiredJwtException;

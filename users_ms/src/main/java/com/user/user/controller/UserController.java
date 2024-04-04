@@ -3,7 +3,6 @@ package com.user.user.controller;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -38,13 +37,11 @@ public class UserController {
 
     // POST
     @PostMapping
-    @CrossOrigin
     public ResponseEntity<ResponseMessage<UUID>> registerUser(@RequestBody UserDTO dto) {
         return service.register(dto);
     }
 
     @PostMapping("login")
-    @CrossOrigin
     public ResponseEntity<ResponseMessage<UserTokenDTO>> login(@RequestBody UserDTO dto) {
         try {
             return service.login(dto);
@@ -64,19 +61,17 @@ public class UserController {
 
     // GET
     @GetMapping("/{id}")
-    @CrossOrigin
     public ResponseEntity<ResponseMessage<Persona>> getUserById(@PathVariable UUID id) {
         return personaService.getPersonaByUserId(id);
     }
 
     @GetMapping("/ms-get-chat-user/{id}")
-    public ResponseEntity<ResponseMessage<ChatUserDTO>> getChatUserByUserId(@PathVariable UUID id) {
+    public ResponseEntity<ChatUserDTO> getChatUserByUserId(@PathVariable UUID id) {
         return personaService.getChatUserByUserId(id);
     }
 
     // PATCH
     @PatchMapping("/change-password/{id}")
-    @CrossOrigin
     public ResponseEntity<ResponseMessage<?>> changePassword(@PathVariable UUID id,
             @RequestBody ChangePasswordDTO dto) {
         try {
@@ -88,7 +83,6 @@ public class UserController {
 
     // DELETE
     @DeleteMapping("/{id}")
-    @CrossOrigin
     public ResponseEntity<ResponseMessage<?>> deleteUser(@PathVariable UUID id, @RequestBody String password) {
         try {
             return service.deleteUser(id, password);

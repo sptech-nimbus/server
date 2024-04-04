@@ -1,4 +1,4 @@
-package com.user.user.security;
+package com.user.user.config.security;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import org.springframework.http.HttpHeaders;
 
-import com.user.user.security.jwt.GerenciadorTokenJwt;
+import com.user.user.config.security.jwt.GerenciadorTokenJwt;
 import com.user.user.service.AuthenticationService;
 
 @Configuration
