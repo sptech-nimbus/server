@@ -1,4 +1,4 @@
-package com.user.user.security;
+package com.user.user.config.security;
 
 import java.io.IOException;
 
