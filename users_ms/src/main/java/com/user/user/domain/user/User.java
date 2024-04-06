@@ -17,8 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "user")
-@Table(name = "user")
+@Entity(name = "app_user")
+@Table(name = "app_user")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,10 +29,10 @@ public class User {
     @Column(name = "user_id")
     private UUID id;
 
-    @Column(name = "email", nullable = false, columnDefinition = "VARCHAR(255) COLLATE utf8_bin", unique = true)
+    @Column(name = "email", nullable = false, length = 255, unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false, columnDefinition = "VARCHAR(255) COLLATE utf8_bin")
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
 
     @OneToOne(mappedBy = "user")
