@@ -3,6 +3,7 @@ package com.user.user.domain.athlete;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.user.user.domain.athleteHistoric.AthleteHistoric;
 import com.user.user.domain.injury.Injury;
 import com.user.user.domain.persona.Persona;
 import com.user.user.domain.team.Team;
@@ -48,6 +49,9 @@ public class Athlete extends Persona {
 
         @OneToMany(mappedBy = "athlete")
         private List<Injury> injuries;
+
+        @OneToMany(mappedBy = "athlete")
+        private List<AthleteHistoric> athleteHistorics;
 
         @Override
         public String toString() {
