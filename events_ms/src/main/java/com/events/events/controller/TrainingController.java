@@ -35,10 +35,16 @@ public class TrainingController {
         return service.register(dto);
     }
 
+    // GET
     @GetMapping("{teamId}")
     public ResponseEntity<ResponseMessage<Page<Training>>> getTrainingsPageByTeamId(@PathVariable UUID teamId,
             @RequestParam Integer page, @RequestParam Integer elements) {
         return service.getTrainingsPageByTeamId(teamId, page, elements);
+    }
+
+    @GetMapping("ms-get-by-id/{id}")
+    public Training msGetTrainingById(@PathVariable UUID id) {
+        return service.msGetTrainingById(id);
     }
 
     // PUT

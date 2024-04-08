@@ -1,4 +1,4 @@
-package com.events.events.controller;
+package com.user.user.controller;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.events.events.domain.athleteHistoric.AthleteHistoric;
-import com.events.events.domain.athleteHistoric.AthleteHistoricDTO;
-import com.events.events.domain.responseMessage.ResponseMessage;
-import com.events.events.exception.ResourceNotFoundException;
-import com.events.events.service.AthleteHistoricService;
+import com.user.user.domain.athleteHistoric.AthleteHistoric;
+import com.user.user.domain.athleteHistoric.AthleteHistoricDTO;
+import com.user.user.domain.responseMessage.ResponseMessage;
+import com.user.user.exception.ResourceNotFoundException;
+import com.user.user.service.AthleteHistoricService;
 
 @RestController
 @RequestMapping("athlete-historics")
@@ -33,7 +33,11 @@ public class AthleteHistoricController {
     // POST
     @PostMapping
     public ResponseEntity<ResponseMessage<AthleteHistoric>> postAthleteHistoric(@RequestBody AthleteHistoricDTO dto) {
-        return service.register(dto);
+        try {
+            return service.register(dto);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
+        }
     }
 
     // GET

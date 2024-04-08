@@ -42,6 +42,11 @@ public class GameController {
         return service.getGamesFromTeamId(teamId);
     }
 
+    @GetMapping("ms-get-by-id/{id}")
+    public Game msGetGameById(@PathVariable UUID id) {
+        return service.msGetGameById(id);
+    }
+
     // PATCH
     @PatchMapping("confirm-game/{id}")
     public ResponseEntity<ResponseMessage<Game>> confirmGame(@PathVariable UUID id, @RequestBody Coach coach) {

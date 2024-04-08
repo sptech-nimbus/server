@@ -129,4 +129,8 @@ public class GameService {
 
         return ResponseEntity.status(200).body(new ResponseMessage<Game>("Jogo cancelado"));
     }
+
+    public Game msGetGameById(UUID id) throws ResourceNotFoundException {
+        return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Jogo", id));
+    }
 }

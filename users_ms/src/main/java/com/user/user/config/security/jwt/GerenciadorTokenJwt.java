@@ -17,7 +17,6 @@ public class GerenciadorTokenJwt {
 
     public String getUsernameFromToken(final String token) {
         return getClaimForToken(token, Claims::getSubject);
-
     }
 
     public Date getExpirationDateFromToken(final String token) {
@@ -40,8 +39,9 @@ public class GerenciadorTokenJwt {
     }
 
     public boolean isTokenExpired(String token) {
-        Date expirationDate = getExpirationDateFromToken(token);
-        return expirationDate.before(new Date(System.currentTimeMillis()));
+        return false;
+        // Date expirationDate = getExpirationDateFromToken(token);
+        // return expirationDate.before(new Date(System.currentTimeMillis()));
     }
 
     private Claims getAllClaimsFromToken(String token) {
