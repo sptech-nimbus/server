@@ -50,6 +50,7 @@ public class Athlete extends Persona {
         @OneToMany(mappedBy = "athlete")
         private List<Injury> injuries;
 
+        @JsonIgnore
         @OneToMany(mappedBy = "athlete")
         private List<AthleteHistoric> athleteHistorics;
 

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.events.events.domain.graphs.PointsDivisionDTO;
 import com.events.events.domain.graphs.ThreePointsConvertedDTO;
 import com.events.events.domain.graphs.WinsFromTeamDTO;
 import com.events.events.domain.responseMessage.ResponseMessage;
@@ -35,5 +36,11 @@ public class GraphController {
     public ResponseEntity<ResponseMessage<List<ThreePointsConvertedDTO>>> getThreePointsConverteAndAttempeddByTeam(
             @PathVariable UUID teamId, @RequestParam Integer matches) {
         return service.getThreePointsConverteAndAttempeddByTeam(teamId, matches);
+    }
+
+    @GetMapping("points-division-by-team-matches/{teamId}")
+    public ResponseEntity<ResponseMessage<PointsDivisionDTO>> getPointsDivisionByTeamMatches(@PathVariable UUID teamId,
+            @RequestParam Integer matches) {
+        return service.getPointsDivisionByTeamMatches(teamId, matches);
     }
 }
