@@ -59,11 +59,6 @@ public class UserService {
 
     public ResponseEntity<ResponseMessage<UUID>> register(UserDTO dto, MultipartFile picture) {
         List<String> credencialsErrors = checkAllUserCredencials(dto);
-        try {
-            blobService.uploadImage(picture);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ResponseMessage<>(e.getMessage()));
-        }
 
         if (!credencialsErrors.isEmpty()) {
             return ResponseEntity.status(400)
@@ -105,6 +100,12 @@ public class UserService {
         } else {
             return ResponseEntity.status(400)
                     .body(new ResponseMessage<>("Tipo de usuário não permitido ou não informado."));
+        }
+
+        try {
+            blobService.uploadImage(picture);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ResponseMessage<>(e.getMessage()));
         }
 
         return ResponseEntity
