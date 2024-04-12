@@ -25,15 +25,12 @@ import lombok.Setter;
 public class GraphService {
     private final GameResultRepository gameResultRepo;
     private final GameRepository gameRepo;
-    private final RestTemplateService<AthleteHistoric> athleteHistoricService;
     private final RestTemplateService<AthleteHistoricList> athleteHistoricListService;
 
     public GraphService(GameResultRepository gameResultRepo, GameRepository gameRepo,
-            RestTemplateService<AthleteHistoric> athleteHistoricService,
             RestTemplateService<AthleteHistoricList> athleteHistoricListService) {
         this.gameResultRepo = gameResultRepo;
         this.gameRepo = gameRepo;
-        this.athleteHistoricService = athleteHistoricService;
         this.athleteHistoricListService = athleteHistoricListService;
     }
 
