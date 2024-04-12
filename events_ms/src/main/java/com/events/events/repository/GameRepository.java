@@ -13,4 +13,7 @@ public interface GameRepository extends JpaRepository<Game, UUID> {
 
     @Query(value = "select g.* from game g where challenger_id = ?1 or challenged_id = ?1 limit ?2", nativeQuery = true)
     List<Game> findGamesByChallengerChallengedWithTop(UUID teamId, Integer matches);
+
+    @Query(value = "select g.* from game g where g.challenger_id = ?1 or challenged_id = ?1 order by g.final_date_time desc limit ?2", nativeQuery = true)
+    List<Game> findTopGames(UUID teamId, Integer top);
 }

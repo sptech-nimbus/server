@@ -54,6 +54,12 @@ public class AthleteHistoricController {
         return service.getAthleteHistoricsPageByAthleteId(athleteId, page, elements);
     }
 
+    @GetMapping("ms-by-games/{teamId}")
+    public ResponseEntity<List<AthleteHistoric>> msGetByGameIdList(
+            @PathVariable UUID teamId, @RequestParam(value = "gamesIdList") List<UUID> gamesIdList) {
+        return service.msGetByGameIdList(teamId, gamesIdList);
+    }
+
     // PUT
     @PutMapping("{id}")
     public ResponseEntity<ResponseMessage<AthleteHistoric>> putAthleteHistoric(@PathVariable UUID id,

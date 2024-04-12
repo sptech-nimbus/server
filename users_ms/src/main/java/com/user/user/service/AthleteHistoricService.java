@@ -43,11 +43,13 @@ public class AthleteHistoricService {
 
         try {
             if (dto.game() != null) {
-                Game gameFound = gameService.getTemplateById("3002", "/games/ms-get-by-id", dto.game().getId(), Game.class);
+                Game gameFound = gameService.getTemplateById("3002", "/games/ms-get-by-id", dto.game().getId(),
+                        Game.class);
 
                 newAthleteHistoric.setGameId(gameFound.getId());
             } else if (dto.training() != null) {
-                Training trainingFound = trainingService.getTemplateById("3002", "/trainings/ms-get-by-id", dto.training().getId(),
+                Training trainingFound = trainingService.getTemplateById("3002", "/trainings/ms-get-by-id",
+                        dto.training().getId(),
                         Training.class);
 
                 newAthleteHistoric.setTrainingId(trainingFound.getId());
@@ -115,5 +117,11 @@ public class AthleteHistoricService {
         repo.delete(athleteHistoricFound);
 
         return ResponseEntity.status(200).body(new ResponseMessage<>("Histórico de atleta deletado"));
+    }
+
+    public ResponseEntity<List<AthleteHistoric>> msGetByGameIdList(UUID teamId, List<UUID> gamesIdList) {
+        List<AthleteHistoric> athleteHistoricsFound = repo.findByAthleteTeamIdAndGameIdIn(teamId, gamesIdList);
+  
+        return ResponseEntity.status(200).body(athleteHistoricsFound);
     }
 }

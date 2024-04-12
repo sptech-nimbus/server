@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.user.user.config.security.jwt.GerenciadorTokenJwt;
 import com.user.user.domain.email.EmailDTO;
@@ -39,10 +40,12 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final GerenciadorTokenJwt gerenciadorTokenJwt;
     private final AuthenticationManager authenticationManager;
+    private final AzureBlobService blobService;
 
     public UserService(UserRepository repo, CoachService coachService, AthleteService athleteService,
             EmailService emailService, OperationCodeService operationCodeService, PasswordEncoder encoder,
-            GerenciadorTokenJwt gerenciadorTokenJwt, AuthenticationManager authenticationManager) {
+            GerenciadorTokenJwt gerenciadorTokenJwt, AuthenticationManager authenticationManager,
+            AzureBlobService blobService) {
         this.repo = repo;
         this.coachService = coachService;
         this.athleteService = athleteService;
@@ -51,10 +54,16 @@ public class UserService {
         this.encoder = encoder;
         this.gerenciadorTokenJwt = gerenciadorTokenJwt;
         this.authenticationManager = authenticationManager;
+        this.blobService = blobService;
     }
 
-    public ResponseEntity<ResponseMessage<UUID>> register(UserDTO dto) {
+    public ResponseEntity<ResponseMessage<UUID>> register(UserDTO dto, MultipartFile picture) {
         List<String> credencialsErrors = checkAllUserCredencials(dto);
+        try {
+            blobService.uploadImage(picture);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ResponseMessage<>(e.getMessage()));
+        }
 
         if (!credencialsErrors.isEmpty()) {
             return ResponseEntity.status(400)
