@@ -23,12 +23,13 @@ public class CoachService extends PersonaService implements _persona<CoachDTO> {
         this.repo = repo;
     }
 
-    public ResponseEntity<ResponseMessage<UUID>> register(CoachDTO dto, User user) {
+    public ResponseEntity<ResponseMessage<UUID>> register(CoachDTO dto, User user, String picturePath) {
         Coach newCoach = new Coach();
 
         BeanUtils.copyProperties(dto, newCoach);
 
         newCoach.setUser(user);
+        newCoach.setPicture(picturePath);
 
         if (!checkPersonaCredencials(newCoach)) {
             return ResponseEntity.status(400)

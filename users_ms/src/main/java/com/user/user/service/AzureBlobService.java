@@ -11,6 +11,7 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.user.user.util.CodeGenerator;
 
 @Service
 public class AzureBlobService {
@@ -21,7 +22,7 @@ public class AzureBlobService {
     String containerName;
 
     @Async
-    public void uploadImage(MultipartFile file) throws IOException {
+    public String uploadImage(MultipartFile file) throws IOException {
         try {
             BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
                     .connectionString(this.connectionString)
@@ -29,9 +30,12 @@ public class AzureBlobService {
 
             BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
 
-            BlobClient blobClient = containerClient.getBlobClient(file.getOriginalFilename());
+            BlobClient blobClient = containerClient
+                    .getBlobClient(CodeGenerator.codeGen(12, true) + file.getOriginalFilename());
 
-            blobClient.upload(file.getInputStream(), file.getSize(), true);
+            blobClient.upload(file.getInputStream(), file.getSize());
+
+            return blobClient.getBlobUrl();
         } catch (IOException e) {
             throw e;
         }

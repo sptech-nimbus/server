@@ -58,6 +58,14 @@ public class UserService {
     }
 
     public ResponseEntity<ResponseMessage<UUID>> register(UserDTO dto, MultipartFile picture) {
+        String picturePath;
+
+        try {
+            picturePath = blobService.uploadImage(picture);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ResponseMessage<>(e.getMessage()));
+        }
+
         List<String> credencialsErrors = checkAllUserCredencials(dto);
 
         if (!credencialsErrors.isEmpty()) {
@@ -81,7 +89,7 @@ public class UserService {
         repo.save(newUser);
 
         if (dto.coach() != null) {
-            ResponseEntity<ResponseMessage<UUID>> coachResponseEntity = coachService.register(dto.coach(), newUser);
+            ResponseEntity<ResponseMessage<UUID>> coachResponseEntity = coachService.register(dto.coach(), newUser, picturePath);
 
             if (!coachResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
                 repo.delete(newUser);
@@ -90,7 +98,7 @@ public class UserService {
             }
         } else if (dto.athlete() != null) {
             ResponseEntity<ResponseMessage<UUID>> athleteResponseEntity = athleteService.register(dto.athlete(),
-                    newUser);
+                    newUser, picturePath);
 
             if (!athleteResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
                 repo.delete(newUser);
@@ -100,12 +108,6 @@ public class UserService {
         } else {
             return ResponseEntity.status(400)
                     .body(new ResponseMessage<>("Tipo de usuário não permitido ou não informado."));
-        }
-
-        try {
-            blobService.uploadImage(picture);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ResponseMessage<>(e.getMessage()));
         }
 
         return ResponseEntity

@@ -28,12 +28,13 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
         this.teamRepo = teamRepo;
     }
 
-    public ResponseEntity<ResponseMessage<UUID>> register(AthleteDTO dto, User user) {
+    public ResponseEntity<ResponseMessage<UUID>> register(AthleteDTO dto, User user, String picturePath) {
         Athlete newAthlete = new Athlete();
 
         BeanUtils.copyProperties(dto, newAthlete);
 
         newAthlete.setUser(user);
+        newAthlete.setPicture(picturePath);
 
         if (!checkPersonaCredencials(newAthlete)
                 || !checkAthleteCredentials(dto.category(), dto.isStarting()).isEmpty()) {
