@@ -27,7 +27,7 @@ import com.user.user.service.PersonaService;
 import com.user.user.service.UserService;
 
 @RestController
-@RequestMapping(path = "users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+@RequestMapping(path = "users", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, "application/json" })
 public class UserController {
     private final UserService service;
 
@@ -41,7 +41,7 @@ public class UserController {
     // POST
     @PostMapping
     public ResponseEntity<ResponseMessage<UUID>> registerUser(@RequestPart UserDTO dto,
-            @RequestPart("picture") MultipartFile picture) {
+            @RequestPart(name = "picture", required = false) MultipartFile picture) {
         return service.register(dto, picture);
     }
 
