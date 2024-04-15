@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.user.user.domain.persona.ChatUserDTO;
 import com.user.user.domain.persona.Persona;
@@ -40,9 +38,8 @@ public class UserController {
 
     // POST
     @PostMapping
-    public ResponseEntity<ResponseMessage<UUID>> registerUser(@RequestPart UserDTO dto,
-            @RequestPart(name = "picture", required = false) MultipartFile picture) {
-        return service.register(dto, picture);
+    public ResponseEntity<ResponseMessage<UUID>> registerUser(@RequestBody UserDTO dto) {
+        return service.register(dto);
     }
 
     @PostMapping("login")

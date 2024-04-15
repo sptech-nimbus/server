@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.user.user.domain.athlete.Athlete;
 import com.user.user.domain.coach.Coach;
+import com.user.user.domain.persona.Pictured;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +27,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Team {
+public class Team extends Pictured {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "team_id")
@@ -50,6 +51,11 @@ public class Team {
 
     @OneToMany(mappedBy = "team")
     private List<Athlete> athletes;
+
+    @Override
+    public void setPicture(String picturePath) {
+        this.picture = picturePath;
+    }
 
     @Override
     public String toString() {
