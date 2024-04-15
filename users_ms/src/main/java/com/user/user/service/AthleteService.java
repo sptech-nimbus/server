@@ -43,9 +43,7 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
 
         repo.save(newAthlete);
 
-        return ResponseEntity
-                .status(200)
-                .body(new ResponseMessage<UUID>("Cadastro realizado", newAthlete.getId()));
+        return ResponseEntity.status(201).body(new ResponseMessage<UUID>("Cadastro realizado", newAthlete.getId()));
     }
 
     public ResponseEntity<ResponseMessage<?>> removeUserFromAthlete(UUID id) {
@@ -55,7 +53,7 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
 
         repo.save(athleteFound);
 
-        return ResponseEntity.ok(new ResponseMessage<>("Usuário desvinculado de atleta"));
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Usuário desvinculado de atleta"));
     }
 
     public ResponseEntity<Athlete> getAthleteForMs(UUID id) {
@@ -77,7 +75,7 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
                     .body(new ResponseMessage<>("Erro ao atualizar atleta.", e.getMessage()));
         }
 
-        return ResponseEntity.ok(new ResponseMessage<>("Atleta atualizado com sucesso"));
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Atleta atualizado com sucesso"));
     }
 
     public ResponseEntity<ResponseMessage<?>> registerAthleteToTeam(UUID id, Team team) {
@@ -91,8 +89,8 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
 
         repo.save(athleteFound);
 
-        return ResponseEntity.status(200).body(new ResponseMessage<>(
-                "Atleta " + athleteFound.getLastName() + " cadastrado no time"));
+        return ResponseEntity.status(200)
+                .body(new ResponseMessage<>("Atleta " + athleteFound.getLastName() + " cadastrado no time"));
     }
 
     public List<String> checkAthleteCredentials(String category, Boolean isStarting) {

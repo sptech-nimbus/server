@@ -79,14 +79,18 @@ public class UserService {
 
         NewUserDTO newUserDTO;
 
+        if (dto.coach() != null && dto.athlete() != null) {
+            return ResponseEntity.status(400).body(new ResponseMessage<>("Informe apenas um tipo de usuário"));
+        }
+
         if (dto.coach() != null) {
             ResponseEntity<ResponseMessage<UUID>> coachResponseEntity = coachService.register(dto.coach(), newUser);
 
-            if (!coachResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            if (!coachResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(201))) {
                 repo.delete(newUser);
 
-                return ResponseEntity.status(400).body(new ResponseMessage<>(
-                        coachResponseEntity.getBody().getClientMsg()));
+                return ResponseEntity.status(400)
+                        .body(new ResponseMessage<>(coachResponseEntity.getBody().getClientMsg()));
             }
 
             newUserDTO = new NewUserDTO(newUser.getId(), coachResponseEntity.getBody().getData());
@@ -94,7 +98,7 @@ public class UserService {
             ResponseEntity<ResponseMessage<UUID>> athleteResponseEntity = athleteService.register(dto.athlete(),
                     newUser);
 
-            if (!athleteResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            if (!athleteResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(201))) {
                 repo.delete(newUser);
 
                 return ResponseEntity.status(400).body(new ResponseMessage<>(
@@ -128,7 +132,6 @@ public class UserService {
         return ResponseEntity.status(200)
                 .body(new ResponseMessage<UserTokenDTO>("Login realizado.", userType,
                         new UserTokenDTO(userFound.getId(), token)));
-
     }
 
     public ResponseEntity<ResponseMessage<?>> changePasswordRequest(ChangePasswordRequestDTO dto) {
@@ -147,7 +150,6 @@ public class UserService {
         }
 
         try {
-
             String emailContent = "<style>\r\n" + //
                     "@import url('https://fonts.cdnfonts.com/css/catamaran');\r\n" + //
                     "</style>"

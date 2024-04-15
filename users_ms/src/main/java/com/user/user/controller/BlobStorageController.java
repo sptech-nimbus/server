@@ -38,6 +38,5 @@ public class BlobStorageController {
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
-
     }
 }
