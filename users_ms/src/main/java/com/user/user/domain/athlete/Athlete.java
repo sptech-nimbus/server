@@ -39,7 +39,7 @@ public class Athlete extends Persona {
         @Column(name = "category", nullable = false)
         private String category;
 
-        @Column(name = "is_starting", nullable = false, columnDefinition = "bit default 0")
+        @Column(name = "is_starting", nullable = false)
         private Boolean isStarting;
 
         @JsonIgnore

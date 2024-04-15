@@ -14,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.user.user.config.security.jwt.GerenciadorTokenJwt;
 import com.user.user.domain.email.EmailDTO;
@@ -40,12 +39,10 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final GerenciadorTokenJwt gerenciadorTokenJwt;
     private final AuthenticationManager authenticationManager;
-    private final AzureBlobService blobService;
 
     public UserService(UserRepository repo, CoachService coachService, AthleteService athleteService,
             EmailService emailService, OperationCodeService operationCodeService, PasswordEncoder encoder,
-            GerenciadorTokenJwt gerenciadorTokenJwt, AuthenticationManager authenticationManager,
-            AzureBlobService blobService) {
+            GerenciadorTokenJwt gerenciadorTokenJwt, AuthenticationManager authenticationManager) {
         this.repo = repo;
         this.coachService = coachService;
         this.athleteService = athleteService;
@@ -54,10 +51,9 @@ public class UserService {
         this.encoder = encoder;
         this.gerenciadorTokenJwt = gerenciadorTokenJwt;
         this.authenticationManager = authenticationManager;
-        this.blobService = blobService;
     }
 
-    public ResponseEntity<ResponseMessage<UUID>> register(UserDTO dto, MultipartFile picture) {
+    public ResponseEntity<ResponseMessage<UUID>> register(UserDTO dto) {
         List<String> credencialsErrors = checkAllUserCredencials(dto);
 
         if (!credencialsErrors.isEmpty()) {
@@ -100,12 +96,6 @@ public class UserService {
         } else {
             return ResponseEntity.status(400)
                     .body(new ResponseMessage<>("Tipo de usuário não permitido ou não informado."));
-        }
-
-        try {
-            blobService.uploadImage(picture);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ResponseMessage<>(e.getMessage()));
         }
 
         return ResponseEntity

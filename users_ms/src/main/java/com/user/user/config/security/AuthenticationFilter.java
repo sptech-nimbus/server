@@ -70,8 +70,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     private void addUsernameInContext(HttpServletRequest request, String username, String jwtToken) {
         UserDetails userDetails = authenticationService.loadUserByUsername(username);
-        if (jwtTokenManager.validateToken(jwtToken, userDetails)) {
 
+        if (jwtTokenManager.validateToken(jwtToken, userDetails)) {
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.getAuthorities());
 

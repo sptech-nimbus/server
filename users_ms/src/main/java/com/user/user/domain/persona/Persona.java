@@ -22,7 +22,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Persona {
+public class Persona extends Pictured {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -37,6 +37,11 @@ public class Persona {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
+
+    @Override
+    public void setPicture(String picturePath) {
+        this.picture = picturePath;
+    }
 
     @Override
     public String toString() {
