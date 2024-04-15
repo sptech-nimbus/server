@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.user.user.config.security.jwt.GerenciadorTokenJwt;
 import com.user.user.domain.email.EmailDTO;
 import com.user.user.domain.operationCodes.OperationCode;
+import com.user.user.domain.persona.NewUserDTO;
 import com.user.user.domain.persona.Persona;
 import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.domain.user.ChangePasswordDTO;
@@ -53,7 +54,7 @@ public class UserService {
         this.authenticationManager = authenticationManager;
     }
 
-    public ResponseEntity<ResponseMessage<UUID>> register(UserDTO dto) {
+    public ResponseEntity<ResponseMessage<NewUserDTO>> register(UserDTO dto) {
         List<String> credencialsErrors = checkAllUserCredencials(dto);
 
         if (!credencialsErrors.isEmpty()) {
@@ -76,14 +77,19 @@ public class UserService {
 
         repo.save(newUser);
 
+        NewUserDTO newUserDTO;
+
         if (dto.coach() != null) {
             ResponseEntity<ResponseMessage<UUID>> coachResponseEntity = coachService.register(dto.coach(), newUser);
 
             if (!coachResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
                 repo.delete(newUser);
 
-                return coachResponseEntity;
+                return ResponseEntity.status(400).body(new ResponseMessage<>(
+                        coachResponseEntity.getBody().getClientMsg()));
             }
+
+            newUserDTO = new NewUserDTO(newUser.getId(), coachResponseEntity.getBody().getData());
         } else if (dto.athlete() != null) {
             ResponseEntity<ResponseMessage<UUID>> athleteResponseEntity = athleteService.register(dto.athlete(),
                     newUser);
@@ -91,15 +97,17 @@ public class UserService {
             if (!athleteResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
                 repo.delete(newUser);
 
-                return athleteResponseEntity;
+                return ResponseEntity.status(400).body(new ResponseMessage<>(
+                        athleteResponseEntity.getBody().getClientMsg()));
             }
+
+            newUserDTO = new NewUserDTO(newUser.getId(), athleteResponseEntity.getBody().getData());
         } else {
             return ResponseEntity.status(400)
                     .body(new ResponseMessage<>("Tipo de usuário não permitido ou não informado."));
         }
 
-        return ResponseEntity
-                .status(200).body(new ResponseMessage<UUID>("Cadastro realizado", newUser.getId()));
+        return ResponseEntity.status(200).body(new ResponseMessage<NewUserDTO>(newUserDTO));
     }
 
     public ResponseEntity<ResponseMessage<UserTokenDTO>> login(UserDTO dto) {
