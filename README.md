@@ -15,7 +15,7 @@ Na **nimbus**, os usuários podem ser registrados como atletas ou treinadores, p
 
 #### Registrar usuário
 ```http
-  POST /users
+POST /users
 ```
 
 #### Realiza login
@@ -25,68 +25,68 @@ Na **nimbus**, os usuários podem ser registrados como atletas ou treinadores, p
 
 #### Requisição de mudança de senha
 ```http
-  POST /users/change-password-request
+POST /users/change-password-request
 ```
 
 #### Busca usuário por id
 ```http
-  GET /users/{id}
+GET /users/{id}
 ```
 
 #### Alterar senha
 ```http
-  PATCH /users/change-password/{id}
+PATCH /users/change-password/{id}
 ```
 
 #### Deletar registro de usuário
 ```http
-  DELETE /users/{id}
+DELETE /users/{id}
 ```
 
 ### AthleteController
 
 #### Alterar informações de atleta
 ```http
-  PUT /athletes
+PUT /athletes
 ```
 
 #### Registrar atleta em time
 ```http
-  PATCH /athletes/register-team/{id}
+PATCH /athletes/register-team/{id}
 ```
 
 ### AthleteDescController
 
 #### Registrar descrições de atleta
 ```http
-  POST /athlete-descs
+POST /athlete-descs
 ```
 
 #### Busca descrições de atleta
 ```http
-  GET /athlete-descs/{athleteId}
+GET /athlete-descs/{athleteId}
 ```
 
 #### Atualiza descrições de atleta
 ```http
-  PUT /athlete-descs/{athleteId}
+PUT /athlete-descs/{athleteId}
 ```
 
 ### AthleteHistoricController
 
 #### Registra histórico de atleta
 ```http
-  POST /athlete-historics
+POST /athlete-historics
 ```
 
 #### Busca históricos de atleta por id do atleta
 ```http
-  GET /athlete-historics/from-athlete/{athleteId}
+GET /athlete-historics/from-athlete/{athleteId}
 ```
 
 #### Busca históricos de atleta por id do atleta pageada
 ```http
-  GET /athlete-historics/page-from-athlete/{athleteId}
+GET /athlete-historics/page-from-athlete/{athleteId}
 ```
 Params: page & elements
 
@@ -99,7 +99,7 @@ DELETE /athlete-historics/{id}
 
 #### Alterar informações de terinador
 ```http
-  PUT /coaches
+PUT /coaches
 ```
 
 ### InjuryController
