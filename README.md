@@ -20,7 +20,7 @@ POST /users
 
 #### Realiza login
 ```http
-  POST /users/login
+POST /users/login
 ```
 
 #### Requisição de mudança de senha
