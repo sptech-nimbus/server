@@ -19,7 +19,6 @@ import com.chat.chat.repository.MessageRepository;
 @Service
 public class MessageService {
     private final MessageRepository repo;
-
     private final RestTemplate restTemplate;
 
     public MessageService(MessageRepository repo, RestTemplate restTemplate) {
@@ -36,7 +35,7 @@ public class MessageService {
         ChatUserDTO chatUser;
 
         try {
-            chatUser = restTemplate.getForEntity("http://localhost:3000/ms-get-chat-user/" + dto.userId(),
+            chatUser = restTemplate.getForEntity("http://localhost:3000/users/ms-get-chat-user/" + dto.userId(),
                     ChatUserDTO.class).getBody();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));

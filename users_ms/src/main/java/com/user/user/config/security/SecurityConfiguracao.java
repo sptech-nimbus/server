@@ -56,7 +56,10 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/actuator/*"),
             new AntPathRequestMatcher("/h2-console/**"),
-            new AntPathRequestMatcher("/error/**")
+            new AntPathRequestMatcher("/error/**"),
+            new AntPathRequestMatcher("/users/change-password-request"),
+            new AntPathRequestMatcher("/codes/validate-code"),
+            new AntPathRequestMatcher("/users/ms-get-chat-user/**"),
     };
 
     @Bean

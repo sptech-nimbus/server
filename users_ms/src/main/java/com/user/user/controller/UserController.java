@@ -26,7 +26,7 @@ import com.user.user.service.PersonaService;
 import com.user.user.service.UserService;
 
 @RestController
-@RequestMapping(path = "users", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE })
+@RequestMapping(path = "users", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.ALL_VALUE })
 public class UserController {
     private final UserService service;
 
