@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.user.user.config.security.jwt.GerenciadorTokenJwt;
 import com.user.user.domain.email.EmailDTO;
 import com.user.user.domain.operationCodes.OperationCode;
+import com.user.user.domain.persona.NewUserDTO;
 import com.user.user.domain.persona.Persona;
 import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.domain.user.ChangePasswordDTO;
@@ -53,7 +54,7 @@ public class UserService {
         this.authenticationManager = authenticationManager;
     }
 
-    public ResponseEntity<ResponseMessage<UUID>> register(UserDTO dto) {
+    public ResponseEntity<ResponseMessage<NewUserDTO>> register(UserDTO dto) {
         List<String> credencialsErrors = checkAllUserCredencials(dto);
 
         if (!credencialsErrors.isEmpty()) {
@@ -76,30 +77,41 @@ public class UserService {
 
         repo.save(newUser);
 
+        NewUserDTO newUserDTO;
+
+        if (dto.coach() != null && dto.athlete() != null) {
+            return ResponseEntity.status(400).body(new ResponseMessage<>("Informe apenas um tipo de usuário"));
+        }
+
         if (dto.coach() != null) {
             ResponseEntity<ResponseMessage<UUID>> coachResponseEntity = coachService.register(dto.coach(), newUser);
 
-            if (!coachResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            if (!coachResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(201))) {
                 repo.delete(newUser);
 
-                return coachResponseEntity;
+                return ResponseEntity.status(400)
+                        .body(new ResponseMessage<>(coachResponseEntity.getBody().getClientMsg()));
             }
+
+            newUserDTO = new NewUserDTO(newUser.getId(), coachResponseEntity.getBody().getData());
         } else if (dto.athlete() != null) {
             ResponseEntity<ResponseMessage<UUID>> athleteResponseEntity = athleteService.register(dto.athlete(),
                     newUser);
 
-            if (!athleteResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            if (!athleteResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(201))) {
                 repo.delete(newUser);
 
-                return athleteResponseEntity;
+                return ResponseEntity.status(400).body(new ResponseMessage<>(
+                        athleteResponseEntity.getBody().getClientMsg()));
             }
+
+            newUserDTO = new NewUserDTO(newUser.getId(), athleteResponseEntity.getBody().getData());
         } else {
             return ResponseEntity.status(400)
                     .body(new ResponseMessage<>("Tipo de usuário não permitido ou não informado."));
         }
 
-        return ResponseEntity
-                .status(200).body(new ResponseMessage<UUID>("Cadastro realizado", newUser.getId()));
+        return ResponseEntity.status(200).body(new ResponseMessage<NewUserDTO>(newUserDTO));
     }
 
     public ResponseEntity<ResponseMessage<UserTokenDTO>> login(UserDTO dto) {
@@ -120,7 +132,6 @@ public class UserService {
         return ResponseEntity.status(200)
                 .body(new ResponseMessage<UserTokenDTO>("Login realizado.", userType,
                         new UserTokenDTO(userFound.getId(), token)));
-
     }
 
     public ResponseEntity<ResponseMessage<?>> changePasswordRequest(ChangePasswordRequestDTO dto) {
@@ -139,14 +150,13 @@ public class UserService {
         }
 
         try {
-
             String emailContent = "<style>\r\n" + //
                     "@import url('https://fonts.cdnfonts.com/css/catamaran');\r\n" + //
                     "</style>"
                     + "<div style=\"display: flex; justify-content: center; background-color: #c9c9c9; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;\">"
                     + "<div style=\"background-color: #131313; width: 40%; color: #FFEAE0\">"
                     + "<div style=\"margin-left: 86px; margin-top: 15px;\">"
-                    + "<img style=\"width: 180px; height: 150px;\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/dev/users_ms/src/main/java/com/user/user/utils/img/logo-email.png\" alt=\"\">"
+                    + "<img style=\"width: 180px; height: 150px;\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/main/users_ms/src/main/java/com/user/user/util/img/logo-email.png\" alt=\"\">"
                     + "</div>"
                     + "<div style=\"border-top: 2px solid #FF7425; margin-top: 15px;\"></div>"
                     + "<div style=\"margin-left: 17%; width: 95%;\">"
@@ -160,7 +170,7 @@ public class UserService {
                     + "<div style=\"display: flex; justify-content: center; align-items: center; margin-left: 5%; width: 300px; height: 100px; border: 3px solid #FF7425 ;\">"
                     + "<h2>" + recuperationCode + "</h2>"
                     + "</div>"
-                    + "<img style=\"margin-top: 20px; width: 315px; height: 150px; margin-left: 17px\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/dev/users_ms/src/main/java/com/user/user/utils/img/footer-email.png\" alt=\"\">"
+                    + "<img style=\"margin-top: 20px; width: 315px; height: 150px; margin-left: 17px\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/main/users_ms/src/main/java/com/user/user/util/img/footer-email.png\" alt=\"\">"
                     + "</div>"
                     + "</div>";
 
