@@ -44,7 +44,7 @@ public class AthleteHistoricController {
     @GetMapping("from-athlete/{athleteId}")
     public ResponseEntity<ResponseMessage<List<AthleteHistoric>>> getAthleteHistoricByAthleteId(
             @PathVariable UUID athleteId) {
-        return service.getAthleteHistoricsByAthleteId(athleteId);
+        return service.getAthleteHistoricsByAthleteId(athleteId);     
     }
 
     @GetMapping("page-from-athlete/{athleteId}")
@@ -76,4 +76,7 @@ public class AthleteHistoricController {
             return ResponseEntity.status(204).body(new ResponseMessage<>(e.getMessage()));
         }
     }
+
+    //CSV
+    
 }
