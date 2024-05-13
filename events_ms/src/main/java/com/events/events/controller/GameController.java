@@ -31,9 +31,9 @@ public class GameController {
     }
 
     // POST
-    @PostMapping
-    public ResponseEntity<ResponseMessage<Game>> registerGame(@RequestBody GameDTO dto) {
-        return service.register(dto);
+  @PostMapping
+    public ResponseEntity<ResponseMessage<List<Game>>> registerGames(@RequestBody List<GameDTO> dtos) {
+        return service.register(dtos);
     }
 
     // GET
