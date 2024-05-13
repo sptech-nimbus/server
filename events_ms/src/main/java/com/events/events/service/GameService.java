@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -32,14 +33,21 @@ public class GameService {
         this.wsMsgTemplate = wsMsgTemplate;
     }
 
-    public ResponseEntity<ResponseMessage<Game>> register(GameDTO dto) {
-        Game newGame = new Game(dto);
+    public ResponseEntity<ResponseMessage<List<Game>>> register(List<GameDTO> dtos) {
+        List<Game> newGames = new ArrayList<>();
+    
+        for (GameDTO dto : dtos) {
+            Game newGame = new Game(dto);
+        
+            BeanUtils.copyProperties(dtos, newGames);   
 
-        repo.save(newGame);
+            repo.save(newGame);
 
-        return ResponseEntity.status(200).body(new ResponseMessage<Game>(newGame));
+            newGames.add(newGame);
+        }
+    
+        return ResponseEntity.status(200).body(new ResponseMessage<List<Game>>(newGames));
     }
-
     public ResponseEntity<ResponseMessage<List<GameWithTeams>>> getGamesFromTeamId(UUID teamId) {
         List<Game> games = repo.findGamesByChallengerOrChallenged(teamId, teamId);
 
