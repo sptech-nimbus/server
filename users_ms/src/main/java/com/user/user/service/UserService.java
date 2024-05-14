@@ -135,7 +135,7 @@ public class UserService {
     }
 
     public ResponseEntity<ResponseMessage<?>> changePasswordRequest(ChangePasswordRequestDTO dto) {
-        User userFound = repo.findById(dto.id()).orElseThrow(() -> new ResourceNotFoundException("Usuário", dto.id()));
+        User userFound = repo.findByEmail(dto.email()).get();
 
         Persona personaFound = userFound.getAthlete() == null ? userFound.getCoach() : userFound.getAthlete();
 
