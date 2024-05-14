@@ -189,16 +189,12 @@ public class UserService {
     public ResponseEntity<ResponseMessage<?>> changePassword(UUID id, ChangePasswordDTO dto) {
         User userFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
 
-        if (userFound.getPassword().equals(dto.oldPassword())) {
-            if (checkUserPassword(dto.newPassword())) {
-                userFound.setPassword(dto.newPassword());
+        if (checkUserPassword(dto.newPassword())) {
+            userFound.setPassword(dto.newPassword());
 
-                repo.save(userFound);
-            } else {
-                return ResponseEntity.status(409).body(new ResponseMessage<>("Senha fora dos padrões."));
-            }
+            repo.save(userFound);
         } else {
-            return ResponseEntity.status(400).body(new ResponseMessage<>("Antiga senha incorreta."));
+            return ResponseEntity.status(409).body(new ResponseMessage<>("Senha fora dos padrões."));
         }
 
         return ResponseEntity.status(200).body(new ResponseMessage<>("Senha alterada com sucesso."));
