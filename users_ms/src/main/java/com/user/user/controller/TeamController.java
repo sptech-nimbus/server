@@ -1,6 +1,7 @@
 package com.user.user.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +24,7 @@ import com.user.user.domain.team.ChangeTeamOwnerAcceptDTO;
 import com.user.user.domain.team.ChangeTeamOwnerRequestDTO;
 import com.user.user.domain.team.Team;
 import com.user.user.domain.team.TeamDTO;
+import com.user.user.domain.team.TeamToUserDTO;
 import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.service.TeamService;
 
@@ -47,8 +49,33 @@ public class TeamController {
 
     // GET
     @GetMapping
-    public ResponseEntity<ResponseMessage<List<Team>>> getAllTeams() {
-        return service.getAllTeams();
+    public ResponseEntity<ResponseMessage<List<TeamToUserDTO>>> getAllTeams() {
+        List<TeamToUserDTO> dtos = new ArrayList<>();
+
+        List<Team> teams = service.getAllTeams().getBody().getData();
+
+        for (Team team : teams) {
+            dtos.add(new TeamToUserDTO(team));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<>(dtos));
+    }
+
+    @GetMapping("by-name")
+    public ResponseEntity<ResponseMessage<List<TeamToUserDTO>>> getTeamsByName(@RequestParam String name) {
+        List<TeamToUserDTO> dtos = new ArrayList<>();
+
+        List<Team> teamsFound = service.getTeamsByName(name);
+
+        if (teamsFound.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        for (Team team : teamsFound) {
+            dtos.add(new TeamToUserDTO(team));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<List<TeamToUserDTO>>(dtos));
     }
 
     @GetMapping("/{id}")

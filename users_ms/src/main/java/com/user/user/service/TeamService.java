@@ -190,4 +190,10 @@ public class TeamService {
     public ResponseEntity<ResponseMessage<List<Team>>> getAllTeams() {
         return ResponseEntity.status(200).body(new ResponseMessage<List<Team>>(repo.findAll()));
     }
+
+    public List<Team> getTeamsByName(String name) {
+        List<Team> teamsFound = repo.findByNameContainsIgnoreCase(name);
+
+        return teamsFound;
+    }
 }
