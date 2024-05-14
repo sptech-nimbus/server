@@ -18,16 +18,12 @@ public class OperationCodeService {
         this.repo = repo;
     }
 
-    public ResponseEntity<ResponseMessage<?>> getCode(String code, LocalDateTime date) {
+    public OperationCode getCode(String code, LocalDateTime date) {
         try {
-            if (!validateCode(code, date)) {
-                return ResponseEntity.status(401).body(new ResponseMessage<>("Código expirado"));
-            }
+            return validateCode(code, date);
         } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException(code, null);
         }
-
-        return ResponseEntity.status(200).build();
     }
 
     public ResponseEntity<ResponseMessage<?>> insertCode(OperationCode operationCode) {
@@ -40,13 +36,13 @@ public class OperationCodeService {
         return ResponseEntity.status(200).build();
     }
 
-    public Boolean validateCode(String code, LocalDateTime date) {
+    public OperationCode validateCode(String code, LocalDateTime date) {
         OperationCode codeFound = repo.findByCode(code)
                 .orElseThrow(() -> new ResourceNotFoundException("código", null));
 
         if (codeFound.getExpirationDate().isBefore(date))
-            return false;
+            return null;
 
-        return true;
+        return codeFound;
     }
 }

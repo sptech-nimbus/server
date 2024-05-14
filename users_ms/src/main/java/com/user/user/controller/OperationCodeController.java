@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.user.user.domain.operationCodes.OperationCode;
 import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.service.OperationCodeService;
@@ -27,7 +28,8 @@ public class OperationCodeController {
     public ResponseEntity<ResponseMessage<?>> validateCode(@RequestParam String code,
             @RequestParam LocalDateTime date) {
         try {
-            return service.getCode(code, date);
+            OperationCode codeFound = service.getCode(code, date);
+            return ResponseEntity.status(200).body(new ResponseMessage<>(codeFound));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(401).body(new ResponseMessage<>("Código não encontrado"));
         }
