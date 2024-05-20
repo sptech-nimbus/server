@@ -63,13 +63,13 @@ public class AzureBlobService {
 
             blobClient.setHttpHeaders(headers);
 
-            if (coachRepository.existsById(entityId)) {
-                Coach coachFound = coachRepository.findById(entityId).get();
+            if (coachRepository.existsByUserId(entityId)) {
+                Coach coachFound = coachRepository.findCoachByUserId(entityId).get();
                 coachFound.setPicture(createBlobSas(blobClient));
 
                 coachRepository.save(coachFound);
-            } else if (athleteRepository.existsById(entityId)) {
-                Athlete athleteFound = athleteRepository.findById(entityId).get();
+            } else if (athleteRepository.existsByUserId(entityId)) {
+                Athlete athleteFound = athleteRepository.findAthleteByUserId(entityId).get();
                 athleteFound.setPicture(createBlobSas(blobClient));
 
                 athleteRepository.save(athleteFound);
