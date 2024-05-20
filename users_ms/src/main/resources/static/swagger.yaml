@@ -565,44 +565,83 @@ paths:
                 clientMessage: Erro ao cadastrar, Id do atleta não encontrado.
                 serverMessage: null
                 data: null
-  # /athlete-descs/{id}:
-  #   get:
-  #     tags:
-  #       - "Athletes description"
-  #     summary: Obtém a descrição do atleta por id.
-  #     description: Obtém as informações da descrição do atleta por id.
-  #     requestBody:
-  #       content:
-  #         application/json:
-  #           schema:
-  #             $ref: "#components/schemas/AthleteDesc"
-  #           example:
-  #               weight: 70.3
-  #               height: 1.84
-  #               position: PG
-  #               athlete: 
-  #                 id: ''
-  #     responses:
-  #       200:
-  #         description: Descrição do atleta cadastrado.
-  #         content:
-  #           application/json:
-  #             schema:
-  #               $ref: "#components/schemas/ResponseMessage"
-  #             example:
-  #               clientMessage: Descrição do atleta cadastrado com sucesso.
-  #               serverMessage: null
-  #               data: null  
-  #       400:
-  #         description: Id do atleta não encontrado.
-  #         content:
-  #           application/json:
-  #             schema: 
-  #               $ref: "#components/schemas/ResponseMessage"
-  #             example:
-  #               clientMessage: Erro ao cadastrar, Id do atleta não encontrado.
-  #               serverMessage: null
-  #               data: null
+  /athlete-descs/{athleteId}:
+    get:
+      tags:
+        - "Athletes description"
+      summary: Retorna as descrição do atleta por id.
+      description: Retorna as informações da descrição do atleta por id.
+      parameters:
+        - in: path
+          name: Id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do atleta    
+      responses:
+        200:
+          description: Descrição do atleta encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Descrição do atleta encontrado.
+                serverMessage: null
+                data: 
+                  weight: 70.3
+                  height: 1.84
+                  position: PG
+                  athlete: 
+                    id: ''  
+        400:
+          description: Id do atleta não encontrado.
+          content:
+            application/json:
+              schema: 
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Id do atleta não encontrado.
+                serverMessage: null
+                data: null
+  /{athleteId}:
+    put:
+      tags:
+        - "Athletes description"
+      summary: Atualiza a descrição do atleta por id.
+      description: Atualiza as informações da descrição do atleta por id.
+      requestBody:
+        content:
+           application/json:
+            schema:
+              $ref: "#components/schemas/AthleteDesc"
+            example:
+                weight: 70.3
+                height: 1.84
+                position: PG
+                athlete: 
+                  id: '' 
+      responses:
+        200:
+          description: Informações de atleta atualizadas.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Informações de atleta atualizadas.
+                serverMessage: null
+                data: null.  
+        400:
+          description: Id do atleta não encontrado.
+          content:
+            application/json:
+              schema: 
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Id do atleta não encontrado.
+                serverMessage: null
+                data: null
 
   /injuries:
     post:
