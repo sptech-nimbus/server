@@ -87,7 +87,6 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
     }
 
     public ResponseEntity<ResponseMessage<?>> registerAthleteToTeam(UUID id, Team team) {
-        System.out.println(team.getId());
         Team teamFound = teamRepo.findById(team.getId()).orElseThrow(() -> new ResourceNotFoundException("Time", id));
 
         Athlete athleteFound = repo.findById(id)

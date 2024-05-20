@@ -107,6 +107,17 @@ public class TeamController {
         return service.getAthletesByAgeAsc(id);
     }
 
+    @GetMapping("by-coach/{userId}")
+    public ResponseEntity<ResponseMessage<List<Team>>> getByCoachUserId(@PathVariable UUID userId) {
+        List<Team> teamsFound = service.getTeamsByCoach(userId);
+
+        if (teamsFound.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<List<Team>>(teamsFound));
+    }
+
     // PUT
     @PutMapping("/{id}")
     public ResponseEntity<ResponseMessage<?>> putTeamById(@PathVariable UUID id, @RequestBody TeamDTO team) {

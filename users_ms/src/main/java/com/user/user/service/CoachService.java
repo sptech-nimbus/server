@@ -1,5 +1,6 @@
 package com.user.user.service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
@@ -69,5 +70,11 @@ public class CoachService extends PersonaService implements _persona<CoachDTO> {
         }
 
         return ResponseEntity.status(200).body(new ResponseMessage<>("Treinador atualizado com sucesso"));
+    }
+
+    public Optional<Coach> findCoachByUserId(UUID userId) {
+        Optional<Coach> coachFound = repo.findCoachByUserId(userId);
+
+        return coachFound;
     }
 }
