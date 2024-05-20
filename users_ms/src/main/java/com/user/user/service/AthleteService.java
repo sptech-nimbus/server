@@ -4,6 +4,7 @@ package com.user.user.service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
@@ -129,5 +130,15 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
         CsvGenerator.gravaArquivoCsv(dtoList, "athletes-" + LocalDate.now().toString());
 
         return ResponseEntity.status(200).build();
+    }
+
+    public ResponseEntity<ResponseMessage<?>> replaceIsStating(UUID id){
+        Athlete athleteFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("athlete", id));
+
+        athleteFound.setIsStarting(!athleteFound.getIsStarting());
+        
+        repo.save(athleteFound);
+
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Atleta" + athleteFound.getLastName() + " foi para o banco"));
     }
 }
