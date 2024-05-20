@@ -642,7 +642,7 @@ paths:
                 clientMessage: Id do atleta não encontrado.
                 serverMessage: null
                 data: null
-
+  
   /injuries:
     post:
       tags:
