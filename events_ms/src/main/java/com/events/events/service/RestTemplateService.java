@@ -23,6 +23,10 @@ public class RestTemplateService<T> {
 
     public T getTemplateById(String port, String endPoint, UUID id, Class<T> classType) throws Exception {
         try {
+            HttpHeaders headers = new HttpHeaders();
+
+            headers.add("jwt-secret", jwtSecret);
+
             ResponseEntity<T> restResponseEntity = restTemplate.getForEntity(
                     "http://localhost:" + port + "/" + endPoint + "/" + id, classType);
 
@@ -50,13 +54,11 @@ public class RestTemplateService<T> {
 
             headers.add("jwt-secret", jwtSecret);
 
-            String httpUrl = "http://localhost:" + port + "/" + endPoint + "/" + id + "?" + requestParams;
-
-            System.out.println(httpUrl);
+            String httpUrl = "http://localhost:" + port + "/" + endPoint + "/" + id;
 
             HttpEntity<String> entity = new HttpEntity<String>(headers);
 
-            ResponseEntity<T> restResponseObject = restTemplate.exchange(httpUrl, HttpMethod.GET, entity, classType);
+            ResponseEntity<T> restResponseObject = restTemplate.exchange(httpUrl, HttpMethod.GET, entity, classType, requestParams);
 
             return restResponseObject.getBody();
         } catch (Exception e) {

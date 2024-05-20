@@ -1,7 +1,9 @@
 package com.user.user.domain.team;
 
-public record TeamToUserDTO(String name, String picture, String category) {
+import java.util.UUID;
+
+public record TeamToUserDTO(String name, String picture, String category, UUID id) {
     public TeamToUserDTO(Team team) {
-        this(team.getName(), team.getPicture(), team.getCategory());
+        this(team.getName(), team.getPicture(), team.getCategory(), team.getId());
     }
 }

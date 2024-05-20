@@ -35,20 +35,21 @@ public class GameService {
 
     public ResponseEntity<ResponseMessage<List<Game>>> register(List<GameDTO> dtos) {
         List<Game> newGames = new ArrayList<>();
-    
+
         for (GameDTO dto : dtos) {
             Game newGame = new Game(dto);
-        
-            BeanUtils.copyProperties(dtos, newGames);   
+
+            BeanUtils.copyProperties(dtos, newGames);
 
             repo.save(newGame);
 
             newGames.add(newGame);
         }
-    
+
         return ResponseEntity.status(200).body(new ResponseMessage<List<Game>>(newGames));
     }
-    public ResponseEntity<ResponseMessage<List<GameWithTeams>>> getGamesFromTeamId(UUID teamId) {
+
+    public ResponseEntity<ResponseMessage<List<GameWithTeams>>> getGamesWithTeamsFromTeamId(UUID teamId) {
         List<Game> games = repo.findGamesByChallengerOrChallenged(teamId, teamId);
 
         List<GameWithTeams> gamesWithTeams = new ArrayList<>();
@@ -57,8 +58,8 @@ public class GameService {
             for (Game game : games) {
                 try {
                     GameWithTeams gameWithTeams = new GameWithTeams(
-                            teamService.getTemplateById("3000", "teams/ms-get-team", game.getChallenger(), Team.class),
-                            teamService.getTemplateById("3000", "teams/ms-get-team", game.getChallenged(), Team.class),
+                            teamService.exchange("3000", "teams/ms-get-team", game.getChallenger(), null, Team.class),
+                            teamService.exchange("3000", "teams/ms-get-team", game.getChallenged(), null, Team.class),
                             game);
 
                     gamesWithTeams.add(gameWithTeams);
@@ -66,6 +67,7 @@ public class GameService {
                     return ResponseEntity.status(404)
                             .body(new ResponseMessage<List<GameWithTeams>>(e.getMessage()));
                 } catch (Exception e) {
+                    System.out.println(e);
                     return ResponseEntity.status(500)
                             .body(new ResponseMessage<List<GameWithTeams>>("Serviço de usuários fora do ar no momento",
                                     e.getMessage()));
@@ -77,6 +79,12 @@ public class GameService {
 
         return ResponseEntity.status(204)
                 .body(new ResponseMessage<List<GameWithTeams>>("Nenhum jogo encontrado"));
+    }
+
+    public List<Game> getGamesFromTeamId(UUID teamId) {
+        List<Game> games = repo.findGamesByChallengerOrChallenged(teamId, teamId);
+
+        return games;
     }
 
     public ResponseEntity<ResponseMessage<Game>> confirmGame(UUID id, Coach coach) {

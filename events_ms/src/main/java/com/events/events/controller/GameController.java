@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.events.events.domain.coach.Coach;
 import com.events.events.domain.game.Game;
 import com.events.events.domain.game.GameDTO;
-import com.events.events.domain.game.GameWithTeams;
 import com.events.events.domain.responseMessage.ResponseMessage;
 import com.events.events.exception.ResourceNotFoundException;
 import com.events.events.service.GameService;
@@ -31,15 +30,21 @@ public class GameController {
     }
 
     // POST
-  @PostMapping
+    @PostMapping
     public ResponseEntity<ResponseMessage<List<Game>>> registerGames(@RequestBody List<GameDTO> dtos) {
         return service.register(dtos);
     }
 
     // GET
     @GetMapping("{teamId}")
-    public ResponseEntity<ResponseMessage<List<GameWithTeams>>> getGamesFromTeamId(@PathVariable UUID teamId) {
-        return service.getGamesFromTeamId(teamId);
+    public ResponseEntity<ResponseMessage<List<Game>>> getGamesFromTeamId(@PathVariable UUID teamId) {
+        List<Game> games = service.getGamesFromTeamId(teamId);
+
+        if (games.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<>(games));
     }
 
     @GetMapping("ms-get-by-id/{id}")
