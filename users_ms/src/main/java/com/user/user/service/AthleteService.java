@@ -130,6 +130,16 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
         return ResponseEntity.status(200).build();
     }
 
+    public ResponseEntity<ResponseMessage<?>> replaceIsStating(UUID id){
+        Athlete athleteFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("athlete", id));
+
+        athleteFound.setIsStarting(!athleteFound.getIsStarting());
+        
+        repo.save(athleteFound);
+
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Atleta" + athleteFound.getLastName() + " foi para o banco"));
+    }
+
     public List<Athlete> findByTeam(UUID teamId) {
         return repo.findByTeamId(teamId);
     }
