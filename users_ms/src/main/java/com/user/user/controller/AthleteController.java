@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.azure.core.annotation.Patch;
 import com.user.user.domain.athlete.Athlete;
 import com.user.user.domain.athlete.AthleteDTO;
 import com.user.user.domain.responseMessage.ResponseMessage;
@@ -68,7 +66,6 @@ public class AthleteController {
 
     @PatchMapping("replace-starting/{id}")
     public ResponseEntity<ResponseMessage<?>> replaceIsStartingById(@PathVariable UUID id) {
-        
         try{
             return service.replaceIsStating(id);
         }catch (ResourceNotFoundException e) {
