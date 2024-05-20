@@ -85,18 +85,13 @@ public class AthleteHistoricService {
         return ResponseEntity.status(200).body(new ResponseMessage<List<AthleteHistoric>>(athleteHistoricFound));
     }
 
-    public ResponseEntity<ResponseMessage<Page<AthleteHistoric>>> getAthleteHistoricsPageByAthleteId(UUID athleteId,
+    public Page<AthleteHistoric> getAthleteHistoricsPageByAthleteId(UUID athleteId,
             Integer page,
             Integer elements) {
         Page<AthleteHistoric> athleteHistoricsFound = repo.findAllByAthleteId(athleteId,
                 PageRequest.of(page, elements));
 
-        if (athleteHistoricsFound.isEmpty()) {
-            return ResponseEntity.status(204)
-                    .body(new ResponseMessage<Page<AthleteHistoric>>("Nenhum histórico do atleta de id " + athleteId));
-        }
-
-        return ResponseEntity.status(200).body(new ResponseMessage<Page<AthleteHistoric>>(athleteHistoricsFound));
+        return athleteHistoricsFound;
     }
 
     public ResponseEntity<ResponseMessage<AthleteHistoric>> putAhlteteHistoric(UUID id, AthleteHistoricDTO dto) {

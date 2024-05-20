@@ -3,12 +3,14 @@ package com.user.user.service;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.user.user.domain.athleteDesc.AthleteDesc;
 import com.user.user.domain.athleteDesc.AthleteDescDTO;
 import com.user.user.domain.athleteDesc.AthleteDescwAthleteDTO;
+import com.user.user.domain.athleteHistoric.AthleteHistoric;
 import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.repository.AthleteDescRepository;
@@ -20,9 +22,13 @@ public class AthleteDescService {
 
     private final AthleteRepository athleteRepo;
 
-    public AthleteDescService(AthleteDescRepository repo, AthleteRepository athleteRepo) {
+    private final AthleteHistoricService athleteHistoricService;
+
+    public AthleteDescService(AthleteDescRepository repo, AthleteRepository athleteRepo,
+            AthleteHistoricService athleteHistoricService) {
         this.repo = repo;
         this.athleteRepo = athleteRepo;
+        this.athleteHistoricService = athleteHistoricService;
     }
 
     public ResponseEntity<ResponseMessage<AthleteDesc>> register(AthleteDescDTO dto) {
@@ -60,10 +66,17 @@ public class AthleteDescService {
         AthleteDesc athleteDesc = repo.findByAthleteId(athleteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Informações de atleta", athleteId));
 
-        
+        Page<AthleteHistoric> historicPages = athleteHistoricService.getAthleteHistoricsPageByAthleteId(athleteId, 1,
+                5);
 
-        return new AthleteDescwAthleteDTO(athleteDesc,
+        Integer points = 0, assists = 0, rebounds = 0;
 
-        );
+        for (AthleteHistoric ah : historicPages) {
+            points += ah.getTwoPointsConverted() + ah.getThreePointsConverted();
+            assists += ah.getAssists();
+            rebounds += ah.getDefRebounds() + ah.getOffRebounds();
+        }
+
+        return new AthleteDescwAthleteDTO(athleteDesc, points, assists, rebounds);
     }
 }

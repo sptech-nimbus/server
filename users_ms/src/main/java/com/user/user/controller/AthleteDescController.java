@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.user.user.domain.athleteDesc.AthleteDesc;
 import com.user.user.domain.athleteDesc.AthleteDescDTO;
+import com.user.user.domain.athleteDesc.AthleteDescwAthleteDTO;
 import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.service.AthleteDescService;
@@ -44,6 +45,13 @@ public class AthleteDescController {
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
+    }
+
+    @GetMapping("/all-info/{athleteId}")
+    public ResponseEntity<ResponseMessage<AthleteDescwAthleteDTO>> getAthleteAllInfo(@PathVariable UUID athleteId) {
+        AthleteDescwAthleteDTO athleteInfo = service.getAthleteAllInfo(athleteId);
+
+        return ResponseEntity.ok(new ResponseMessage<AthleteDescwAthleteDTO>(athleteInfo));
     }
 
     // PUT
