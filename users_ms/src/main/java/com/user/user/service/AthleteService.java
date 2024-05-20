@@ -1,6 +1,5 @@
 package com.user.user.service;
 
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -129,5 +128,9 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
         CsvGenerator.gravaArquivoCsv(dtoList, "athletes-" + LocalDate.now().toString());
 
         return ResponseEntity.status(200).build();
+    }
+
+    public List<Athlete> findByTeam(UUID teamId) {
+        return repo.findByTeamId(teamId);
     }
 }

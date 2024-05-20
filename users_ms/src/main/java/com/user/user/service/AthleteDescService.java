@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.user.user.domain.athleteDesc.AthleteDesc;
 import com.user.user.domain.athleteDesc.AthleteDescDTO;
+import com.user.user.domain.athleteDesc.AthleteDescwAthleteDTO;
 import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.repository.AthleteDescRepository;
@@ -53,5 +54,16 @@ public class AthleteDescService {
         repo.save(athleteDesc);
 
         return ResponseEntity.status(200).body(new ResponseMessage<>("Informações de atleta atualizadas"));
+    }
+
+    public AthleteDescwAthleteDTO getAthleteAllInfo(UUID athleteId) {
+        AthleteDesc athleteDesc = repo.findByAthleteId(athleteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Informações de atleta", athleteId));
+
+        
+
+        return new AthleteDescwAthleteDTO(athleteDesc,
+
+        );
     }
 }

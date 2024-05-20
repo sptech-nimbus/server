@@ -121,7 +121,7 @@ public class AthleteHistoricService {
 
     public ResponseEntity<List<AthleteHistoric>> msGetByGameIdList(UUID teamId, List<UUID> gamesIdList) {
         List<AthleteHistoric> athleteHistoricsFound = repo.findByAthleteTeamIdAndGameIdIn(teamId, gamesIdList);
-  
+
         return ResponseEntity.status(200).body(athleteHistoricsFound);
     }
 }
