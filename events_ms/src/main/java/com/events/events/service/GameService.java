@@ -40,11 +40,17 @@ public class GameService {
                 .findLastGameByTeam(teamId, now)
                 .orElseThrow(() -> new ResourceNotFoundException("Jogo", teamId));
 
-        System.out.println(now);
+        Team challenger = teamService.exchange("3000", "teams/ms-get-team", gameFound.getChallenger(), null,
+                Team.class);
 
-        System.out.println(gameFound.getFinalDateTime());
+        Team challenged = teamService.exchange("3000", "teams/ms-get-team", gameFound.getChallenged(), null,
+                Team.class);
 
-        return new GamewResultsDTO(gameFound, gameFound.getGameResult());
+        return new GamewResultsDTO(
+                gameFound,
+                gameFound.getGameResult(),
+                challenger,
+                challenged);
     }
 
     public ResponseEntity<ResponseMessage<List<Game>>> register(List<GameDTO> dtos) {

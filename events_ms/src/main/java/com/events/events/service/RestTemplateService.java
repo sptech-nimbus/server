@@ -57,9 +57,11 @@ public class RestTemplateService<T> {
             String httpUrl = "http://localhost:" + port + "/" + endPoint + "/" + id;
 
             HttpEntity<String> entity = new HttpEntity<String>(headers);
+            
+            ResponseEntity<T> restResponseObject = restTemplate.exchange(httpUrl, HttpMethod.GET, entity, classType);
 
-            ResponseEntity<T> restResponseObject = restTemplate.exchange(httpUrl, HttpMethod.GET, entity, classType, requestParams);
-
+            System.out.println(restResponseObject);
+            
             return restResponseObject.getBody();
         } catch (Exception e) {
             throw e;

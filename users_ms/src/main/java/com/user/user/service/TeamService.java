@@ -198,7 +198,8 @@ public class TeamService {
     }
 
     public List<Team> getTeamsByCoach(UUID userId) {
-        Coach coachFound = coachRepo.findCoachByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("Coach", userId));
+        Coach coachFound = coachRepo.findCoachByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Coach", userId));
 
         List<Team> teamsFound = repo.findByCoachId(coachFound.getId());
 

@@ -56,10 +56,16 @@ public class GameController {
     }
 
     @GetMapping("last-game/{teamId}")
-    public ResponseEntity<ResponseMessage<GamewResultsDTO>> getLastGame(@PathVariable UUID teamId, @RequestParam LocalDateTime now) {
-        GamewResultsDTO gameFound = service.getLastGame(teamId, now);
+    public ResponseEntity<ResponseMessage<GamewResultsDTO>> getLastGame(@PathVariable UUID teamId,
+            @RequestParam LocalDateTime now) {
+        try {
+            GamewResultsDTO gameFound = service.getLastGame(teamId, now);
+            return ResponseEntity.ok(new ResponseMessage<GamewResultsDTO>(gameFound));
+        } catch (Exception e) {
+            System.out.println(e);
+            return ResponseEntity.status(500).build();
+        }
 
-        return ResponseEntity.ok(new ResponseMessage<GamewResultsDTO>(gameFound));
     }
 
     // PATCH

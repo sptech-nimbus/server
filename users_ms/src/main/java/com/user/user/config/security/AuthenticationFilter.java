@@ -39,15 +39,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        if (request.getHeader("jwt-secret") != null && request.getHeader("jwt-secret").equals(jwtSecret)) {
-            return;
-        }
-
         String username = null;
         String jwtToken = null;
 
         String requestTokenHeader = request.getHeader("Authorization");
-        System.out.println(requestTokenHeader);
         if (Objects.nonNull(requestTokenHeader) && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
 

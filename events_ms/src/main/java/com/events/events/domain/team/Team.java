@@ -23,6 +23,7 @@ public class Team {
     private String local;
     private Coach coach;
     private List<Athlete> athletes;
+    
     @Override
     public String toString() {
         return "Team {" + '\'' +
