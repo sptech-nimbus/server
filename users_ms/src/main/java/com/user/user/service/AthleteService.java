@@ -137,7 +137,7 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
         
         repo.save(athleteFound);
 
-        return ResponseEntity.status(200).body(new ResponseMessage<>("Atleta" + athleteFound.getLastName() + " foi para o banco"));
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Atleta " + athleteFound.getLastName() + " foi para o banco"));
     }
 
     public List<Athlete> findByTeam(UUID teamId) {
