@@ -1,5 +1,6 @@
 package com.events.events.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,11 +12,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.events.events.domain.coach.Coach;
 import com.events.events.domain.game.Game;
 import com.events.events.domain.game.GameDTO;
+import com.events.events.domain.game.GamewResultsDTO;
 import com.events.events.domain.responseMessage.ResponseMessage;
 import com.events.events.exception.ResourceNotFoundException;
 import com.events.events.service.GameService;
@@ -50,6 +53,13 @@ public class GameController {
     @GetMapping("ms-get-by-id/{id}")
     public Game msGetGameById(@PathVariable UUID id) {
         return service.msGetGameById(id);
+    }
+
+    @GetMapping("last-game/{teamId}")
+    public ResponseEntity<ResponseMessage<GamewResultsDTO>> getLastGame(@PathVariable UUID teamId, @RequestParam LocalDateTime now) {
+        GamewResultsDTO gameFound = service.getLastGame(teamId, now);
+
+        return ResponseEntity.ok(new ResponseMessage<GamewResultsDTO>(gameFound));
     }
 
     // PATCH

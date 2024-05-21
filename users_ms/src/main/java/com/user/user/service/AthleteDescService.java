@@ -77,6 +77,8 @@ public class AthleteDescService {
             rebounds += ah.getDefRebounds() + ah.getOffRebounds();
         }
 
+        System.out.println(athleteDesc);
+
         return new AthleteDescwAthleteDTO(athleteDesc, points, assists, rebounds);
     }
 }
