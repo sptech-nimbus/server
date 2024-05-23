@@ -135,7 +135,7 @@ public class UserService {
     }
 
     public ResponseEntity<ResponseMessage<?>> changePasswordRequest(ChangePasswordRequestDTO dto) {
-        User userFound = repo.findById(dto.id()).orElseThrow(() -> new ResourceNotFoundException("Usuário", dto.id()));
+        User userFound = repo.findByEmail(dto.email()).get();
 
         Persona personaFound = userFound.getAthlete() == null ? userFound.getCoach() : userFound.getAthlete();
 
@@ -156,7 +156,7 @@ public class UserService {
                     + "<div style=\"display: flex; justify-content: center; background-color: #c9c9c9; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;\">"
                     + "<div style=\"background-color: #131313; width: 40%; color: #FFEAE0\">"
                     + "<div style=\"margin-left: 86px; margin-top: 15px;\">"
-                    + "<img style=\"width: 180px; height: 150px;\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/main/users_ms/src/main/java/com/user/user/util/img/logo-email.png\" alt=\"\">"
+                    + "<img style=\"width: 180px; height: 150px;\" data-imagetype=\"External\" class=\"x_gmail-CToWUd\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/main/users_ms/src/main/java/com/user/user/util/img/logo-email.png\" alt=\"\">"
                     + "</div>"
                     + "<div style=\"border-top: 2px solid #FF7425; margin-top: 15px;\"></div>"
                     + "<div style=\"margin-left: 17%; width: 95%;\">"
@@ -170,7 +170,7 @@ public class UserService {
                     + "<div style=\"display: flex; justify-content: center; align-items: center; margin-left: 5%; width: 300px; height: 100px; border: 3px solid #FF7425 ;\">"
                     + "<h2>" + recuperationCode + "</h2>"
                     + "</div>"
-                    + "<img style=\"margin-top: 20px; width: 315px; height: 150px; margin-left: 17px\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/main/users_ms/src/main/java/com/user/user/util/img/footer-email.png\" alt=\"\">"
+                    + "<img style=\"margin-top: 20px; width: 315px; height: 150px; margin-left: 17px\" data-imagetype=\\\"External\\\" class=\\\"x_gmail-CToWUd\\\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/main/users_ms/src/main/java/com/user/user/util/img/footer-email.png\" alt=\"\">"
                     + "</div>"
                     + "</div>";
 
@@ -189,16 +189,12 @@ public class UserService {
     public ResponseEntity<ResponseMessage<?>> changePassword(UUID id, ChangePasswordDTO dto) {
         User userFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
 
-        if (userFound.getPassword().equals(dto.oldPassword())) {
-            if (checkUserPassword(dto.newPassword())) {
-                userFound.setPassword(dto.newPassword());
+        if (checkUserPassword(dto.newPassword())) {
+            userFound.setPassword(dto.newPassword());
 
-                repo.save(userFound);
-            } else {
-                return ResponseEntity.status(409).body(new ResponseMessage<>("Senha fora dos padrões."));
-            }
+            repo.save(userFound);
         } else {
-            return ResponseEntity.status(400).body(new ResponseMessage<>("Antiga senha incorreta."));
+            return ResponseEntity.status(409).body(new ResponseMessage<>("Senha fora dos padrões."));
         }
 
         return ResponseEntity.status(200).body(new ResponseMessage<>("Senha alterada com sucesso."));

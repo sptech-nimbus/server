@@ -12,7 +12,6 @@ public class GameWithTeams {
     private Object challenged;
     private Game game;
 
-
     @Override
     public String toString() {
         return "GameWithTeams {" + '\'' +

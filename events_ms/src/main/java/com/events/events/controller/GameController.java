@@ -1,5 +1,8 @@
 package com.events.events.controller;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,12 +14,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.events.events.domain.coach.Coach;
 import com.events.events.domain.game.Game;
 import com.events.events.domain.game.GameDTO;
-import com.events.events.domain.game.GameWithTeams;
+import com.events.events.domain.game.GamewResultsDTO;
 import com.events.events.domain.responseMessage.ResponseMessage;
 import com.events.events.exception.ResourceNotFoundException;
 import com.events.events.service.GameService;
@@ -31,20 +35,41 @@ public class GameController {
     }
 
     // POST
-  @PostMapping
+    @PostMapping
     public ResponseEntity<ResponseMessage<List<Game>>> registerGames(@RequestBody List<GameDTO> dtos) {
         return service.register(dtos);
     }
 
     // GET
     @GetMapping("{teamId}")
-    public ResponseEntity<ResponseMessage<List<GameWithTeams>>> getGamesFromTeamId(@PathVariable UUID teamId) {
-        return service.getGamesFromTeamId(teamId);
+    public ResponseEntity<ResponseMessage<List<Game>>> getGamesFromTeamId(@PathVariable UUID teamId) {
+        List<Game> games = service.getGamesFromTeamId(teamId);
+
+        if (games.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<>(games));
     }
 
     @GetMapping("ms-get-by-id/{id}")
     public Game msGetGameById(@PathVariable UUID id) {
         return service.msGetGameById(id);
+    }
+
+    @GetMapping("last-game/{teamId}")
+    public ResponseEntity<ResponseMessage<GamewResultsDTO>> getLastGame(@PathVariable UUID teamId,
+            @RequestParam Long now) {
+        try {
+            LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(now), ZoneId.of("UTC"));
+
+            GamewResultsDTO gameFound = service.getLastGame(teamId, date);
+
+            return ResponseEntity.ok(new ResponseMessage<GamewResultsDTO>(gameFound));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+
     }
 
     // PATCH

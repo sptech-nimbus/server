@@ -105,7 +105,6 @@ public class TrainingService {
     }
 
     public Training msGetTrainingById(UUID id) throws ResourceNotFoundException {
-        System.out.println(id);
         return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Treino", id));
     }
 }

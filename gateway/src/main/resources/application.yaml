@@ -1,6 +1,19 @@
 spring:
   cloud:
     gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          "[/**]":
+            allowedOrigins: "http://localhost:5173"
+            allowedHeaders: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
       routes:
         - id: teams
           uri: http://localhost:3000
@@ -26,3 +39,11 @@ spring:
           uri: http://localhost:3000
           predicates:
             - Path=/coaches/**
+        - id: games
+          uri: http://localhost:3002
+          predicates:
+            - Path=/games/**
+        - id: game-results
+          uri: http://localhost:3002
+          predicates:
+            - Path=/game-results/**

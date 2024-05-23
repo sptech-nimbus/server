@@ -60,6 +60,7 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/users/change-password-request"),
             new AntPathRequestMatcher("/codes/validate-code"),
             new AntPathRequestMatcher("/users/ms-get-chat-user/**"),
+            new AntPathRequestMatcher("/teams/ms-get-team/**"),
     };
 
     @Bean
@@ -67,7 +68,8 @@ public class SecurityConfiguracao {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers(URLS_PERMITIDAS)
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(URLS_PERMITIDAS)
                         .permitAll()
                         .anyRequest()
                         .authenticated())

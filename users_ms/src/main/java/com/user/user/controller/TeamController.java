@@ -2,7 +2,11 @@ package com.user.user.controller;
 
 import java.time.Instant;
 import java.time.LocalDate;
+
 import java.time.ZoneId;
+
+import java.util.ArrayList;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +29,7 @@ import com.user.user.domain.team.ChangeTeamOwnerAcceptDTO;
 import com.user.user.domain.team.ChangeTeamOwnerRequestDTO;
 import com.user.user.domain.team.Team;
 import com.user.user.domain.team.TeamDTO;
+import com.user.user.domain.team.TeamToUserDTO;
 import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.service.TeamService;
 
@@ -49,8 +54,33 @@ public class TeamController {
 
     // GET
     @GetMapping
-    public ResponseEntity<ResponseMessage<List<Team>>> getAllTeams() {
-        return service.getAllTeams();
+    public ResponseEntity<ResponseMessage<List<TeamToUserDTO>>> getAllTeams() {
+        List<TeamToUserDTO> dtos = new ArrayList<>();
+
+        List<Team> teams = service.getAllTeams().getBody().getData();
+
+        for (Team team : teams) {
+            dtos.add(new TeamToUserDTO(team));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<>(dtos));
+    }
+
+    @GetMapping("by-name")
+    public ResponseEntity<ResponseMessage<List<TeamToUserDTO>>> getTeamsByName(@RequestParam String name) {
+        List<TeamToUserDTO> dtos = new ArrayList<>();
+
+        List<Team> teamsFound = service.getTeamsByName(name);
+
+        if (teamsFound.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        for (Team team : teamsFound) {
+            dtos.add(new TeamToUserDTO(team));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<List<TeamToUserDTO>>(dtos));
     }
 
     @GetMapping("/{id}")
@@ -64,6 +94,14 @@ public class TeamController {
         try {
             LocalDate nowDate = LocalDate.ofInstant(Instant.ofEpochMilli(now), ZoneId.of("UTC"));
             return service.getActiveInjuriesOnTeam(id, nowDate);
+            List<InjuredAthleteDTO> injuredAthletes = service.getActiveInjuriesOnTeam(id, nowDate);
+
+            if(injuredAthletes.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            return ResponseEntity.ok(new ResponseMessage<List<InjuredAthleteDTO>>(injuredAthletes));
+
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
@@ -81,6 +119,17 @@ public class TeamController {
     @GetMapping("get-team-athletes-asc-age/{id}")
     public ResponseEntity<ResponseMessage<List<Athlete>>> getAthletesByAgeAsc(@PathVariable UUID id) {
         return service.getAthletesByAgeAsc(id);
+    }
+
+    @GetMapping("by-coach/{userId}")
+    public ResponseEntity<ResponseMessage<List<Team>>> getByCoachUserId(@PathVariable UUID userId) {
+        List<Team> teamsFound = service.getTeamsByCoach(userId);
+
+        if (teamsFound.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<List<Team>>(teamsFound));
     }
 
     // PUT

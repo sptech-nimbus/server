@@ -2,6 +2,7 @@ package com.user.user.domain.athleteDesc;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.user.user.domain.athlete.Athlete;
 
 import jakarta.persistence.Column;
@@ -38,7 +39,14 @@ public class AthleteDesc {
     @Column(name = "position")
     private String position;
 
+    @Column(name = "number")
+    private Integer number;
+
+    @Column(name = "address")
+    private String address;
+
     @OneToOne
+    @JsonIgnore
     @JoinColumn(name = "athlete_id", referencedColumnName = "athlete_id")
     private Athlete athlete;
 
@@ -49,7 +57,9 @@ public class AthleteDesc {
                 "weight=" + weight + '\'' +
                 "height=" + height + '\'' +
                 "position=" + position + '\'' +
+                "number=" + number + '\'' +
                 "athlete=" + athlete + '\'' +
+                "address=" + address + '\'' +
                 "}";
     }
 }

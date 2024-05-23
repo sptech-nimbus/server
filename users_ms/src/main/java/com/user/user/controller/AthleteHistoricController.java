@@ -44,14 +44,20 @@ public class AthleteHistoricController {
     @GetMapping("from-athlete/{athleteId}")
     public ResponseEntity<ResponseMessage<List<AthleteHistoric>>> getAthleteHistoricByAthleteId(
             @PathVariable UUID athleteId) {
-        return service.getAthleteHistoricsByAthleteId(athleteId);     
+        return service.getAthleteHistoricsByAthleteId(athleteId);
     }
 
     @GetMapping("page-from-athlete/{athleteId}")
     public ResponseEntity<ResponseMessage<Page<AthleteHistoric>>> getAthleteHistoricPageByAthleteId(
             @PathVariable UUID athleteId,
             @RequestParam Integer page, @RequestParam Integer elements) {
-        return service.getAthleteHistoricsPageByAthleteId(athleteId, page, elements);
+        Page<AthleteHistoric> historicPage = service.getAthleteHistoricsPageByAthleteId(athleteId, page, elements);
+
+        if (historicPage.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<Page<AthleteHistoric>>(historicPage));
     }
 
     @GetMapping("ms-by-games/{teamId}")
@@ -77,6 +83,6 @@ public class AthleteHistoricController {
         }
     }
 
-    //CSV
-    
+    // CSV
+
 }

@@ -43,6 +43,17 @@ public class AthleteController {
         return service.generateCSV(ids);
     }
 
+    @GetMapping("by-team/{teamId}")
+    public ResponseEntity<ResponseMessage<List<Athlete>>> findByTeam(@PathVariable UUID teamId) {
+        List<Athlete> athletesFound = service.findByTeam(teamId);
+
+        if (athletesFound.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<List<Athlete>>(athletesFound));
+    }
+
     // PUT
     @PutMapping("/{id}")
     public ResponseEntity<ResponseMessage<?>> putAthlete(@PathVariable UUID id, @RequestBody AthleteDTO dto) {
