@@ -66,7 +66,9 @@ public class TeamService {
         return ResponseEntity.ok(new ResponseMessage<Team>(repo.findById(id).get()));
     }
 
-    public List<InjuredAthleteDTO> getActiveInjuriesOnTeam(UUID id, LocalDate nowDate) {
+
+    public ResponseEntity<ResponseMessage<List<InjuredAthleteDTO>>> getActiveInjuriesOnTeam(UUID id,
+            LocalDate nowDate) {
         Team team = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
 
         List<InjuredAthleteDTO> injuredAthletes = new ArrayList<>();
@@ -82,7 +84,11 @@ public class TeamService {
             }
         }
 
-        return injuredAthletes;
+        if (injuredAthletes.isEmpty()) {
+            return ResponseEntity.status(204).body(new ResponseMessage<>("Sem jogadores lesionados"));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<List<InjuredAthleteDTO>>(injuredAthletes));
     }
 
     public ResponseEntity<ResponseMessage<?>> putTeamById(UUID id, TeamDTO dto) {
@@ -184,20 +190,5 @@ public class TeamService {
 
     public ResponseEntity<ResponseMessage<List<Team>>> getAllTeams() {
         return ResponseEntity.status(200).body(new ResponseMessage<List<Team>>(repo.findAll()));
-    }
-
-    public List<Team> getTeamsByName(String name) {
-        List<Team> teamsFound = repo.findByNameContainsIgnoreCase(name);
-
-        return teamsFound;
-    }
-
-    public List<Team> getTeamsByCoach(UUID userId) {
-        Coach coachFound = coachRepo.findCoachByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Coach", userId));
-
-        List<Team> teamsFound = repo.findByCoachId(coachFound.getId());
-
-        return teamsFound;
     }
 }
