@@ -87,7 +87,6 @@ public class GameService {
                     return ResponseEntity.status(404)
                             .body(new ResponseMessage<List<GameWithTeams>>(e.getMessage()));
                 } catch (Exception e) {
-                    System.out.println(e);
                     return ResponseEntity.status(500)
                             .body(new ResponseMessage<List<GameWithTeams>>("Serviço de usuários fora do ar no momento",
                                     e.getMessage()));

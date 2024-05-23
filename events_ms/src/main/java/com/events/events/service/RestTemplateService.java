@@ -59,8 +59,6 @@ public class RestTemplateService<T> {
             HttpEntity<String> entity = new HttpEntity<String>(headers);
             
             ResponseEntity<T> restResponseObject = restTemplate.exchange(httpUrl, HttpMethod.GET, entity, classType);
-
-            System.out.println(restResponseObject);
             
             return restResponseObject.getBody();
         } catch (Exception e) {
