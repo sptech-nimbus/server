@@ -1,6 +1,8 @@
 package com.events.events.controller;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,12 +59,14 @@ public class GameController {
 
     @GetMapping("last-game/{teamId}")
     public ResponseEntity<ResponseMessage<GamewResultsDTO>> getLastGame(@PathVariable UUID teamId,
-            @RequestParam LocalDateTime now) {
+            @RequestParam Long now) {
         try {
-            GamewResultsDTO gameFound = service.getLastGame(teamId, now);
+            LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(now), ZoneId.of("UTC"));
+
+            GamewResultsDTO gameFound = service.getLastGame(teamId, date);
+
             return ResponseEntity.ok(new ResponseMessage<GamewResultsDTO>(gameFound));
         } catch (Exception e) {
-            System.out.println(e);
             return ResponseEntity.status(500).build();
         }
 
