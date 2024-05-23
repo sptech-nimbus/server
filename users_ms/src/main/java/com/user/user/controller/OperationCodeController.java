@@ -1,6 +1,8 @@
 package com.user.user.controller;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,10 +28,10 @@ public class OperationCodeController {
 
     @GetMapping("validate-code")
     public ResponseEntity<ResponseMessage<?>> validateCode(@RequestParam String code,
-            @RequestParam LocalDateTime date) {
+            @RequestParam Long now) {
         try {
-            OperationCode codeFound = service.getCode(code, date);
-            return ResponseEntity.status(200).body(new ResponseMessage<>(codeFound));
+            LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(now), ZoneId.of("UTC"));
+            return service.getCode(code, date);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(401).body(new ResponseMessage<>("Código não encontrado"));
         }
