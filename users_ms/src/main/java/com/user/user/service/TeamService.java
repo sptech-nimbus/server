@@ -66,7 +66,7 @@ public class TeamService {
         return ResponseEntity.ok(new ResponseMessage<Team>(repo.findById(id).get()));
     }
 
-    public ResponseEntity<ResponseMessage<List<InjuredAthleteDTO>>> getActiveInjuriesOnTeam(UUID id,
+    public List<InjuredAthleteDTO> getActiveInjuriesOnTeam(UUID id,
             LocalDate nowDate) {
         Team team = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
 
@@ -83,11 +83,7 @@ public class TeamService {
             }
         }
 
-        if (injuredAthletes.isEmpty()) {
-            return ResponseEntity.status(204).body(new ResponseMessage<>("Sem jogadores lesionados"));
-        }
-
-        return ResponseEntity.ok(new ResponseMessage<List<InjuredAthleteDTO>>(injuredAthletes));
+        return injuredAthletes;
     }
 
     public ResponseEntity<ResponseMessage<?>> putTeamById(UUID id, TeamDTO dto) {

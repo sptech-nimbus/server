@@ -87,7 +87,13 @@ public class TeamController {
     public ResponseEntity<ResponseMessage<List<InjuredAthleteDTO>>> getActiveInjuriesOnTeam(@PathVariable UUID id,
             @RequestParam LocalDate nowDate) {
         try {
-            return service.getActiveInjuriesOnTeam(id, nowDate);
+            List<InjuredAthleteDTO> injuredAthletes = service.getActiveInjuriesOnTeam(id, nowDate);
+
+            if(injuredAthletes.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            return ResponseEntity.ok(new ResponseMessage<List<InjuredAthleteDTO>>(injuredAthletes));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
