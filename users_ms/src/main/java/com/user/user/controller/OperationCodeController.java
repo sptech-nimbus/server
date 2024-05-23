@@ -31,9 +31,13 @@ public class OperationCodeController {
             @RequestParam Long now) {
         try {
             LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(now), ZoneId.of("UTC"));
-            return service.getCode(code, date);
+            
+            OperationCode opCode = service.getCode(code, date);
+
+            return ResponseEntity.ok(new ResponseMessage<OperationCode>(opCode));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(401).body(new ResponseMessage<>("Código não encontrado"));
         }
     }
-}
+
+}        
