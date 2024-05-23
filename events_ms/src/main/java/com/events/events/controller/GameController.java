@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.events.events.domain.coach.Coach;
 import com.events.events.domain.game.Game;
 import com.events.events.domain.game.GameDTO;
+import com.events.events.domain.game.GameWithTeams;
 import com.events.events.domain.game.GamewResultsDTO;
 import com.events.events.domain.responseMessage.ResponseMessage;
 import com.events.events.exception.ResourceNotFoundException;
@@ -69,7 +70,15 @@ public class GameController {
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
+    }
 
+    @GetMapping("next-game/{teamId}")
+    public ResponseEntity<ResponseMessage<GameWithTeams>> getNextGame(@PathVariable UUID teamId, @RequestParam Long now) {
+        LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(now), ZoneId.of("UTC"));
+
+        GameWithTeams nextGame = service.getNextGameFromTeamId(teamId, date);
+
+        return ResponseEntity.ok(new ResponseMessage<GameWithTeams>(nextGame));
     }
 
     // PATCH

@@ -66,8 +66,7 @@ public class TeamService {
         return ResponseEntity.ok(new ResponseMessage<Team>(repo.findById(id).get()));
     }
 
-    public List<InjuredAthleteDTO> getActiveInjuriesOnTeam(UUID id,
-            LocalDate nowDate) {
+    public List<InjuredAthleteDTO> getActiveInjuriesOnTeam(UUID id, LocalDate nowDate) {
         Team team = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Time", id));
 
         List<InjuredAthleteDTO> injuredAthletes = new ArrayList<>();
