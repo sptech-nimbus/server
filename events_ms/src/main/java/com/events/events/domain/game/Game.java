@@ -33,7 +33,7 @@ public class Game {
     @Column(name = "game_id")
     private UUID id;
 
-    @Column(name = "confirmed", columnDefinition = "boolean default 0")
+    @Column(name = "confirmed")
     private Boolean confirmed;
 
     @Column(name = "inicial_date_time")

@@ -106,6 +106,19 @@ public class GameService {
         return games;
     }
 
+    public GameWithTeams getNextGameFromTeamId(UUID teamId, LocalDateTime date) {
+        Game nextGameFound = repo.findNextGameByTeam(teamId, date)
+                .orElseThrow(() -> new ResourceNotFoundException("Jogo", teamId));
+
+        Team challenger = teamService.exchange("3000", "teams/ms-get-team", nextGameFound.getChallenger(), null,
+                Team.class);
+
+        Team challenged = teamService.exchange("3000", "teams/ms-get-team", nextGameFound.getChallenged(), null,
+                Team.class);
+
+        return new GameWithTeams(challenger, challenged, nextGameFound);
+    }
+
     public ResponseEntity<ResponseMessage<Game>> confirmGame(UUID id, Coach coach) {
         Game game = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Jogo", id));
         Coach coachFound;
