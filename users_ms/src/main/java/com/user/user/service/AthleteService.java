@@ -3,6 +3,7 @@ package com.user.user.service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
@@ -138,6 +139,12 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
         repo.save(athleteFound);
 
         return ResponseEntity.status(200).body(new ResponseMessage<>("Atleta " + athleteFound.getLastName() + " foi para o banco"));
+    }
+
+    public Optional<Athlete> findByUserId(UUID userId) {
+        Optional<Athlete> athleteFound = repo.findAthleteByUserId(userId);
+
+        return athleteFound;
     }
 
     public List<Athlete> findByTeam(UUID teamId) {

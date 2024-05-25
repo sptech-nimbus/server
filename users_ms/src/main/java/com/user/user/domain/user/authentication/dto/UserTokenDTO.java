@@ -10,10 +10,12 @@ public class UserTokenDTO {
     private String nome;
     private String email;
     private String token;
+    private UUID personaId;
 
-    public UserTokenDTO(UUID id, String token) {
+    public UserTokenDTO(UUID id, UUID personaId, String token) {
         this.userId = id;
         this.token = token;
+        this.personaId = personaId;
     }
 
     public UUID getUserId() {
@@ -46,5 +48,13 @@ public class UserTokenDTO {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public UUID getPersonaId() {
+        return personaId;
+    }
+
+    public void setPersonaId(UUID personaId) {
+        this.personaId = personaId;
     }
 }

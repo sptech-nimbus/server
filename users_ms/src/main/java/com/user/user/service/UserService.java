@@ -2,6 +2,7 @@ package com.user.user.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.user.user.config.security.jwt.GerenciadorTokenJwt;
+import com.user.user.domain.coach.Coach;
 import com.user.user.domain.email.EmailDTO;
 import com.user.user.domain.operationCodes.OperationCode;
 import com.user.user.domain.persona.NewUserDTO;
@@ -123,7 +125,18 @@ public class UserService {
         User userFound = repo.findByEmail(dto.email())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário", null));
 
-        String userType = userFound.getAthlete() != null ? "Athlete" : "Coach";
+        String userType;
+        UUID personaId;
+
+        Optional<Coach> coach = coachService.findCoachByUserId(userFound.getId());
+
+        if (coach.isPresent()) {
+            userType = "Coach";
+            personaId = coach.get().getId();
+        } else {
+            userType = "Athlete";
+            personaId = athleteService.findByUserId(userFound.getId()).get().getId();
+        }
 
         SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -131,7 +144,7 @@ public class UserService {
 
         return ResponseEntity.status(200)
                 .body(new ResponseMessage<UserTokenDTO>("Login realizado.", userType,
-                        new UserTokenDTO(userFound.getId(), token)));
+                        new UserTokenDTO(userFound.getId(), personaId, token)));
     }
 
     public ResponseEntity<ResponseMessage<?>> changePasswordRequest(ChangePasswordRequestDTO dto) {
