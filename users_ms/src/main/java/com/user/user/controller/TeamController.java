@@ -2,7 +2,6 @@ package com.user.user.controller;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
@@ -57,6 +56,17 @@ public class TeamController {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseMessage<Team>> getTeamById(@PathVariable UUID id) {
         return service.getTeamById(id);
+    }
+
+    @GetMapping("by-coach/{coachId}")
+    public ResponseEntity<ResponseMessage<List<Team>>> getTeamsByCoachId(@PathVariable UUID coachId) {
+        List<Team> teamsFound = service.findByCoachId(coachId);
+
+        if (teamsFound.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<List<Team>>(teamsFound));
     }
 
     @GetMapping("/active-injuries/{id}")
