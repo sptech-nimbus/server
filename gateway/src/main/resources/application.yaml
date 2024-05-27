@@ -35,6 +35,10 @@ spring:
           uri: http://localhost:3000
           predicates:
             - Path=/athletes/**
+        - id: athlete-historics
+          uri: http://localhost:3000
+          predicates:
+            - Path=/athlete-historics/**
         - id: coaches
           uri: http://localhost:3000
           predicates:

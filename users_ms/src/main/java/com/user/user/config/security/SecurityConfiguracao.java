@@ -61,6 +61,7 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/codes/validate-code"),
             new AntPathRequestMatcher("/users/ms-get-chat-user/**"),
             new AntPathRequestMatcher("/teams/ms-get-team/**"),
+            new AntPathRequestMatcher("/athlete-historics/ms-by-games/**"),
     };
 
     @Bean

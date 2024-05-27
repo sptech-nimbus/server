@@ -1,6 +1,7 @@
 package com.events.events.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +14,9 @@ import com.events.events.domain.athleteHistoric.AthleteHistoric;
 import com.events.events.domain.game.Game;
 import com.events.events.domain.gameResult.GameResult;
 import com.events.events.domain.graphs.PointsDivisionDTO;
-import com.events.events.domain.graphs.ThreePointsConvertedDTO;
 import com.events.events.domain.graphs.WinsFromTeamDTO;
 import com.events.events.domain.responseMessage.ResponseMessage;
+import com.events.events.exception.NoContentException;
 import com.events.events.repository.GameRepository;
 import com.events.events.repository.GameResultRepository;
 
@@ -30,6 +31,7 @@ public class GraphService {
     private final GameResultRepository gameResultRepo;
     private final GameRepository gameRepo;
     private final RestTemplateService<AthleteHistoricList> athleteHistoricListService;
+    private final RestTemplateService<AthleteHistoric> athleteHistoricService;
 
     public ResponseEntity<ResponseMessage<WinsFromTeamDTO>> getWinsByTeam(UUID teamId, Integer matches) {
         List<GameResult> gameResultsFound = gameResultRepo.findGameResultsByTeamWithLimit(teamId, matches);
@@ -53,39 +55,6 @@ public class GraphService {
         WinsFromTeamDTO winsFromTeamDTO = new WinsFromTeamDTO(teamWins, gameResultsFound.size() - teamWins);
 
         return ResponseEntity.status(200).body(new ResponseMessage<WinsFromTeamDTO>(winsFromTeamDTO));
-    }
-
-    public ResponseEntity<ResponseMessage<List<ThreePointsConvertedDTO>>> getThreePointsConverteAndAttempeddByTeam(
-            UUID teamId,
-            Integer matches) {
-        List<Game> gamesFound = gameRepo.findGamesByChallengerChallengedWithTop(teamId, matches);
-
-        if (gamesFound.isEmpty())
-            return ResponseEntity.status(204)
-                    .body(new ResponseMessage<>("Time ainda não jogou nenhum jogo"));
-
-        if (gamesFound.stream().allMatch(game -> game.getAthletesHistorics() == null))
-            return ResponseEntity.status(204)
-                    .body(new ResponseMessage<>("Nenhum histórico de atleta registrado"));
-
-        List<ThreePointsConvertedDTO> threePointsConverted = new ArrayList<>();
-
-        for (Game game : gamesFound) {
-            Integer threePointsConvertedThatGame = 0, threePointsAttempedThatGame = 0;
-
-            for (AthleteHistoric athleteHistoric : game.getAthletesHistorics()) {
-                threePointsConvertedThatGame += athleteHistoric.getThreePointsConverted();
-                threePointsAttempedThatGame += athleteHistoric.getThreePointsAttemped();
-            }
-
-            threePointsConverted.add(new ThreePointsConvertedDTO(
-                    threePointsAttempedThatGame,
-                    threePointsConvertedThatGame,
-                    game));
-        }
-
-        return ResponseEntity.status(200)
-                .body(new ResponseMessage<List<ThreePointsConvertedDTO>>(threePointsConverted));
     }
 
     public ResponseEntity<ResponseMessage<PointsDivisionDTO>> getPointsDivisionByTeamMatches(UUID teamId,
@@ -127,6 +96,54 @@ public class GraphService {
         }
 
         return pointsPerGame;
+    }
+
+    public Map<Game, Integer> getFoulsPerGame(UUID teamId, Integer matches) {
+        List<Game> gamesFound = gameRepo.findTopGames(teamId, matches);
+
+        if (gamesFound.isEmpty()) {
+            throw new NoContentException();
+        }
+
+        String gameIdListRequestParam = "";
+
+        for (Game game : gamesFound) {
+            if (gameIdListRequestParam != "")
+                gameIdListRequestParam += "&";
+
+            gameIdListRequestParam += "gamesIdList=" + game.getId();
+        }
+
+        AthleteHistoric[] athleteHistoricsArray = athleteHistoricService.getTemplateList("3000",
+                "athlete-historics/ms-by-games", teamId, gameIdListRequestParam, AthleteHistoric[].class);
+
+        List<AthleteHistoric> athleteHistoricList = new ArrayList<AthleteHistoric>(
+                Arrays.asList(athleteHistoricsArray));
+
+        System.out.println(athleteHistoricList);
+
+        Map<Game, List<AthleteHistoric>> mapAthleteHistoricPerGame = new HashMap<Game, List<AthleteHistoric>>();
+
+        for (Game game : gamesFound) {
+            List<AthleteHistoric> athleteHistorics = athleteHistoricList.stream()
+                    .filter(g -> g.getGameId().equals(game.getId()))
+                    .toList();
+
+            mapAthleteHistoricPerGame.put(game, athleteHistorics);
+        }
+
+        Map<Game, Integer> mapFoulsPerGame = new HashMap<Game, Integer>();
+
+        for (Game game : mapAthleteHistoricPerGame.keySet()) {
+            Integer totalFouls = 0;
+            for (AthleteHistoric ah : mapAthleteHistoricPerGame.get(game)) {
+                totalFouls += ah.getFouls();
+            }
+
+            mapFoulsPerGame.put(game, totalFouls);
+        }
+
+        return mapFoulsPerGame;
     }
 
     @Getter
