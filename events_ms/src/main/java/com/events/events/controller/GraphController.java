@@ -32,10 +32,12 @@ public class GraphController {
         return service.getWinsByTeam(teamId, matches);
     }
 
-    @GetMapping("points-division-by-team-matches/{teamId}")
+    @GetMapping("points-division-per-team/{teamId}")
     public ResponseEntity<ResponseMessage<PointsDivisionDTO>> getPointsDivisionByTeamMatches(@PathVariable UUID teamId,
             @RequestParam Integer matches) {
-        return service.getPointsDivisionByTeamMatches(teamId, matches);
+        PointsDivisionDTO pointsDivision = service.getPointsDivisionByTeamMatches(teamId, matches);
+
+        return ResponseEntity.ok(new ResponseMessage<>(pointsDivision));
     }
 
     @GetMapping("points-per-game/{teamId}")
