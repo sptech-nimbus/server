@@ -47,3 +47,7 @@ spring:
           uri: http://localhost:3002
           predicates:
             - Path=/game-results/**
+        - id: graphs
+          uri: http://localhost:3002
+          predicates:
+            - Path=/graphs/**

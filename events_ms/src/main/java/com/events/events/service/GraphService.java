@@ -1,7 +1,9 @@
 package com.events.events.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -19,20 +21,15 @@ import com.events.events.repository.GameResultRepository;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Service
+@RequiredArgsConstructor
 public class GraphService {
     private final GameResultRepository gameResultRepo;
     private final GameRepository gameRepo;
     private final RestTemplateService<AthleteHistoricList> athleteHistoricListService;
-
-    public GraphService(GameResultRepository gameResultRepo, GameRepository gameRepo,
-            RestTemplateService<AthleteHistoricList> athleteHistoricListService) {
-        this.gameResultRepo = gameResultRepo;
-        this.gameRepo = gameRepo;
-        this.athleteHistoricListService = athleteHistoricListService;
-    }
 
     public ResponseEntity<ResponseMessage<WinsFromTeamDTO>> getWinsByTeam(UUID teamId, Integer matches) {
         List<GameResult> gameResultsFound = gameResultRepo.findGameResultsByTeamWithLimit(teamId, matches);
@@ -106,7 +103,7 @@ public class GraphService {
         }
 
         try {
-            AthleteHistoricList athleteHistoricListFound = athleteHistoricListService.exchange("3000",
+            athleteHistoricListService.exchange("3000",
                     "athlete-historics/ms-by-games", teamId, gameIdListRequestParam,
                     AthleteHistoricList.class);
         } catch (Exception e) {
@@ -115,6 +112,21 @@ public class GraphService {
         }
 
         return ResponseEntity.status(200).build();
+    }
+
+    public Map<Game, Integer> getPointsPerGame(UUID teamId, Integer matches) {
+        List<GameResult> gameResultsFound = gameResultRepo.findGameResultsByTeamWithLimit(teamId, matches);
+
+        Map<Game, Integer> pointsPerGame = new HashMap<>();
+
+        for (GameResult gr : gameResultsFound) {
+            pointsPerGame.put(gr.getGame(),
+                    gr.getGame().getChallenged().equals(teamId)
+                            ? gr.getChallengedPoints()
+                            : gr.getChallengerPoints());
+        }
+
+        return pointsPerGame;
     }
 
     @Getter
