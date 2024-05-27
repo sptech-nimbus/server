@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.events.events.domain.game.Game;
 import com.events.events.domain.graphs.PointsDivisionDTO;
+import com.events.events.domain.graphs.ReboundsPerTeam;
 import com.events.events.domain.graphs.WinsFromTeamDTO;
 import com.events.events.domain.responseMessage.ResponseMessage;
 import com.events.events.service.GraphService;
@@ -38,6 +39,19 @@ public class GraphController {
         PointsDivisionDTO pointsDivision = service.getPointsDivisionByTeamMatches(teamId, matches);
 
         return ResponseEntity.ok(new ResponseMessage<>(pointsDivision));
+    }
+
+    @GetMapping("rebounds-per-team/{teamId}")
+    public ResponseEntity<ResponseMessage<Map<Game, ReboundsPerTeam>>> getReboundsPerGameFromTeam(
+            @PathVariable UUID teamId,
+            @RequestParam Integer matches) {
+        Map<Game, ReboundsPerTeam> mapReboundsPerGame = service.getReboundsPerGameFromTeam(teamId, matches);
+
+        if (mapReboundsPerGame.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<>(mapReboundsPerGame));
     }
 
     @GetMapping("points-per-game/{teamId}")

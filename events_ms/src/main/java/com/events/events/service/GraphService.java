@@ -14,6 +14,7 @@ import com.events.events.domain.athleteHistoric.AthleteHistoric;
 import com.events.events.domain.game.Game;
 import com.events.events.domain.gameResult.GameResult;
 import com.events.events.domain.graphs.PointsDivisionDTO;
+import com.events.events.domain.graphs.ReboundsPerTeam;
 import com.events.events.domain.graphs.WinsFromTeamDTO;
 import com.events.events.domain.responseMessage.ResponseMessage;
 import com.events.events.exception.NoContentException;
@@ -51,6 +52,41 @@ public class GraphService {
         WinsFromTeamDTO winsFromTeamDTO = new WinsFromTeamDTO(teamWins, gameResultsFound.size() - teamWins);
 
         return ResponseEntity.status(200).body(new ResponseMessage<WinsFromTeamDTO>(winsFromTeamDTO));
+    }
+
+    public Map<Game, ReboundsPerTeam> getReboundsPerGameFromTeam(UUID teamId, Integer matches) {
+        List<Game> gamesFound = gameRepo.findTopGames(teamId, matches);
+
+        if (gamesFound.isEmpty()) {
+            throw new NoContentException();
+        }
+
+        String gameIdListRequestParam = "";
+
+        for (Game game : gamesFound) {
+            if (gameIdListRequestParam != "")
+                gameIdListRequestParam += "&";
+
+            gameIdListRequestParam += "gamesIdList=" + game.getId();
+        }
+
+        AthleteHistoric[] athleteHistoricsArray = athleteHistoricService.getTemplateList("3000",
+                "athlete-historics/ms-by-games", teamId, gameIdListRequestParam, AthleteHistoric[].class);
+
+        List<AthleteHistoric> athleteHistoricList = new ArrayList<>(Arrays.asList(athleteHistoricsArray));
+
+        Map<Game, List<AthleteHistoric>> mapAthleteHistoricPerGame = getHistoricsPerGameByGamesAndHistoricList(
+                gamesFound, athleteHistoricList);
+
+        Map<Game, ReboundsPerTeam> mapReboundsPerGame = new HashMap<>();
+
+        for (Game game : mapAthleteHistoricPerGame.keySet()) {
+            mapReboundsPerGame.put(game, new ReboundsPerTeam(
+                    getAllOffReboundsFromAthleteHistoricList(mapAthleteHistoricPerGame.get(game)),
+                    getAllDefReboundsFromAthleteHistoricList(mapAthleteHistoricPerGame.get(game))));
+        }
+
+        return mapReboundsPerGame;
     }
 
     public PointsDivisionDTO getPointsDivisionByTeamMatches(UUID teamId, Integer matches) {
@@ -100,6 +136,26 @@ public class GraphService {
         }
 
         return totalTwoPoints;
+    }
+
+    public Integer getAllDefReboundsFromAthleteHistoricList(List<AthleteHistoric> ahs) {
+        Integer totalDefReboundsPoints = 0;
+
+        for (AthleteHistoric ah : ahs) {
+            totalDefReboundsPoints += ah.getDefRebounds();
+        }
+
+        return totalDefReboundsPoints;
+    }
+
+    public Integer getAllOffReboundsFromAthleteHistoricList(List<AthleteHistoric> ahs) {
+        Integer totalOffReboundsPoints = 0;
+
+        for (AthleteHistoric ah : ahs) {
+            totalOffReboundsPoints += ah.getOffRebounds();
+        }
+
+        return totalOffReboundsPoints;
     }
 
     public Integer getAllThreePointsFromAthleteHistoricList(List<AthleteHistoric> ahs) {
