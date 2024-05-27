@@ -79,4 +79,11 @@ public class AthleteDescService {
 
         return new AthleteDescwAthleteDTO(athleteDesc, points, assists, rebounds);
     }
+
+    public void deleteAthleteDescById(UUID athleteId) {
+        AthleteDesc athleteDesc = repo.findByAthleteId(athleteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Descrição de atleta", athleteId));
+
+        repo.delete(athleteDesc);
+    }
 }

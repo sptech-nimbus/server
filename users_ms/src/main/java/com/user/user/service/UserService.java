@@ -32,7 +32,10 @@ import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.repository.UserRepository;
 import com.user.user.util.CodeGenerator;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository repo;
     private final CoachService coachService;
@@ -42,19 +45,7 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final GerenciadorTokenJwt gerenciadorTokenJwt;
     private final AuthenticationManager authenticationManager;
-
-    public UserService(UserRepository repo, CoachService coachService, AthleteService athleteService,
-            EmailService emailService, OperationCodeService operationCodeService, PasswordEncoder encoder,
-            GerenciadorTokenJwt gerenciadorTokenJwt, AuthenticationManager authenticationManager) {
-        this.repo = repo;
-        this.coachService = coachService;
-        this.athleteService = athleteService;
-        this.emailService = emailService;
-        this.operationCodeService = operationCodeService;
-        this.encoder = encoder;
-        this.gerenciadorTokenJwt = gerenciadorTokenJwt;
-        this.authenticationManager = authenticationManager;
-    }
+    private final AthleteDescService athleteDescService;
 
     public ResponseEntity<ResponseMessage<NewUserDTO>> register(UserDTO dto) {
         List<String> credencialsErrors = checkAllUserCredencials(dto);
@@ -221,17 +212,10 @@ public class UserService {
         }
 
         if (userFound.getAthlete() != null) {
-            try {
-                athleteService.removeUserFromAthlete(userFound.getAthlete().getId());
-            } catch (ResourceNotFoundException e) {
-                throw new ResourceNotFoundException("Atleta", userFound.getAthlete().getId());
-            }
+            athleteService.removeUserFromAthlete(userFound.getAthlete().getId());
+            athleteDescService.deleteAthleteDescById(userFound.getAthlete().getId());
         } else {
-            try {
-                coachService.removeUserFromCoach(userFound.getCoach().getId());
-            } catch (ResourceNotFoundException e) {
-                throw new ResourceNotFoundException("Atleta", userFound.getCoach().getId());
-            }
+            coachService.removeUserFromCoach(userFound.getCoach().getId());
         }
 
         repo.delete(userFound);
