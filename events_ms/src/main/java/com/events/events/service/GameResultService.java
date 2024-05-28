@@ -34,8 +34,7 @@ public class GameResultService {
     }
 
     public ResponseEntity<ResponseMessage<GameResult>> register(GameResultDTO dto) {
-        Game gameFound = gameRepo.findById(dto.game().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Time", dto.game().getId()));
+        Game gameFound = gameRepo.findById(dto.game().getId()).orElseThrow(() -> new ResourceNotFoundException("Time", dto.game().getId()));
 
         List<String> validateErrors = validateDTO(dto);
 

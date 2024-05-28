@@ -1,17 +1,13 @@
 package com.events.events.domain.training;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
-
-import com.events.events.domain.athleteHistoric.AthleteHistoric;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,9 +38,6 @@ public class Training {
     @Column(name = "team_id")
     private UUID team;
 
-    @OneToMany(mappedBy = "training")
-    private List<AthleteHistoric> athletesHistorics;
-
     public Training(TrainingDTO dto) {
         this.setFinalDateTime(dto.finalDateTime());
         this.setInicialDateTime(dto.inicialDateTime());
@@ -60,7 +53,6 @@ public class Training {
                 "finalDateTime=" + finalDateTime + '\'' +
                 "local=" + local + '\'' +
                 "team=" + team + '\'' +
-                "athletesHistorics=" + athletesHistorics + '\'' +
                 "}";
     }
 }

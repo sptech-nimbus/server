@@ -56,7 +56,12 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/actuator/*"),
             new AntPathRequestMatcher("/h2-console/**"),
-            new AntPathRequestMatcher("/error/**")
+            new AntPathRequestMatcher("/error/**"),
+            new AntPathRequestMatcher("/users/change-password-request"),
+            new AntPathRequestMatcher("/codes/validate-code"),
+            new AntPathRequestMatcher("/users/ms-get-chat-user/**"),
+            new AntPathRequestMatcher("/teams/ms-get-team/**"),
+            new AntPathRequestMatcher("/athlete-historics/ms-by-games/**"),
     };
 
     @Bean
@@ -64,7 +69,8 @@ public class SecurityConfiguracao {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers(URLS_PERMITIDAS)
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(URLS_PERMITIDAS)
                         .permitAll()
                         .anyRequest()
                         .authenticated())

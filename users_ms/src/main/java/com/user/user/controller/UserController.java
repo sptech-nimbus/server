@@ -2,6 +2,7 @@ package com.user.user.controller;
 
 import java.util.UUID;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.user.user.domain.persona.ChatUserDTO;
+import com.user.user.domain.persona.NewUserDTO;
 import com.user.user.domain.persona.Persona;
 import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.domain.user.ChangePasswordDTO;
@@ -24,7 +26,7 @@ import com.user.user.service.PersonaService;
 import com.user.user.service.UserService;
 
 @RestController
-@RequestMapping("users")
+@RequestMapping(path = "users", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.ALL_VALUE })
 public class UserController {
     private final UserService service;
 
@@ -37,7 +39,7 @@ public class UserController {
 
     // POST
     @PostMapping
-    public ResponseEntity<ResponseMessage<UUID>> registerUser(@RequestBody UserDTO dto) {
+    public ResponseEntity<ResponseMessage<NewUserDTO>> registerUser(@RequestBody UserDTO dto) {
         return service.register(dto);
     }
 

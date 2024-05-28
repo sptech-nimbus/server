@@ -103,4 +103,8 @@ public class TrainingService {
 
         return !trainingFinal.isPresent() || trainingFinal.get().getId().equals(id);
     }
+
+    public Training msGetTrainingById(UUID id) throws ResourceNotFoundException {
+        return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Treino", id));
+    }
 }

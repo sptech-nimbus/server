@@ -2,6 +2,7 @@ package com.user.user.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -16,8 +17,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.user.user.config.security.jwt.GerenciadorTokenJwt;
+import com.user.user.domain.coach.Coach;
 import com.user.user.domain.email.EmailDTO;
 import com.user.user.domain.operationCodes.OperationCode;
+import com.user.user.domain.persona.NewUserDTO;
 import com.user.user.domain.persona.Persona;
 import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.domain.user.ChangePasswordDTO;
@@ -29,7 +32,10 @@ import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.repository.UserRepository;
 import com.user.user.util.CodeGenerator;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository repo;
     private final CoachService coachService;
@@ -39,21 +45,9 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final GerenciadorTokenJwt gerenciadorTokenJwt;
     private final AuthenticationManager authenticationManager;
+    private final AthleteDescService athleteDescService;
 
-    public UserService(UserRepository repo, CoachService coachService, AthleteService athleteService,
-            EmailService emailService, OperationCodeService operationCodeService, PasswordEncoder encoder,
-            GerenciadorTokenJwt gerenciadorTokenJwt, AuthenticationManager authenticationManager) {
-        this.repo = repo;
-        this.coachService = coachService;
-        this.athleteService = athleteService;
-        this.emailService = emailService;
-        this.operationCodeService = operationCodeService;
-        this.encoder = encoder;
-        this.gerenciadorTokenJwt = gerenciadorTokenJwt;
-        this.authenticationManager = authenticationManager;
-    }
-
-    public ResponseEntity<ResponseMessage<UUID>> register(UserDTO dto) {
+    public ResponseEntity<ResponseMessage<NewUserDTO>> register(UserDTO dto) {
         List<String> credencialsErrors = checkAllUserCredencials(dto);
 
         if (!credencialsErrors.isEmpty()) {
@@ -76,30 +70,41 @@ public class UserService {
 
         repo.save(newUser);
 
+        NewUserDTO newUserDTO;
+
+        if (dto.coach() != null && dto.athlete() != null) {
+            return ResponseEntity.status(400).body(new ResponseMessage<>("Informe apenas um tipo de usuário"));
+        }
+
         if (dto.coach() != null) {
             ResponseEntity<ResponseMessage<UUID>> coachResponseEntity = coachService.register(dto.coach(), newUser);
 
-            if (!coachResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            if (!coachResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(201))) {
                 repo.delete(newUser);
 
-                return coachResponseEntity;
+                return ResponseEntity.status(400)
+                        .body(new ResponseMessage<>(coachResponseEntity.getBody().getClientMsg()));
             }
+
+            newUserDTO = new NewUserDTO(newUser.getId(), coachResponseEntity.getBody().getData());
         } else if (dto.athlete() != null) {
             ResponseEntity<ResponseMessage<UUID>> athleteResponseEntity = athleteService.register(dto.athlete(),
                     newUser);
 
-            if (!athleteResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            if (!athleteResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(201))) {
                 repo.delete(newUser);
 
-                return athleteResponseEntity;
+                return ResponseEntity.status(400).body(new ResponseMessage<>(
+                        athleteResponseEntity.getBody().getClientMsg()));
             }
+
+            newUserDTO = new NewUserDTO(newUser.getId(), athleteResponseEntity.getBody().getData());
         } else {
             return ResponseEntity.status(400)
                     .body(new ResponseMessage<>("Tipo de usuário não permitido ou não informado."));
         }
 
-        return ResponseEntity
-                .status(200).body(new ResponseMessage<UUID>("Cadastro realizado", newUser.getId()));
+        return ResponseEntity.status(200).body(new ResponseMessage<NewUserDTO>(newUserDTO));
     }
 
     public ResponseEntity<ResponseMessage<UserTokenDTO>> login(UserDTO dto) {
@@ -111,7 +116,18 @@ public class UserService {
         User userFound = repo.findByEmail(dto.email())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário", null));
 
-        String userType = userFound.getAthlete() != null ? "Athlete" : "Coach";
+        String userType;
+        UUID personaId;
+
+        Optional<Coach> coach = coachService.findCoachByUserId(userFound.getId());
+
+        if (coach.isPresent()) {
+            userType = "Coach";
+            personaId = coach.get().getId();
+        } else {
+            userType = "Athlete";
+            personaId = athleteService.findByUserId(userFound.getId()).get().getId();
+        }
 
         SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -119,12 +135,11 @@ public class UserService {
 
         return ResponseEntity.status(200)
                 .body(new ResponseMessage<UserTokenDTO>("Login realizado.", userType,
-                        new UserTokenDTO(userFound.getId(), token)));
-
+                        new UserTokenDTO(userFound.getId(), personaId, token)));
     }
 
     public ResponseEntity<ResponseMessage<?>> changePasswordRequest(ChangePasswordRequestDTO dto) {
-        User userFound = repo.findById(dto.id()).orElseThrow(() -> new ResourceNotFoundException("Usuário", dto.id()));
+        User userFound = repo.findByEmail(dto.email()).get();
 
         Persona personaFound = userFound.getAthlete() == null ? userFound.getCoach() : userFound.getAthlete();
 
@@ -139,14 +154,13 @@ public class UserService {
         }
 
         try {
-
             String emailContent = "<style>\r\n" + //
                     "@import url('https://fonts.cdnfonts.com/css/catamaran');\r\n" + //
                     "</style>"
                     + "<div style=\"display: flex; justify-content: center; background-color: #c9c9c9; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;\">"
                     + "<div style=\"background-color: #131313; width: 40%; color: #FFEAE0\">"
                     + "<div style=\"margin-left: 86px; margin-top: 15px;\">"
-                    + "<img style=\"width: 180px; height: 150px;\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/dev/users_ms/src/main/java/com/user/user/utils/img/logo-email.png\" alt=\"\">"
+                    + "<img style=\"width: 180px; height: 150px;\" data-imagetype=\"External\" class=\"x_gmail-CToWUd\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/main/users_ms/src/main/java/com/user/user/util/img/logo-email.png\" alt=\"\">"
                     + "</div>"
                     + "<div style=\"border-top: 2px solid #FF7425; margin-top: 15px;\"></div>"
                     + "<div style=\"margin-left: 17%; width: 95%;\">"
@@ -160,7 +174,7 @@ public class UserService {
                     + "<div style=\"display: flex; justify-content: center; align-items: center; margin-left: 5%; width: 300px; height: 100px; border: 3px solid #FF7425 ;\">"
                     + "<h2>" + recuperationCode + "</h2>"
                     + "</div>"
-                    + "<img style=\"margin-top: 20px; width: 315px; height: 150px; margin-left: 17px\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/dev/users_ms/src/main/java/com/user/user/utils/img/footer-email.png\" alt=\"\">"
+                    + "<img style=\"margin-top: 20px; width: 315px; height: 150px; margin-left: 17px\" data-imagetype=\\\"External\\\" class=\\\"x_gmail-CToWUd\\\" src=\"https://raw.githubusercontent.com/sptech-nimbus/server/main/users_ms/src/main/java/com/user/user/util/img/footer-email.png\" alt=\"\">"
                     + "</div>"
                     + "</div>";
 
@@ -179,16 +193,12 @@ public class UserService {
     public ResponseEntity<ResponseMessage<?>> changePassword(UUID id, ChangePasswordDTO dto) {
         User userFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
 
-        if (userFound.getPassword().equals(dto.oldPassword())) {
-            if (checkUserPassword(dto.newPassword())) {
-                userFound.setPassword(dto.newPassword());
+        if (checkUserPassword(dto.newPassword())) {
+            userFound.setPassword(dto.newPassword());
 
-                repo.save(userFound);
-            } else {
-                return ResponseEntity.status(409).body(new ResponseMessage<>("Senha fora dos padrões."));
-            }
+            repo.save(userFound);
         } else {
-            return ResponseEntity.status(400).body(new ResponseMessage<>("Antiga senha incorreta."));
+            return ResponseEntity.status(409).body(new ResponseMessage<>("Senha fora dos padrões."));
         }
 
         return ResponseEntity.status(200).body(new ResponseMessage<>("Senha alterada com sucesso."));
@@ -202,17 +212,10 @@ public class UserService {
         }
 
         if (userFound.getAthlete() != null) {
-            try {
-                athleteService.removeUserFromAthlete(userFound.getAthlete().getId());
-            } catch (ResourceNotFoundException e) {
-                throw new ResourceNotFoundException("Atleta", userFound.getAthlete().getId());
-            }
+            athleteService.removeUserFromAthlete(userFound.getAthlete().getId());
+            athleteDescService.deleteAthleteDescById(userFound.getAthlete().getId());
         } else {
-            try {
-                coachService.removeUserFromCoach(userFound.getCoach().getId());
-            } catch (ResourceNotFoundException e) {
-                throw new ResourceNotFoundException("Atleta", userFound.getCoach().getId());
-            }
+            coachService.removeUserFromCoach(userFound.getCoach().getId());
         }
 
         repo.delete(userFound);

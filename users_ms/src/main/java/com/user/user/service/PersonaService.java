@@ -80,6 +80,7 @@ public class PersonaService {
     };
 
     public Boolean checkValidPhone(String phone) {
+        System.out.println(phone);
         if (phone == null)
             return true;
 

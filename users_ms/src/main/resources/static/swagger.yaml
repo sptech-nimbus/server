@@ -14,7 +14,7 @@ paths:
       tags:
         - Users
       summary: Insere um novo usuário.
-      description: Registro novo usuário e atleta/treinador.
+      description: Registro de um novo usuário e atleta/treinador.
       requestBody:
         content:
           application/json:
@@ -318,6 +318,122 @@ paths:
                 serverMessage: error message
                 data: null
 
+  /coaches/ms-get-coach/{id}:
+    get:
+      tags:
+        - Coaches
+      summary: Retorna as informações do treinador.
+      description: Retorna informações de persona do treinador por seu ID.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do usuário.
+      responses:
+        200:
+          description: Treinador encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: null
+                serverMessage: null
+                data:
+                  firstName: Melissa
+                  lastName: Cavalcante
+                  birthDate: 2004-10-07
+                  phone: 84244562331
+                  picture: null
+        404:
+          description: Usuário não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Informações de usuário não encontradas
+                serverMessage: null
+                data: null
+
+  /athletes/ms-get-athlete/{id}:
+    get:
+      tags:
+        - Athletes
+      summary: Retorna as informações do atleta.
+      description: Retorna informações de persona do atleta por seu ID.
+      parameters:
+        - in: path
+          name: Id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do usuário.
+      responses:
+        200:
+          description: Atleta encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: null
+                serverMessage: null
+                data:
+                  firstName: Melissa
+                  lastName: Cavalcante
+                  birthDate: 2004-10-07
+                  phone: 84244562331
+                  picture: null
+                  category: sub-20
+                  isStarting: true
+        404:
+          description: Usuário não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Informações de usuário não encontradas
+                serverMessage: null
+                data: null
+  /athletes/generate-csv:
+    get:
+      tags:
+        - Athletes
+      summary: Cria o arquivo csv.         
+      description: Cria o arquivo csv com as informações dos atletas.
+      parameters:
+        - in: path
+          name: Ids
+          schema:
+            type: string
+          required: true
+          description: List Id (UUID) do usuário.
+      responses:
+        200:
+            description: criação do arquivo feita com sucesso.
+            content:
+              application/json:
+                schema:
+                  $ref: "#components/schemas/ResponseMessage"
+                example:
+                  clientMessage: null
+                  serverMessage: null
+                  data: null
+        500:
+            description: erro na criação do arquivo csv.
+            content:
+              application/json:
+                schema:
+                  $ref: "#components/schemas/ResponseMessage"
+                example:
+                  clientMessage: erro ao criar o arquivo csv.
+                  serverMessage: null
+                  data: null                        
+
   /athletes/{id}:
     put:
       tags:
@@ -342,6 +458,8 @@ paths:
               birthDate: 2004-04-09
               phone: 11910434007
               picture: null
+              category: sub-20
+              isStarting: true
       responses:
         200:
           description: Senha de usuário atualizada.
@@ -376,7 +494,7 @@ paths:
           schema:
             type: string
           required: true
-          description: Id(UUID) do atleta.
+          description: Id(UUID) do time.
       requestBody:
         content:
           application/json:
@@ -408,7 +526,123 @@ paths:
                 clientMessage: Atleta {lastName} cadatrado no time.
                 serverMessage: null
                 data: null
-
+  
+  /athlete-descs/:
+    post:
+      tags:
+        - "Athletes description"
+      summary: Registra uma descrição para o atletas.
+      description: Registra altura, peso, posição do atleta.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/schemas/AthleteDesc"
+            example:
+                weight: 70.3
+                height: 1.84
+                position: PG
+                athlete: 
+                  id: ''
+      responses:
+        200:
+          description: Descrição do atleta cadastrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Descrição do atleta cadastrado com sucesso.
+                serverMessage: null
+                data: null  
+        400:
+          description: Id do atleta não encontrado.
+          content:
+            application/json:
+              schema: 
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Erro ao cadastrar, Id do atleta não encontrado.
+                serverMessage: null
+                data: null
+  /athlete-descs/{athleteId}:
+    get:
+      tags:
+        - "Athletes description"
+      summary: Retorna as descrição do atleta por id.
+      description: Retorna as informações da descrição do atleta por id.
+      parameters:
+        - in: path
+          name: Id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do atleta    
+      responses:
+        200:
+          description: Descrição do atleta encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Descrição do atleta encontrado.
+                serverMessage: null
+                data: 
+                  weight: 70.3
+                  height: 1.84
+                  position: PG
+                  athlete: 
+                    id: ''  
+        400:
+          description: Id do atleta não encontrado.
+          content:
+            application/json:
+              schema: 
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Id do atleta não encontrado.
+                serverMessage: null
+                data: null
+  /{athleteId}:
+    put:
+      tags:
+        - "Athletes description"
+      summary: Atualiza a descrição do atleta por id.
+      description: Atualiza as informações da descrição do atleta por id.
+      requestBody:
+        content:
+           application/json:
+            schema:
+              $ref: "#components/schemas/AthleteDesc"
+            example:
+                weight: 70.3
+                height: 1.84
+                position: PG
+                athlete: 
+                  id: '' 
+      responses:
+        200:
+          description: Informações de atleta atualizadas.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Informações de atleta atualizadas.
+                serverMessage: null
+                data: null.  
+        400:
+          description: Id do atleta não encontrado.
+          content:
+            application/json:
+              schema: 
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Id do atleta não encontrado.
+                serverMessage: null
+                data: null
+  
   /injuries:
     post:
       tags:
@@ -451,8 +685,47 @@ paths:
                 serverMessage: null
                 data: null
 
-  /injuries/{id}:
+  /injuries/from-athlete/{athleteId}:
     get:
+      tags:
+        - Injuries
+      summary: Retorna as informações da lesão do atleta.
+      description: Retorna informações lesão do atleta por seu id.
+      parameters:
+        - in: path
+          name: Id
+          schema:
+            type: string
+          required: true
+          description: id(UUID) do usuário.
+      responses:
+        200:
+          description: Informações da lesão do atleta.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Lesão do Atleta encontrado.
+                serverMessage: null
+                data:
+                  type: Deslocamento no ombro direito.
+                  inicialDate: 2024-03-20
+                  finalDate: 2024-03-27
+        500:
+          description: Atleta sem registros de lesões.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: error message
+                serverMessage: null
+                data: null
+
+
+  /injuries/{id}:
+    put:
       tags:
         - Injuries
       summary: Atualiza informações de lesão de atleta.
@@ -499,8 +772,8 @@ paths:
     delete:
       tags:
         - Injuries
-      summary: Atualiza informações de lesão de atleta.
-      description: Atualiza informações lesão de relacionada a atleta.
+      summary: Deleta informações de lesão de atleta.
+      description: Deleta as informações da lesão relacionada ao atleta.
       parameters:
         - in: path
           name: id
@@ -568,12 +841,174 @@ paths:
               example:
                 clientMessage: Time registrado.
                 serverMessage: null
+                data: null.
+    get:
+      tags:
+        - Teams
+      summary: Retorna as informações do time
+      description: obtém informações dos times, Id do treinador e os atletas cadastrado no time.
+      responses:
+        200:
+          description: Times encontrados.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Team"
+              example: 
+                clientMessage: Times encontrados.
+                serverMessage: null
+                data:
+                  name: Dragões de gelo
+                  category: sub-20
+                  picture: null
+                  local: Rua das araras
+                  coach: 
+                    id: ""
+                  athletes:
+                    firstName: Melissa
+                    lastName: Cavalcante
+                    birthDate: 2004-10-07
+                    phone: 84244562331
+                    picture: null
+                    category: sub-20
+                    isStarting: true
+  /teams/{id}:             
+    get:
+      tags:
+        - Teams
+      summary: Retorna as informações do time por Id.
+      description: Obtém as informações do time por Id, o Id do treinador e os atletas cadastrados no time.
+      parameters:
+        - in: path
+          name: Id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do Time.
+      requestBody:
+        content:
+          application/json:
+            schema: 
+             $ref: "#components/schemas/Team"
+            example:
+              team_id: ""
+      responses:
+        200:
+          description: Times encontrados.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Team"
+              example: 
+                clientMessage: Times encontrados.
+                serverMessage: null
+                data:
+                  name: Dragões de gelo
+                  category: sub-20
+                  picture: null
+                  local: Rua das araras
+                  coach: 
+                    id: ""
+                  athletes:
+                    firstName: Melissa
+                    lastName: Cavalcante
+                    birthDate: 2004-10-07
+                    phone: 84244562331
+                    picture: null
+                    category: sub-20
+                    isStarting: true  
+  /teams/active-injuries/{id}:  
+    get:
+      tags:
+        - Teams
+      summary: obtém lesões ativas na equipe.                 
+      description: Busca as lesões ativas na equipe.
+      parameters:
+        - in: path
+          name: Id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do time.
+        - in: path
+          name: nowDate
+          schema:
+            type: string
+          required: true
+          description: data da lesão para a busca.
+      responses:
+        200:
+          description: Lesão encontrada.
+          content: 
+            application/json:
+              schema: 
+                $ref: "#components/schemas/Team"
+              example:
+                clientMessage: Lesão encontrada.
+                serverMessage: null
+                data:
+                  type: Deslocamento no ombro direito.
+                  inicialDate: 2024-03-20
+                  finalDate: 2024-03-27
+                  athlete:
+                    firstName: Mel
+                    lastName: Rodrigues
+                    birthDate: 2004-04-09
+                    phone: 11910434007
+                    picture: null
+                    category: sub-20
+                    isStarting: true
+        404:
+          description: Lesão não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ResponseMessage"
+              example:
+                clientMessage: Lesão não encontrada. 
+                serverMessage: null
                 data: null
+  /teams/ms-get-team/{id}:
+    get:
+      tags:
+        - Teams
+      summary: Retorna as informações do time por Id                 
+      description: Retorna as informações do time por id para outros microserviços.
+      parameters:
+        - in: path
+          name: Id
+          schema:
+            type: string
+          required: true
+          description: Id(UUID) do time.
+      responses:
+        200:
+          description: Times buscados.
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Team"
+              example:
+                clientMessage: Times encontrados.
+                serverMessage: null
+                data:
+                  name: Dragões de gelo
+                  category: sub-20
+                  picture: null
+                  local: Rua das araras
+                  coach: 
+                    id: ""
+                  athletes:
+                    firstName: Melissa
+                    lastName: Cavalcante
+                    birthDate: 2004-10-07
+                    phone: 84244562331
+                    picture: null
+                    category: sub-20
+                    isStarting: true   
+      
 
-tags:
-  - name: Users
-  - name: Coaches
-
+    
 components:
   schemas:
     ResponseMessage:

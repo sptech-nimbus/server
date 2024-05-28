@@ -21,7 +21,6 @@ public class Athlete {
     private String picture;
     private String category;
 
-
     @Override
     public String toString() {
         return "Athlete {" + '\'' +

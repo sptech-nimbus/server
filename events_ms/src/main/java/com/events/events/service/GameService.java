@@ -1,9 +1,11 @@
 package com.events.events.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import com.events.events.domain.coach.Coach;
 import com.events.events.domain.game.Game;
 import com.events.events.domain.game.GameDTO;
 import com.events.events.domain.game.GameWithTeams;
+import com.events.events.domain.game.GamewResultsDTO;
 import com.events.events.domain.responseMessage.ResponseMessage;
 import com.events.events.domain.team.Team;
 import com.events.events.exception.ResourceNotFoundException;
@@ -32,15 +35,41 @@ public class GameService {
         this.wsMsgTemplate = wsMsgTemplate;
     }
 
-    public ResponseEntity<ResponseMessage<Game>> register(GameDTO dto) {
-        Game newGame = new Game(dto);
+    public GamewResultsDTO getLastGame(UUID teamId, LocalDateTime now) {
+        Game gameFound = repo
+                .findLastGameByTeam(teamId, now)
+                .orElseThrow(() -> new ResourceNotFoundException("Jogo", teamId));
 
-        repo.save(newGame);
+        Team challenger = teamService.exchange("3000", "teams/ms-get-team", gameFound.getChallenger(), null,
+                Team.class);
 
-        return ResponseEntity.status(200).body(new ResponseMessage<Game>(newGame));
+        Team challenged = teamService.exchange("3000", "teams/ms-get-team", gameFound.getChallenged(), null,
+                Team.class);
+
+        return new GamewResultsDTO(
+                gameFound,
+                gameFound.getGameResult(),
+                challenger,
+                challenged);
     }
 
-    public ResponseEntity<ResponseMessage<List<GameWithTeams>>> getGamesFromTeamId(UUID teamId) {
+    public ResponseEntity<ResponseMessage<List<Game>>> register(List<GameDTO> dtos) {
+        List<Game> newGames = new ArrayList<>();
+
+        for (GameDTO dto : dtos) {
+            Game newGame = new Game(dto);
+
+            BeanUtils.copyProperties(dtos, newGames);
+
+            repo.save(newGame);
+
+            newGames.add(newGame);
+        }
+
+        return ResponseEntity.status(200).body(new ResponseMessage<List<Game>>(newGames));
+    }
+
+    public ResponseEntity<ResponseMessage<List<GameWithTeams>>> getGamesWithTeamsFromTeamId(UUID teamId) {
         List<Game> games = repo.findGamesByChallengerOrChallenged(teamId, teamId);
 
         List<GameWithTeams> gamesWithTeams = new ArrayList<>();
@@ -49,8 +78,8 @@ public class GameService {
             for (Game game : games) {
                 try {
                     GameWithTeams gameWithTeams = new GameWithTeams(
-                            teamService.getTemplateById("3000", "teams/ms-get-team", game.getChallenger(), Team.class),
-                            teamService.getTemplateById("3000", "teams/ms-get-team", game.getChallenged(), Team.class),
+                            teamService.exchange("3000", "teams/ms-get-team", game.getChallenger(), null, Team.class),
+                            teamService.exchange("3000", "teams/ms-get-team", game.getChallenged(), null, Team.class),
                             game);
 
                     gamesWithTeams.add(gameWithTeams);
@@ -69,6 +98,25 @@ public class GameService {
 
         return ResponseEntity.status(204)
                 .body(new ResponseMessage<List<GameWithTeams>>("Nenhum jogo encontrado"));
+    }
+
+    public List<Game> getGamesFromTeamId(UUID teamId) {
+        List<Game> games = repo.findGamesByChallengerOrChallenged(teamId, teamId);
+
+        return games;
+    }
+
+    public GameWithTeams getNextGameFromTeamId(UUID teamId, LocalDateTime date) {
+        Game nextGameFound = repo.findNextGameByTeam(teamId, date)
+                .orElseThrow(() -> new ResourceNotFoundException("Jogo", teamId));
+
+        Team challenger = teamService.exchange("3000", "teams/ms-get-team", nextGameFound.getChallenger(), null,
+                Team.class);
+
+        Team challenged = teamService.exchange("3000", "teams/ms-get-team", nextGameFound.getChallenged(), null,
+                Team.class);
+
+        return new GameWithTeams(challenger, challenged, nextGameFound);
     }
 
     public ResponseEntity<ResponseMessage<Game>> confirmGame(UUID id, Coach coach) {
@@ -128,5 +176,9 @@ public class GameService {
         repo.delete(game);
 
         return ResponseEntity.status(200).body(new ResponseMessage<Game>("Jogo cancelado"));
+    }
+
+    public Game msGetGameById(UUID id) throws ResourceNotFoundException {
+        return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Jogo", id));
     }
 }

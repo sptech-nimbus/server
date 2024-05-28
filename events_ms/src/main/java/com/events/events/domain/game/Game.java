@@ -1,19 +1,15 @@
 package com.events.events.domain.game;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
-import com.events.events.domain.athleteHistoric.AthleteHistoric;
 import com.events.events.domain.gameResult.GameResult;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -33,7 +29,7 @@ public class Game {
     @Column(name = "game_id")
     private UUID id;
 
-    @Column(name = "confirmed", columnDefinition = "boolean default 0")
+    @Column(name = "confirmed")
     private Boolean confirmed;
 
     @Column(name = "inicial_date_time")
@@ -50,10 +46,6 @@ public class Game {
 
     @Column(name = "challenged_id", nullable = false)
     private UUID challenged;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "game")
-    private List<AthleteHistoric> athletesHistorics;
 
     @OneToOne(mappedBy = "game")
     private GameResult gameResult;
@@ -79,5 +71,4 @@ public class Game {
                 "challenged=" + challenged + '\'' +
                 "}";
     }
-
 }

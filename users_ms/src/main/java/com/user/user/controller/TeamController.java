@@ -1,6 +1,8 @@
 package com.user.user.controller;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,10 +58,23 @@ public class TeamController {
         return service.getTeamById(id);
     }
 
+    @GetMapping("by-coach/{coachId}")
+    public ResponseEntity<ResponseMessage<List<Team>>> getTeamsByCoachId(@PathVariable UUID coachId) {
+        List<Team> teamsFound = service.findByCoachId(coachId);
+
+        if (teamsFound.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<List<Team>>(teamsFound));
+    }
+
     @GetMapping("/active-injuries/{id}")
     public ResponseEntity<ResponseMessage<List<InjuredAthleteDTO>>> getActiveInjuriesOnTeam(@PathVariable UUID id,
-            @RequestParam LocalDate nowDate) {
+            @RequestParam Long now) {
         try {
+            LocalDate nowDate = LocalDate.ofInstant(Instant.ofEpochMilli(now), ZoneId.of("UTC"));
+
             return service.getActiveInjuriesOnTeam(id, nowDate);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));

@@ -1,5 +1,6 @@
 package com.user.user.service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
@@ -31,15 +32,12 @@ public class CoachService extends PersonaService implements _persona<CoachDTO> {
         newCoach.setUser(user);
 
         if (!checkPersonaCredencials(newCoach)) {
-            return ResponseEntity.status(400)
-                    .body(new ResponseMessage<>("Verifique suas credenciais de treinador"));
+            return ResponseEntity.status(400).body(new ResponseMessage<>("Verifique suas credenciais de treinador"));
         }
 
         repo.save(newCoach);
 
-        return ResponseEntity
-                .status(200)
-                .body(new ResponseMessage<UUID>("Cadastro realizado", newCoach.getId()));
+        return ResponseEntity.status(201).body(new ResponseMessage<UUID>("Cadastro realizado", newCoach.getId()));
     }
 
     public ResponseEntity<ResponseMessage<?>> removeUserFromCoach(UUID id) {
@@ -72,5 +70,11 @@ public class CoachService extends PersonaService implements _persona<CoachDTO> {
         }
 
         return ResponseEntity.status(200).body(new ResponseMessage<>("Treinador atualizado com sucesso"));
+    }
+
+    public Optional<Coach> findCoachByUserId(UUID userId) {
+        Optional<Coach> coachFound = repo.findCoachByUserId(userId);
+
+        return coachFound;
     }
 }
