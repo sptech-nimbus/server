@@ -1,5 +1,6 @@
 package com.events.events.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -168,13 +169,13 @@ public class GraphService {
         return totalThreePoints;
     }
 
-    public Map<Game, Integer> getPointsPerGame(UUID teamId, Integer matches) {
+    public Map<LocalDateTime, Integer> getPointsPerGame(UUID teamId, Integer matches) {
         List<GameResult> gameResultsFound = gameResultRepo.findGameResultsByTeamWithLimit(teamId, matches);
 
-        Map<Game, Integer> pointsPerGame = new HashMap<>();
+        Map<LocalDateTime, Integer> pointsPerGame = new HashMap<>();
 
         for (GameResult gr : gameResultsFound) {
-            pointsPerGame.put(gr.getGame(),
+            pointsPerGame.put(gr.getGame().getInicialDateTime(),
                     gr.getGame().getChallenged().equals(teamId)
                             ? gr.getChallengedPoints()
                             : gr.getChallengerPoints());
