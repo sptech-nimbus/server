@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.3</version>
+        <version>3.2.6</version>
         <relativePath />
     </parent>
     <groupId>com.user</groupId>
@@ -46,7 +46,8 @@
             <version>12.4.2.jre11</version>
         </dependency>
 
-        <!--Driver do SQL Server-->
+        <!--Driver
+        do SQL Server-->
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
@@ -57,7 +58,7 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.4.0</version>
-         </dependency>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -98,7 +99,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>3.0.5</version>
         </dependency>
 
         <dependency>

@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "azure.storage.connection-string",
+    "type": "java.lang.String",
+    "description": "A description for 'azure.storage.connection-string'"
+  },
+  {
+    "name": "azure.storage.container-name",
+    "type": "java.lang.String",
+    "description": "A description for 'azure.storage.container-name'"
+  },
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.secret'"
+  }
+]}
