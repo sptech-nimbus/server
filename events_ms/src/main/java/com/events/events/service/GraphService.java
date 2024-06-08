@@ -184,7 +184,7 @@ public class GraphService {
         return pointsPerGame;
     }
 
-    public Map<Game, Integer> getFoulsPerGame(UUID teamId, Integer matches) {
+    public Map<LocalDateTime, Integer> getFoulsPerGame(UUID teamId, Integer matches) {
         List<Game> gamesFound = gameRepo.findTopGames(teamId, matches);
 
         if (gamesFound.isEmpty()) {
@@ -206,7 +206,7 @@ public class GraphService {
         List<AthleteHistoric> athleteHistoricList = new ArrayList<AthleteHistoric>(
                 Arrays.asList(athleteHistoricsArray));
 
-        Map<Game, Integer> mapFoulsPerGame = new HashMap<Game, Integer>();
+        Map<LocalDateTime, Integer> mapFoulsPerGame = new HashMap<LocalDateTime, Integer>();
 
         Map<Game, List<AthleteHistoric>> mapAthleteHistoricPerGame = getHistoricsPerGameByGamesAndHistoricList(
                 gamesFound, athleteHistoricList);
@@ -218,7 +218,7 @@ public class GraphService {
                 totalFouls += ah.getFouls();
             }
 
-            mapFoulsPerGame.put(game, totalFouls);
+            mapFoulsPerGame.put(game.getFinalDateTime(), totalFouls);
         }
 
         return mapFoulsPerGame;

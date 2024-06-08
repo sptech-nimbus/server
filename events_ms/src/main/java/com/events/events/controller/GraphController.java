@@ -68,14 +68,14 @@ public class GraphController {
     }
 
     @GetMapping("fouls-per-game/{teamId}")
-    public ResponseEntity<ResponseMessage<Map<Game, Integer>>> getFoulsPerGameFromTeamId(@PathVariable UUID teamId,
+    public ResponseEntity<ResponseMessage<Map<LocalDateTime, Integer>>> getFoulsPerGameFromTeamId(@PathVariable UUID teamId,
             @RequestParam Integer matches) {
-        Map<Game, Integer> foulsPerGame = service.getFoulsPerGame(teamId, matches);
+        Map<LocalDateTime, Integer> foulsPerGame = service.getFoulsPerGame(teamId, matches);
 
         if (foulsPerGame.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(new ResponseMessage<Map<Game, Integer>>(foulsPerGame));
+        return ResponseEntity.ok(new ResponseMessage<Map<LocalDateTime, Integer>>(foulsPerGame));
     }
 }
