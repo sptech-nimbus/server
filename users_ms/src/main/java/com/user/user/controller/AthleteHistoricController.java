@@ -21,20 +21,30 @@ import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.service.AthleteHistoricService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("athlete-historics")
+@RequiredArgsConstructor
 public class AthleteHistoricController {
     private final AthleteHistoricService service;
-
-    public AthleteHistoricController(AthleteHistoricService service) {
-        this.service = service;
-    }
 
     // POST
     @PostMapping
     public ResponseEntity<ResponseMessage<AthleteHistoric>> postAthleteHistoric(@RequestBody AthleteHistoricDTO dto) {
         try {
             return service.register(dto);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
+        }
+    }
+
+    @PostMapping("list")
+    public ResponseEntity<ResponseMessage<List<AthleteHistoric>>> postAthleteHistoricList(
+            @RequestBody List<AthleteHistoricDTO> dtos) {
+        try {
+            List<AthleteHistoric> athleteHistorics = service.registerList(dtos);
+            return ResponseEntity.ok(new ResponseMessage<>(athleteHistorics));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }

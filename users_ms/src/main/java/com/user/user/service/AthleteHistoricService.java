@@ -1,5 +1,6 @@
 package com.user.user.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,22 +58,28 @@ public class AthleteHistoricService {
                 return ResponseEntity.status(400).body(
                         new ResponseMessage<>("Informe o jogo ou treino relacionado com este histórico de jogador"));
             }
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(500)
                     .body(new ResponseMessage<>("Serviço de eventos fora do ar no momento", e.getMessage()));
         }
 
-        try {
-            repo.save(newAthleteHistoric);
-        } catch (Exception e) {
-            return ResponseEntity.status(400)
-                    .body(new ResponseMessage<AthleteHistoric>("Erro ao registrar historico de atleta",
-                            e.getMessage()));
-        }
+        repo.save(newAthleteHistoric);
 
         return ResponseEntity.status(201).body(new ResponseMessage<AthleteHistoric>(newAthleteHistoric));
+    }
+
+    public List<AthleteHistoric> registerList(List<AthleteHistoricDTO> dtos) {
+        List<AthleteHistoric> athleteHistorics = new ArrayList<AthleteHistoric>();
+
+        for (AthleteHistoricDTO dto : dtos) {
+            AthleteHistoric newAthleteHistoric = new AthleteHistoric();
+
+            BeanUtils.copyProperties(dto, newAthleteHistoric);
+
+            athleteHistorics.add(newAthleteHistoric);
+        }
+
+        return repo.saveAll(athleteHistorics);
     }
 
     public ResponseEntity<ResponseMessage<List<AthleteHistoric>>> getAthleteHistoricsByAthleteId(UUID athleteId) {
