@@ -38,6 +38,7 @@ public class AthleteController {
         }
     }
 
+
     @GetMapping("generate-csv")
     public ResponseEntity<?> recordingCsv(@RequestParam List<UUID> ids) {
         return service.generateCSV(ids);

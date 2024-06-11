@@ -69,6 +69,13 @@ public class TeamController {
         return ResponseEntity.ok(new ResponseMessage<List<Team>>(teamsFound));
     }
 
+    @GetMapping("by-athlete/{athleteId}")
+    public ResponseEntity<ResponseMessage<Team>> getTeamByAthlete(@PathVariable UUID athleteId) {
+        Team teamFound = service.getTeamByAthlete(athleteId);
+
+        return ResponseEntity.ok(new ResponseMessage<Team>(teamFound));
+    }
+
     @GetMapping("/active-injuries/{id}")
     public ResponseEntity<ResponseMessage<List<InjuredAthleteDTO>>> getActiveInjuriesOnTeam(@PathVariable UUID id,
             @RequestParam Long now) {
