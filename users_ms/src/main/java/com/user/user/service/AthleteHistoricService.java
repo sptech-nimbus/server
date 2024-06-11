@@ -68,13 +68,26 @@ public class AthleteHistoricService {
         return ResponseEntity.status(201).body(new ResponseMessage<AthleteHistoric>(newAthleteHistoric));
     }
 
-    public List<AthleteHistoric> registerList(List<AthleteHistoricDTO> dtos) {
+    public List<AthleteHistoric> registerList(List<AthleteHistoricDTO> dtos) throws Exception {
         List<AthleteHistoric> athleteHistorics = new ArrayList<AthleteHistoric>();
 
         for (AthleteHistoricDTO dto : dtos) {
             AthleteHistoric newAthleteHistoric = new AthleteHistoric();
 
             BeanUtils.copyProperties(dto, newAthleteHistoric);
+
+            if (dto.game() != null) {
+                Game gameFound = gameService.getTemplateById("3002", "/games/ms-get-by-id", dto.game().getId(),
+                        Game.class);
+
+                newAthleteHistoric.setGameId(gameFound.getId());
+            } else if (dto.training() != null) {
+                Training trainingFound = trainingService.getTemplateById("3002", "/trainings/ms-get-by-id",
+                        dto.training().getId(),
+                        Training.class);
+
+                newAthleteHistoric.setTrainingId(trainingFound.getId());
+            }
 
             athleteHistorics.add(newAthleteHistoric);
         }

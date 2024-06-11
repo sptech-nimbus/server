@@ -44,9 +44,10 @@ public class AthleteHistoricController {
             @RequestBody List<AthleteHistoricDTO> dtos) {
         try {
             List<AthleteHistoric> athleteHistorics = service.registerList(dtos);
+
             return ResponseEntity.ok(new ResponseMessage<>(athleteHistorics));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ResponseMessage<>(e.getMessage()));
         }
     }
 
