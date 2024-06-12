@@ -25,7 +25,7 @@ jobs:
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
-          name: java-app
+          name: user-3.V2.3-RELEASE
           path: server/users_ms/target/*.jar
 
   deploy:
