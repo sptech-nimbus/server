@@ -20,7 +20,7 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean install
-        working-directory: server/users_ms
+        working-directory: users_ms
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
