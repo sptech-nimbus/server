@@ -1,6 +1,6 @@
 package com.user.user.service;
 
-import java.time.LocalDate;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -114,8 +114,8 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
         return errors;
     }
 
-    public ResponseEntity<?> generateCSV(List<UUID> ids) {
-        List<Athlete> athletes = repo.findAllById(ids);
+    public ResponseEntity<?> generateCSV(UUID teamId) throws IOException {
+        List<Athlete> athletes = repo.findAllByTeam_Id(teamId);
 
         List<AthletewDesc> dtoList = new ArrayList<>();
 
@@ -126,7 +126,7 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
             dtoList.add(new AthletewDesc(athlete, athleteDesc));
         }
 
-        CsvGenerator.gravaArquivoCsv(dtoList, "athletes-" + LocalDate.now().toString());
+        CsvGenerator.exportAthleteToCsv(dtoList);
 
         return ResponseEntity.status(200).build();
     }
