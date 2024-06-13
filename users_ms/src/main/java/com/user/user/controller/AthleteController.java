@@ -1,5 +1,6 @@
 package com.user.user.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,8 +40,8 @@ public class AthleteController {
     }
 
     @GetMapping("generate-csv")
-    public ResponseEntity<?> recordingCsv(@RequestParam List<UUID> ids) {
-        return service.generateCSV(ids);
+    public ResponseEntity<?> recordingCsv(@RequestParam UUID teamId) throws IOException {
+        return service.generateCSV(teamId);
     }
 
     @GetMapping("by-team/{teamId}")
