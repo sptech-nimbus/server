@@ -47,7 +47,7 @@ spring:
           uri: http://localhost:3002
           predicates:
             - Path=/games/**
-        - id: training
+        - id: trainings
           uri: http://localhost:3002
           predicates:
             - Path=/trainings/**
