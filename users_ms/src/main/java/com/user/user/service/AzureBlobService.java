@@ -38,7 +38,7 @@ public class AzureBlobService {
     private final TeamRepository teamRepository;
 
     public AzureBlobService(CoachRepository coachRepository, AthleteRepository athleteRepository,
-            TeamRepository teamRepository) {
+                            TeamRepository teamRepository) {
         this.coachRepository = coachRepository;
         this.athleteRepository = athleteRepository;
         this.teamRepository = teamRepository;
