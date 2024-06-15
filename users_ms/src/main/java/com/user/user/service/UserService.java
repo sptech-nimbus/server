@@ -1,5 +1,8 @@
 package com.user.user.service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -139,6 +142,8 @@ public class UserService {
     }
 
     public ResponseEntity<ResponseMessage<?>> changePasswordRequest(ChangePasswordRequestDTO dto) {
+        LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(dto.expirationDate()), ZoneId.of("UTC"));
+
         User userFound = repo.findByEmail(dto.email()).get();
 
         Persona personaFound = userFound.getAthlete() == null ? userFound.getCoach() : userFound.getAthlete();
@@ -147,7 +152,7 @@ public class UserService {
 
         try {
             operationCodeService.insertCode(
-                    new OperationCode("change-password", recuperationCode, dto.expirationDate().plusHours(2), userFound,
+                    new OperationCode("change-password", recuperationCode, date.plusHours(2), userFound,
                             null));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ResponseMessage<>("Erro ao cadastrar código", e.getMessage()));
@@ -194,7 +199,9 @@ public class UserService {
         User userFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
 
         if (checkUserPassword(dto.newPassword())) {
-            userFound.setPassword(dto.newPassword());
+            String cryptPassword = encoder.encode(dto.newPassword());
+
+            userFound.setPassword(cryptPassword);
 
             repo.save(userFound);
         } else {

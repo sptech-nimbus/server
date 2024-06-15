@@ -47,6 +47,10 @@ spring:
           uri: http://localhost:3002
           predicates:
             - Path=/games/**
+        - id: trainings
+          uri: http://localhost:3002
+          predicates:
+            - Path=/trainings/**
         - id: game-results
           uri: http://localhost:3002
           predicates:
@@ -55,3 +59,7 @@ spring:
           uri: http://localhost:3002
           predicates:
             - Path=/graphs/**
+        - id: blob-storage
+          uri: http://localhost:3000
+          predicates:
+            - Path=/blob-storage/**

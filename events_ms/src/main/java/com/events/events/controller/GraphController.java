@@ -1,5 +1,6 @@
 package com.events.events.controller;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -55,26 +56,26 @@ public class GraphController {
     }
 
     @GetMapping("points-per-game/{teamId}")
-    public ResponseEntity<ResponseMessage<Map<Game, Integer>>> getPointsPerGameFromTeamId(@PathVariable UUID teamId,
+    public ResponseEntity<ResponseMessage<Map<LocalDateTime, Integer>>> getPointsPerGameFromTeamId(@PathVariable UUID teamId,
             @RequestParam Integer matches) {
-        Map<Game, Integer> pointsPerGame = service.getPointsPerGame(teamId, matches);
+        Map<LocalDateTime, Integer> pointsPerGame = service.getPointsPerGame(teamId, matches);
 
         if (pointsPerGame.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(new ResponseMessage<Map<Game, Integer>>(pointsPerGame));
+        return ResponseEntity.ok(new ResponseMessage<Map<LocalDateTime, Integer>>(pointsPerGame));
     }
 
     @GetMapping("fouls-per-game/{teamId}")
-    public ResponseEntity<ResponseMessage<Map<Game, Integer>>> getFoulsPerGameFromTeamId(@PathVariable UUID teamId,
+    public ResponseEntity<ResponseMessage<Map<LocalDateTime, Integer>>> getFoulsPerGameFromTeamId(@PathVariable UUID teamId,
             @RequestParam Integer matches) {
-        Map<Game, Integer> foulsPerGame = service.getFoulsPerGame(teamId, matches);
+        Map<LocalDateTime, Integer> foulsPerGame = service.getFoulsPerGame(teamId, matches);
 
         if (foulsPerGame.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(new ResponseMessage<Map<Game, Integer>>(foulsPerGame));
+        return ResponseEntity.ok(new ResponseMessage<Map<LocalDateTime, Integer>>(foulsPerGame));
     }
 }

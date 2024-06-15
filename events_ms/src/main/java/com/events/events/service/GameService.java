@@ -125,8 +125,6 @@ public class GameService {
 
         try {
             coachFound = coachService.getTemplateById("3000", "coaches/ms-get-coach", coach.getId(), Coach.class);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage<Game>(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(500)
                     .body(new ResponseMessage<Game>("Serviço de usuários fora do ar no momento.", e.getMessage()));
