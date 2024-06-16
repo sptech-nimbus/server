@@ -91,7 +91,7 @@ public class GraphService {
     }
 
     public PointsDivisionDTO getPointsDivisionByTeamMatches(UUID teamId, Integer matches) {
-        List<Game> gamesFound = gameRepo.findTopGamesDesc(teamId, matches);
+        List<Game> gamesFound = gameRepo.findGamesByChallengerOrChallenged(teamId, teamId);
 
         if (gamesFound.isEmpty()) {
             throw new NoContentException();
