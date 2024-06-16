@@ -1,7 +1,6 @@
 package com.events.events.repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,9 +14,9 @@ public interface GameRepository extends JpaRepository<Game, UUID> {
     @Query(value = "select top (:matches) * from game g where challenger_id = :teamId or challenged_id = :teamId order by final_date_time desc", nativeQuery = true)
     List<Game> findTopGamesDesc(UUID teamId, Integer matches);
 
-    @Query("select g from game g where challenger = :teamId or challenged = :teamId and finalDateTime > CURRENT_TIMESTAMP order by finalDateTime desc")
-    Optional<Game> findNextGame(UUID teamId);
+    @Query("select g from game g where challenger = :teamId or challenged = :teamId and finalDateTime > CURRENT_TIMESTAMP order by finalDateTime")
+    List<Game> findNextGames(UUID teamId);
 
     @Query("select g from game g where challenger = :teamId or challenged = :teamId and finalDateTime < CURRENT_TIMESTAMP order by finalDateTime desc")
-    Optional<Game> findLastGame(UUID teamId);
+    List<Game> findLastGames(UUID teamId);
 }
