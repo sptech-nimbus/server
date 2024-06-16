@@ -25,8 +25,8 @@ jobs:
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
-          name: user-3.V2.3-RELEASE
-          path: server/users_ms/target/*.jar
+          name: java-app
+          path: users_ms/target/*.jar  # Ensure this path is correct
 
   deploy:
     runs-on: ubuntu-latest
@@ -35,14 +35,15 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
-  
+      id-token: write # This is required for requesting the JWT
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
-          name: user-3.V2.3-RELEASE
-      
+          name: java-app
+          path: users_ms/target  # This might not be necessary
+
       - name: Login to Azure
         uses: azure/login@v1
         with:
