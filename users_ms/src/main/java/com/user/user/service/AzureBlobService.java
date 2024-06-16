@@ -85,13 +85,13 @@ public class AzureBlobService {
                     .buildClient();
 
             BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
-            BlobHttpHeaders headers = new BlobHttpHeaders().setContentType("application/CSV");
+            BlobHttpHeaders headers = new BlobHttpHeaders().setContentType("text/CSV");
             BlobClient blobClient = containerClient.getBlobClient(blobName);
-            blobClient.setHttpHeaders(headers);
-
+            
             InputStream dataStream = new FileInputStream(filePath);
-
             blobClient.upload(dataStream, true);
+            
+            blobClient.setHttpHeaders(headers);
 
             return createBlobSas(blobClient);
         } catch (Exception e) {
