@@ -56,7 +56,7 @@ public class GraphService {
     }
 
     public Map<Game, ReboundsPerTeam> getReboundsPerGameFromTeam(UUID teamId, Integer matches) {
-        List<Game> gamesFound = gameRepo.findTopGames(teamId, matches);
+        List<Game> gamesFound = gameRepo.findTopGamesDesc(teamId, matches);
 
         if (gamesFound.isEmpty()) {
             throw new NoContentException();
@@ -91,7 +91,7 @@ public class GraphService {
     }
 
     public PointsDivisionDTO getPointsDivisionByTeamMatches(UUID teamId, Integer matches) {
-        List<Game> gamesFound = gameRepo.findTopGames(teamId, matches);
+        List<Game> gamesFound = gameRepo.findGamesByChallengerOrChallenged(teamId, teamId);
 
         if (gamesFound.isEmpty()) {
             throw new NoContentException();
@@ -185,7 +185,7 @@ public class GraphService {
     }
 
     public Map<LocalDateTime, Integer> getFoulsPerGame(UUID teamId, Integer matches) {
-        List<Game> gamesFound = gameRepo.findTopGames(teamId, matches);
+        List<Game> gamesFound = gameRepo.findTopGamesDesc(teamId, matches);
 
         if (gamesFound.isEmpty()) {
             throw new NoContentException();

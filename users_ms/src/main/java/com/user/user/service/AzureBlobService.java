@@ -1,6 +1,6 @@
 package com.user.user.service;
 
-import java.io.IOException;
+import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -25,7 +25,10 @@ import com.user.user.repository.CoachRepository;
 import com.user.user.repository.TeamRepository;
 import com.user.user.util.CodeGenerator;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AzureBlobService {
     @Value("${azure.storage.connection-string}")
     String connectionString;
@@ -37,52 +40,63 @@ public class AzureBlobService {
     private final AthleteRepository athleteRepository;
     private final TeamRepository teamRepository;
 
-    public AzureBlobService(CoachRepository coachRepository, AthleteRepository athleteRepository,
-                            TeamRepository teamRepository) {
-        this.coachRepository = coachRepository;
-        this.athleteRepository = athleteRepository;
-        this.teamRepository = teamRepository;
-    }
-
     @Async
     public void uploadImage(UUID entityId, MultipartFile file) throws IOException, ResourceNotFoundException {
+        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
+                .connectionString(connectionString)
+                .buildClient();
+
+        BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
+
+        BlobHttpHeaders headers = new BlobHttpHeaders().setContentType("image/png");
+
+        String blobName = CodeGenerator.codeGen(12, true) + file.getOriginalFilename().replaceAll("\\s", "");
+
+        BlobClient blobClient = containerClient.getBlobClient(blobName);
+
+        blobClient.upload(file.getInputStream(), file.getSize(), true);
+
+        blobClient.setHttpHeaders(headers);
+
+        if (coachRepository.existsByUserId(entityId)) {
+            Coach coachFound = coachRepository.findCoachByUserId(entityId).get();
+            coachFound.setPicture(createBlobSas(blobClient));
+
+            coachRepository.save(coachFound);
+        } else if (athleteRepository.existsByUserId(entityId)) {
+            Athlete athleteFound = athleteRepository.findAthleteByUserId(entityId).get();
+            athleteFound.setPicture(createBlobSas(blobClient));
+
+            athleteRepository.save(athleteFound);
+        } else if (teamRepository.existsById(entityId)) {
+            Team teamFound = teamRepository.findById(entityId).get();
+            teamFound.setPicture(createBlobSas(blobClient));
+
+            teamRepository.save(teamFound);
+        } else {
+            throw new ResourceNotFoundException("Entidade", entityId);
+        }
+    }
+
+    public String uploadCSVFile(String blobName, String filePath) {
         try {
             BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
-                    .connectionString(this.connectionString)
+                    .connectionString(connectionString)
                     .buildClient();
 
             BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
-
-            BlobHttpHeaders headers = new BlobHttpHeaders().setContentType("image/png");
-
-            String blobName = CodeGenerator.codeGen(12, true) + file.getOriginalFilename().replaceAll("\\s", "");
-
+            BlobHttpHeaders headers = new BlobHttpHeaders().setContentType("text/CSV");
             BlobClient blobClient = containerClient.getBlobClient(blobName);
-
-            blobClient.upload(file.getInputStream(), file.getSize(), true);
-
+            
+            InputStream dataStream = new FileInputStream(filePath);
+            blobClient.upload(dataStream, true);
+            
             blobClient.setHttpHeaders(headers);
 
-            if (coachRepository.existsByUserId(entityId)) {
-                Coach coachFound = coachRepository.findCoachByUserId(entityId).get();
-                coachFound.setPicture(createBlobSas(blobClient));
-
-                coachRepository.save(coachFound);
-            } else if (athleteRepository.existsByUserId(entityId)) {
-                Athlete athleteFound = athleteRepository.findAthleteByUserId(entityId).get();
-                athleteFound.setPicture(createBlobSas(blobClient));
-
-                athleteRepository.save(athleteFound);
-            } else if (teamRepository.existsById(entityId)) {
-                Team teamFound = teamRepository.findById(entityId).get();
-                teamFound.setPicture(createBlobSas(blobClient));
-
-                teamRepository.save(teamFound);
-            } else {
-                throw new ResourceNotFoundException("Entidade", entityId);
-            }
-        } catch (IOException e) {
-            throw e;
+            return createBlobSas(blobClient);
+        } catch (Exception e) {
+            System.out.println(e);
+            return "";
         }
     }
 
