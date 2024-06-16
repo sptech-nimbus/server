@@ -43,6 +43,7 @@ public class TeamService {
     private final AthleteRepository athleteRepo;
     private final OperationCodeRepository operationCodeRepo;
     private final AthleteDescRepository athleteDescRepo;
+    private final AzureBlobService azureBlobService;
 
     public ResponseEntity<ResponseMessage<Team>> register(TeamDTO dto) {
         List<String> fieldsErrors = checkFields(dto);
@@ -82,9 +83,9 @@ public class TeamService {
 
         String csvPath = CsvGenerator.exportAthleteToCsv(dtoList, teamId);
 
-        AzureBlobService.uploadCSVFile(teamId.toString() + LocalDateTime.now(), csvPath);
+        String blobURL = azureBlobService.uploadCSVFile(teamId.toString() + LocalDateTime.now(), csvPath);
 
-        return ResponseEntity.status(200).build();
+        return ResponseEntity.status(200).body(blobURL);
     }
 
     public ResponseEntity<ResponseMessage<List<InjuredAthleteDTO>>> getActiveInjuriesOnTeam(UUID id,

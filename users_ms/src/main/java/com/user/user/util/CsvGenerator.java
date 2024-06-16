@@ -42,7 +42,6 @@ public class CsvGenerator {
                 csvRow.append(athleteDescMatrixData[i][j]).append(",");
             }
             csvRow.deleteCharAt(csvRow.length() - 1);
-            System.out.println(csvRow.toString());
         }
 
         int[] columnWidths = calculateColumnWidths(athleteDescMatrixData);

@@ -25,26 +25,20 @@ import com.user.user.repository.CoachRepository;
 import com.user.user.repository.TeamRepository;
 import com.user.user.util.CodeGenerator;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AzureBlobService {
     @Value("${azure.storage.connection-string}")
-    static
     String connectionString;
 
     @Value("${azure.storage.container-name}")
-    static
     String containerName;
 
     private final CoachRepository coachRepository;
     private final AthleteRepository athleteRepository;
     private final TeamRepository teamRepository;
-
-    public AzureBlobService(CoachRepository coachRepository, AthleteRepository athleteRepository,
-                            TeamRepository teamRepository) {
-        this.coachRepository = coachRepository;
-        this.athleteRepository = athleteRepository;
-        this.teamRepository = teamRepository;
-    }
 
     @Async
     public void uploadImage(UUID entityId, MultipartFile file) throws IOException, ResourceNotFoundException {
@@ -84,21 +78,22 @@ public class AzureBlobService {
         }
     }
 
-    public static String uploadCSVFile(String blobName, String filePath) {
+    public String uploadCSVFile(String blobName, String filePath) {
         try {
             BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
                     .connectionString(connectionString)
                     .buildClient();
 
             BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
-
+            BlobHttpHeaders headers = new BlobHttpHeaders().setContentType("application/CSV");
             BlobClient blobClient = containerClient.getBlobClient(blobName);
+            blobClient.setHttpHeaders(headers);
 
             InputStream dataStream = new FileInputStream(filePath);
 
             blobClient.upload(dataStream, true);
 
-            return blobClient.getBlobUrl();
+            return createBlobSas(blobClient);
         } catch (Exception e) {
             System.out.println(e);
             return "";
