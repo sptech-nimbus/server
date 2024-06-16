@@ -1,6 +1,6 @@
 package com.user.user.service;
 
-import java.io.IOException;
+import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -28,9 +28,11 @@ import com.user.user.util.CodeGenerator;
 @Service
 public class AzureBlobService {
     @Value("${azure.storage.connection-string}")
+    static
     String connectionString;
 
     @Value("${azure.storage.container-name}")
+    static
     String containerName;
 
     private final CoachRepository coachRepository;
@@ -46,43 +48,60 @@ public class AzureBlobService {
 
     @Async
     public void uploadImage(UUID entityId, MultipartFile file) throws IOException, ResourceNotFoundException {
+        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
+                .connectionString(connectionString)
+                .buildClient();
+
+        BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
+
+        BlobHttpHeaders headers = new BlobHttpHeaders().setContentType("image/png");
+
+        String blobName = CodeGenerator.codeGen(12, true) + file.getOriginalFilename().replaceAll("\\s", "");
+
+        BlobClient blobClient = containerClient.getBlobClient(blobName);
+
+        blobClient.upload(file.getInputStream(), file.getSize(), true);
+
+        blobClient.setHttpHeaders(headers);
+
+        if (coachRepository.existsByUserId(entityId)) {
+            Coach coachFound = coachRepository.findCoachByUserId(entityId).get();
+            coachFound.setPicture(createBlobSas(blobClient));
+
+            coachRepository.save(coachFound);
+        } else if (athleteRepository.existsByUserId(entityId)) {
+            Athlete athleteFound = athleteRepository.findAthleteByUserId(entityId).get();
+            athleteFound.setPicture(createBlobSas(blobClient));
+
+            athleteRepository.save(athleteFound);
+        } else if (teamRepository.existsById(entityId)) {
+            Team teamFound = teamRepository.findById(entityId).get();
+            teamFound.setPicture(createBlobSas(blobClient));
+
+            teamRepository.save(teamFound);
+        } else {
+            throw new ResourceNotFoundException("Entidade", entityId);
+        }
+    }
+
+    public static String uploadCSVFile(String blobName, String filePath) {
         try {
             BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
-                    .connectionString(this.connectionString)
+                    .connectionString(connectionString)
                     .buildClient();
 
             BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
 
-            BlobHttpHeaders headers = new BlobHttpHeaders().setContentType("image/png");
-
-            String blobName = CodeGenerator.codeGen(12, true) + file.getOriginalFilename().replaceAll("\\s", "");
-
             BlobClient blobClient = containerClient.getBlobClient(blobName);
 
-            blobClient.upload(file.getInputStream(), file.getSize(), true);
+            InputStream dataStream = new FileInputStream(filePath);
 
-            blobClient.setHttpHeaders(headers);
+            blobClient.upload(dataStream, true);
 
-            if (coachRepository.existsByUserId(entityId)) {
-                Coach coachFound = coachRepository.findCoachByUserId(entityId).get();
-                coachFound.setPicture(createBlobSas(blobClient));
-
-                coachRepository.save(coachFound);
-            } else if (athleteRepository.existsByUserId(entityId)) {
-                Athlete athleteFound = athleteRepository.findAthleteByUserId(entityId).get();
-                athleteFound.setPicture(createBlobSas(blobClient));
-
-                athleteRepository.save(athleteFound);
-            } else if (teamRepository.existsById(entityId)) {
-                Team teamFound = teamRepository.findById(entityId).get();
-                teamFound.setPicture(createBlobSas(blobClient));
-
-                teamRepository.save(teamFound);
-            } else {
-                throw new ResourceNotFoundException("Entidade", entityId);
-            }
-        } catch (IOException e) {
-            throw e;
+            return blobClient.getBlobUrl();
+        } catch (Exception e) {
+            System.out.println(e);
+            return "";
         }
     }
 

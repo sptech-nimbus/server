@@ -19,6 +19,10 @@ spring:
           uri: http://localhost:3000
           predicates:
             - Path=/teams/**
+        - id: codes
+          uri: http://localhost:3000
+          predicates:
+            - Path=/codes/**
         - id: users
           uri: http://localhost:3000
           predicates:
