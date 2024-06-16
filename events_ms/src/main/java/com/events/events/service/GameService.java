@@ -37,7 +37,7 @@ public class GameService {
 
     public GamewResultsDTO getLastGame(UUID teamId, LocalDateTime now) {
         Game gameFound = repo
-                .findLastGameByTeam(teamId, now)
+                .findLastGame(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Jogo", teamId));
 
         Team challenger = teamService.exchange("3000", "teams/ms-get-team", gameFound.getChallenger(), null,
@@ -107,8 +107,7 @@ public class GameService {
     }
 
     public GameWithTeams getNextGameFromTeamId(UUID teamId, LocalDateTime date) {
-        Game nextGameFound = repo.findNextGameByTeam(teamId, date)
-                .orElseThrow(() -> new ResourceNotFoundException("Jogo", teamId));
+        Game nextGameFound = repo.findNextGame(teamId).orElseThrow(() -> new ResourceNotFoundException("Jogo", teamId));
 
         Team challenger = teamService.exchange("3000", "teams/ms-get-team", nextGameFound.getChallenger(), null,
                 Team.class);

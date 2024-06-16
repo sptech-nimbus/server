@@ -67,7 +67,7 @@ class TeamServiceTest {
     @BeforeEach
     void setup() {
         MockitoAnnotations.initMocks(this);
-        service = new TeamService(repository, coachRepo, athleteRepo, operationCodeRepo, athleteDescRepository);
+        service = new TeamService(repository, coachRepo, athleteRepo, operationCodeRepo, athleteDescRepository, null);
 
         coachdto = new CoachDTO("Cafunga", "Carequinha", LocalDate.now(), null, null);
         user = new User(id, "cafunga@email.com" , "Cafunga@123", coach, null);
