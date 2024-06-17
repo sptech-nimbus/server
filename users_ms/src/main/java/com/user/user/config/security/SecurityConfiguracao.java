@@ -27,10 +27,13 @@ import org.springframework.http.HttpHeaders;
 
 import com.user.user.config.security.jwt.GerenciadorTokenJwt;
 import com.user.user.service.AuthenticationService;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@EnableWebMvc
 public class SecurityConfiguracao {
     @Autowired
     private AuthenticationService authenticationService;
@@ -118,6 +121,11 @@ public class SecurityConfiguracao {
     }
 
     @Bean
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**").allowedMethods("*").allowedOrigins("*").allowedHeaders("*");
+    }
+
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuracao = new CorsConfiguration();
         configuracao.setAllowedOrigins(Arrays.asList("https://thankful-rock-03dc41310.5.azurestaticapps.net"));
@@ -139,8 +147,4 @@ public class SecurityConfiguracao {
         configuracao.setExposedHeaders(List.of(HttpHeaders.CONTENT_DISPOSITION));
         configuracao.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource origem = new UrlBasedCorsConfigurationSource();
-        origem.registerCorsConfiguration("/**", configuracao);
-        return origem;
-    }
-}
+      
