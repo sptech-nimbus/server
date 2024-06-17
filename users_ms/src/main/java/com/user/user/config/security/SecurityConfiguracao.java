@@ -120,7 +120,7 @@ public class SecurityConfiguracao {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuracao = new CorsConfiguration();
-        configuracao.setAllowedOrigins(Arrays.asList("https://seu-site.com", "https://outro-site.com"));
+        configuracao.setAllowedOrigins(Arrays.asList("https://thankful-rock-03dc41310.5.azurestaticapps.net"));
         configuracao.setAllowedMethods(Arrays.asList(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),
