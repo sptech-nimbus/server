@@ -10,6 +10,7 @@ import com.user.user.domain.team.Team;
 import com.user.user.domain.team.TeamDTO;
 import com.user.user.domain.user.User;
 import com.user.user.exception.ResourceNotFoundException;
+import com.user.user.repository.AthleteDescRepository;
 import com.user.user.repository.AthleteRepository;
 import com.user.user.repository.CoachRepository;
 import com.user.user.repository.OperationCodeRepository;
@@ -54,6 +55,8 @@ class TeamServiceTest {
     AthleteRepository athleteRepo;
     @Mock
     OperationCodeRepository operationCodeRepo;
+    @Mock
+    AthleteDescRepository athleteDescRepository;
     @InjectMocks
     TeamService service;
     private ResponseEntity<ResponseMessage<?>> teamResponse;
@@ -64,7 +67,7 @@ class TeamServiceTest {
     @BeforeEach
     void setup() {
         MockitoAnnotations.initMocks(this);
-        service = new TeamService(repository, coachRepo, athleteRepo, operationCodeRepo);
+        service = new TeamService(repository, coachRepo, athleteRepo, operationCodeRepo, athleteDescRepository, null);
 
         coachdto = new CoachDTO("Cafunga", "Carequinha", LocalDate.now(), null, null);
         user = new User(id, "cafunga@email.com" , "Cafunga@123", coach, null);

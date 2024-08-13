@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.user.user.domain.athlete.Athlete;
 import com.user.user.domain.athlete.AthleteDTO;
@@ -36,12 +35,6 @@ public class AthleteController {
         } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("atleta", id);
         }
-    }
-
-
-    @GetMapping("generate-csv")
-    public ResponseEntity<?> recordingCsv(@RequestParam List<UUID> ids) {
-        return service.generateCSV(ids);
     }
 
     @GetMapping("by-team/{teamId}")

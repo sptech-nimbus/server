@@ -1,0 +1,39 @@
+server:
+  port: 3000
+  address: 0.0.0.0
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+        starttls:
+          enable: true
+        smtp:
+          socketFactory:
+            port: 465
+            class: javax.net.ssl.SSLSocketFactory
+  main:
+    allow-circular-references: true
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    url: /swagger.yaml
+    path: /swagger
+
+jwt:
+  secret: ${JWT_SECRET}
+
+azure:
+  storage:
+    connection-string: ${AZURE_STORAGE_CONNECTION_STRING}
+    container-name: assets

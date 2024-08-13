@@ -40,10 +40,15 @@ public class TeamController {
     // POST
     @PostMapping
     public ResponseEntity<ResponseMessage<Team>> registerTeam(@RequestBody TeamDTO dto) {
+        return service.register(dto);
+    }
+
+    @GetMapping("generate-csv/{teamId}")
+    public ResponseEntity<?> recordingCsv(@PathVariable UUID teamId) {
         try {
-            return service.register(dto);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
+            return service.generateCSV(teamId);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
         }
     }
 

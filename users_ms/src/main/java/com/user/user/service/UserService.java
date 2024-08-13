@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.user.user.config.security.jwt.GerenciadorTokenJwt;
+import com.user.user.domain.athlete.Athlete;
 import com.user.user.domain.coach.Coach;
 import com.user.user.domain.email.EmailDTO;
 import com.user.user.domain.operationCodes.OperationCode;
@@ -121,15 +122,19 @@ public class UserService {
 
         String userType;
         UUID personaId;
+        String username;
 
         Optional<Coach> coach = coachService.findCoachByUserId(userFound.getId());
 
         if (coach.isPresent()) {
             userType = "Coach";
             personaId = coach.get().getId();
+            username = coach.get().getFirstName() + " " + coach.get().getLastName();
         } else {
+            Optional<Athlete> athlete = athleteService.findByUserId(userFound.getId());
             userType = "Athlete";
-            personaId = athleteService.findByUserId(userFound.getId()).get().getId();
+            personaId = athlete.get().getId();
+            username = athlete.get().getFirstName() + " " + athlete.get().getLastName();
         }
 
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -138,7 +143,7 @@ public class UserService {
 
         return ResponseEntity.status(200)
                 .body(new ResponseMessage<UserTokenDTO>("Login realizado.", userType,
-                        new UserTokenDTO(userFound.getId(), personaId, token)));
+                        new UserTokenDTO(userFound.getId(), personaId, token, username)));
     }
 
     public ResponseEntity<ResponseMessage<?>> changePasswordRequest(ChangePasswordRequestDTO dto) {

@@ -1,128 +1,82 @@
 package com.user.user.util;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
-import java.util.Formatter;
-import java.util.FormatterClosedException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.UUID;
 
 import com.user.user.domain.athlete.AthletewDesc;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+
+import com.user.user.domain.athleteDesc.AthleteDesc;
 
 public class CsvGenerator {
-     public static void leExibeArquivoCsv(AthletewDesc athletewDesc, String nomeArq){
-        FileReader arq = null;
-        Scanner entrada = null;
-        @SuppressWarnings("unused")
-        Boolean deuRuim = false;
-        
-        nomeArq += ".csv";
+    public static String exportAthleteToCsv(List<AthletewDesc> athleteswDescs, UUID teamId) throws IOException {
+        String[][] athleteDescMatrixData = new String[athleteswDescs.size()][7];
 
-        try{
-            arq = new FileReader(nomeArq);
-            entrada = new Scanner(arq).useDelimiter(";|\\n");
+        for (int i = 0; i < athleteswDescs.size(); i++) {
+            AthleteDesc athleteDesc = athleteswDescs.get(i).athleteDesc();
+            Integer idade = LocalDate.now().getYear() - athleteswDescs.get(i).athlete().getBirthDate().getYear();
+
+            athleteDescMatrixData[i][0] = athleteswDescs.get(i).athlete().getFirstName();
+            athleteDescMatrixData[i][1] = athleteswDescs.get(i).athlete().getLastName();
+            athleteDescMatrixData[i][2] = athleteswDescs.get(i).athlete().getCategory();
+            athleteDescMatrixData[i][3] = athleteDesc.getPosition();
+            athleteDescMatrixData[i][4] = athleteDesc.getHeight().toString();
+            athleteDescMatrixData[i][5] = athleteDesc.getWeight().toString();
+            athleteDescMatrixData[i][6] = idade.toString();
         }
-        catch (FileNotFoundException erro) {
-            System.out.println("Erro ao abrir o arquivo");
-            System.exit(1);
+
+        String[] columnNames = { "Nome", "Sobrenome", "Categoria", "Posição", "Altura", "Peso", "Idade" };
+        StringBuilder csvHeader = new StringBuilder();
+        for (String columnName : columnNames) {
+            csvHeader.append(columnName).append(",");
         }
+        csvHeader.deleteCharAt(csvHeader.length() - 1);
 
-
-        //aqui tem q mudar
-        try{
-            System.out.printf("%4S %9S %8S %9S %7S %6S %4S %5S\n", "nome" , "sobrenome" , "Categoria" , "Posição" , "altura" , "peso" , "Idade");
-            
-            while (entrada.hasNext()) {
-                String Nome = athletewDesc.athlete().getFirstName();;
-                String Sobrenome = athletewDesc.athlete().getLastName();
-                String Categoria = athletewDesc.athlete().getCategory();
-                String Posicao = athletewDesc.athleteDesc().getPosition();
-                Double Altura = athletewDesc.athleteDesc().getHeight();
-                Double Peso = athletewDesc.athleteDesc().getWeight();
-                int Idade = LocalDate.now().getYear() - athletewDesc.athlete().getBirthDate().getYear();
-
-                System.out.printf("%-15s %-15s %-6S %9s %2.2f %2.2f %2d\n" , Nome, Sobrenome, Categoria, Posicao, Altura, Peso, Idade);
+        for (int i = 0; i < athleteswDescs.size(); i++) {
+            StringBuilder csvRow = new StringBuilder();
+            for (int j = 0; j < athleteDescMatrixData[i].length; j++) {
+                csvRow.append(athleteDescMatrixData[i][j]).append(",");
             }
+            csvRow.deleteCharAt(csvRow.length() - 1);
         }
-        catch(NoSuchElementException erro){
-            System.out.println("Arquivo com problemas");
-            erro.printStackTrace();
-            deuRuim = true;
-        }
-        catch(IllegalStateException erro){
-            System.out.println("Erro na leitura da arquivo");
-            erro.printStackTrace();
-            deuRuim = true;
-        }
-        finally {
-            entrada.close();
-            try{
-                arq.close();
-            }
-            catch(IOException erro){
-                System.out.println("Erro ao fechar o arquivo");
-                deuRuim = true;
+
+        int[] columnWidths = calculateColumnWidths(athleteDescMatrixData);
+
+        String csvFilePath = CodeGenerator.codeGen(6, true) + teamId.toString() + ".csv";
+
+        try (FileOutputStream file = new FileOutputStream(csvFilePath);
+                OutputStreamWriter fileWriter = new OutputStreamWriter(file, StandardCharsets.UTF_8);
+                CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withDelimiter(';'))) {
+            for (String[] userData : athleteDescMatrixData) {
+                String[] formattedData = formatDataWithColumnWidths(userData, columnWidths);
+
+                csvPrinter.printRecord((Object[]) formattedData);
             }
 
-            if (deuRuim = true) {
-                System.exit(1);
-            }
+            return csvFilePath;
         }
     }
 
-
-    // aqui tem q mudar
-    public static void gravaArquivoCsv(List<AthletewDesc> athletes, String nomeArquivo) {
-        FileWriter arq = null;
-        Formatter saida = null;
-        @SuppressWarnings("unused")
-        Boolean deuRuim = false;
-
-        nomeArquivo += ".csv";
-
-        try{
-            arq = new FileWriter(nomeArquivo);
-            saida = new Formatter(arq);
-        }
-        catch(IOException erro){
-            System.out.println("Erro ao abrir o arquivo");
-            erro.printStackTrace();
-            System.exit(1);
-        }
-
-
-        try{
-            for(AthletewDesc athletewDesc : athletes){
-                int Idade = LocalDate.now().getYear() - athletewDesc.athlete().getBirthDate().getYear();  
-                saida.format("%-15s;%-15s;%-6S;%9s;%2.2f;%2.2f;%2d\n" , athletewDesc.athlete().getFirstName(),
-                                athletewDesc.athlete().getLastName(), athletewDesc.athlete().getCategory(),
-                                athletewDesc.athleteDesc().getPosition(), athletewDesc.athleteDesc().getHeight(),
-                                athletewDesc.athleteDesc().getWeight(), Idade
-                            );
+    private static int[] calculateColumnWidths(String[][] data) {
+        int[] columnWidths = new int[data[0].length];
+        for (String[] row : data) {
+            for (int i = 0; i < row.length; i++) {
+                columnWidths[i] = Math.max(columnWidths[i], row[i].length());
             }
         }
-        catch(FormatterClosedException erro){
-            System.out.println("Erro ao gravar o arquivo");
-            erro.printStackTrace();
-            deuRuim = true;
-        }
-
-        finally {
-            saida.close();
-            try{
-                arq.close();
-            }
-            catch(IOException erro){
-                System.out.println("Erro ao fechar o arquivo");
-                deuRuim = true;
-            }
-            if (deuRuim = true) {
-                System.exit(1);
-            }
-        }
+        return columnWidths;
     }
+
+    private static String[] formatDataWithColumnWidths(String[] data, int[] columnWidths) {
+        String[] formattedData = new String[data.length];
+        for (int i = 0; i < data.length; i++) {
+            formattedData[i] = String.format("%-" + columnWidths[i] + "s", data[i]);
+        }
+        return formattedData;
+    }
+
 }

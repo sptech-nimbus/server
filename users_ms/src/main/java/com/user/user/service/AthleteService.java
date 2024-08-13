@@ -1,6 +1,5 @@
 package com.user.user.service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,28 +11,22 @@ import org.springframework.stereotype.Service;
 
 import com.user.user.domain.athlete.Athlete;
 import com.user.user.domain.athlete.AthleteDTO;
-import com.user.user.domain.athlete.AthletewDesc;
-import com.user.user.domain.athleteDesc.AthleteDesc;
 import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.domain.team.Team;
 import com.user.user.domain.user.User;
 import com.user.user.exception.ResourceNotFoundException;
-import com.user.user.repository.AthleteDescRepository;
 import com.user.user.repository.AthleteRepository;
 import com.user.user.repository.TeamRepository;
-import com.user.user.util.CsvGenerator;
 
 @Service
 public class AthleteService extends PersonaService implements _persona<AthleteDTO> {
     private final AthleteRepository repo;
     private final TeamRepository teamRepo;
-    private final AthleteDescRepository athleteDescRepo;
 
-    public AthleteService(AthleteRepository repo, TeamRepository teamRepo, AthleteDescRepository athleteDescRepo) {
+    public AthleteService(AthleteRepository repo, TeamRepository teamRepo) {
         super(repo, null);
         this.repo = repo;
         this.teamRepo = teamRepo;
-        this.athleteDescRepo = athleteDescRepo;
     }
 
     public ResponseEntity<ResponseMessage<UUID>> register(AthleteDTO dto, User user) {
@@ -112,23 +105,6 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
         }
 
         return errors;
-    }
-
-    public ResponseEntity<?> generateCSV(List<UUID> ids) {
-        List<Athlete> athletes = repo.findAllById(ids);
-
-        List<AthletewDesc> dtoList = new ArrayList<>();
-
-        for (Athlete athlete : athletes) {
-            AthleteDesc athleteDesc = athleteDescRepo.findByAthleteId(athlete.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Informações do atleta", athlete.getId()));
-
-            dtoList.add(new AthletewDesc(athlete, athleteDesc));
-        }
-
-        CsvGenerator.gravaArquivoCsv(dtoList, "athletes-" + LocalDate.now().toString());
-
-        return ResponseEntity.status(200).build();
     }
 
     public ResponseEntity<ResponseMessage<?>> replaceIsStating(UUID id){
