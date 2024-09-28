@@ -16,4 +16,6 @@ public interface AthleteHistoricRepository extends JpaRepository<AthleteHistoric
     Page<AthleteHistoric> findAllByAthleteId(UUID athleteId, Pageable pageable);
 
     List<AthleteHistoric> findByAthleteTeamIdAndGameIdIn(UUID teamId, List<UUID> gamesId);
+
+    List<AthleteHistoric> findByTeamId(UUID teamId);
 }

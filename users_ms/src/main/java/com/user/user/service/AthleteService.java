@@ -44,7 +44,7 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
 
         repo.save(newAthlete);
 
-        return ResponseEntity.status(201).body(new ResponseMessage<UUID>("Cadastro realizado", newAthlete.getId()));
+        return ResponseEntity.status(201).body(new ResponseMessage<>("Cadastro realizado", newAthlete.getId()));
     }
 
     public ResponseEntity<ResponseMessage<?>> removeUserFromAthlete(UUID id) {
@@ -96,7 +96,7 @@ public class AthleteService extends PersonaService implements _persona<AthleteDT
     public List<String> checkAthleteCredentials(String category, Boolean isStarting) {
         List<String> errors = new ArrayList<>();
 
-        if (category == null || category == "") {
+        if (category == null || category.equals("")) {
             errors.add("Campo categoria é obrigatório");
         }
 

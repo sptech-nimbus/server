@@ -19,20 +19,15 @@ import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.repository.AthleteHistoricRepository;
 import com.user.user.repository.AthleteRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AthleteHistoricService {
     private final AthleteHistoricRepository repo;
     private final AthleteRepository athleteRepo;
     private final RestTemplateService<Game> gameService;
     private final RestTemplateService<Training> trainingService;
-
-    public AthleteHistoricService(AthleteHistoricRepository repo, AthleteRepository athleteRepo,
-            RestTemplateService<Game> gameService, RestTemplateService<Training> trainingService) {
-        this.repo = repo;
-        this.athleteRepo = athleteRepo;
-        this.gameService = gameService;
-        this.trainingService = trainingService;
-    }
 
     public ResponseEntity<ResponseMessage<AthleteHistoric>> register(AthleteHistoricDTO dto) {
         athleteRepo.findById(dto.athlete().getId())
@@ -65,11 +60,11 @@ public class AthleteHistoricService {
 
         repo.save(newAthleteHistoric);
 
-        return ResponseEntity.status(201).body(new ResponseMessage<AthleteHistoric>(newAthleteHistoric));
+        return ResponseEntity.status(201).body(new ResponseMessage<>(newAthleteHistoric));
     }
 
     public List<AthleteHistoric> registerList(List<AthleteHistoricDTO> dtos) throws Exception {
-        List<AthleteHistoric> athleteHistorics = new ArrayList<AthleteHistoric>();
+        List<AthleteHistoric> athleteHistorics = new ArrayList<>();
 
         for (AthleteHistoricDTO dto : dtos) {
             AthleteHistoric newAthleteHistoric = new AthleteHistoric();
@@ -100,9 +95,9 @@ public class AthleteHistoricService {
 
         if (athleteHistoricFound.isEmpty())
             return ResponseEntity.status(204)
-                    .body(new ResponseMessage<List<AthleteHistoric>>("Nenhum histórico do atleta de id " + athleteId));
+                    .body(new ResponseMessage<>("Nenhum histórico do atleta de id " + athleteId));
 
-        return ResponseEntity.status(200).body(new ResponseMessage<List<AthleteHistoric>>(athleteHistoricFound));
+        return ResponseEntity.status(200).body(new ResponseMessage<>(athleteHistoricFound));
     }
 
     public Page<AthleteHistoric> getAthleteHistoricsPageByAthleteId(UUID athleteId,
@@ -122,7 +117,7 @@ public class AthleteHistoricService {
 
         repo.save(athleteHistoricFound);
 
-        return ResponseEntity.status(200).body(new ResponseMessage<AthleteHistoric>("Histórico de atleta atualizado"));
+        return ResponseEntity.status(200).body(new ResponseMessage<>("Histórico de atleta atualizado"));
     }
 
     public ResponseEntity<ResponseMessage<?>> deleteAhleteHistoric(UUID id) {

@@ -1,5 +1,6 @@
 package com.user.user.controller;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -47,7 +48,7 @@ public class TeamController {
     public ResponseEntity<?> recordingCsv(@PathVariable UUID teamId) {
         try {
             return service.generateCSV(teamId);
-        } catch (Exception e) {
+        } catch (IOException e) {
             return ResponseEntity.status(500).build();
         }
     }
@@ -71,14 +72,14 @@ public class TeamController {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(new ResponseMessage<List<Team>>(teamsFound));
+        return ResponseEntity.ok(new ResponseMessage<>(teamsFound));
     }
 
     @GetMapping("by-athlete/{athleteId}")
     public ResponseEntity<ResponseMessage<Team>> getTeamByAthlete(@PathVariable UUID athleteId) {
         Team teamFound = service.getTeamByAthlete(athleteId);
 
-        return ResponseEntity.ok(new ResponseMessage<Team>(teamFound));
+        return ResponseEntity.ok(new ResponseMessage<>(teamFound));
     }
 
     @GetMapping("/active-injuries/{id}")
@@ -105,6 +106,13 @@ public class TeamController {
     @GetMapping("get-team-athletes-asc-age/{id}")
     public ResponseEntity<ResponseMessage<List<Athlete>>> getAthletesByAgeAsc(@PathVariable UUID id) {
         return service.getAthletesByAgeAsc(id);
+    }
+
+    @GetMapping("generate-forecast/{challengerId}/{challengedId}")
+    public ResponseEntity<ResponseMessage<?>> generateForecast(@PathVariable UUID challengerId, @PathVariable UUID challengedId) {
+        service.generateForecast(challengerId, challengedId);
+
+        return null;
     }
 
     // PUT

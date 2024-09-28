@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity(name = "athlete_historic")
 @Table(name = "athlete_historic")
@@ -23,6 +24,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class AthleteHistoric {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -83,29 +85,4 @@ public class AthleteHistoric {
 
     @Column(name = "training_id")
     private UUID trainingId;
-
-    @Override
-    public String toString() {
-        return "AthleteHistoric {" + '\'' +
-                "id=" + id + '\'' +
-                "athleteId=" + athlete + '\'' +
-                "observations=" + observations + '\'' +
-                "offRebounds=" + offRebounds + '\'' +
-                "defRebounds=" + defRebounds + '\'' +
-                "blocks=" + blocks + '\'' +
-                "fouls=" + fouls + '\'' +
-                "turnovers=" + turnovers + '\'' +
-                "minutes=" + minutes + '\'' +
-                "assists=" + assists + '\'' +
-                "freeThrowConverted=" + freeThrowConverted + '\'' +
-                "freeThrowAttemped=" + freeThrowAttemped + '\'' +
-                "steals=" + steals + '\'' +
-                "threePointsConverted=" + threePointsConverted + '\'' +
-                "threePointsAttemped=" + threePointsAttemped + '\'' +
-                "twoPointsConverted=" + twoPointsConverted + '\'' +
-                "twoPointsAttemped=" + twoPointsAttemped + '\'' +
-                "training=" + trainingId + '\'' +
-                "game=" + gameId + '\'' +
-                "}";
-    }
 }
