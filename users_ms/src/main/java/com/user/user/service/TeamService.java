@@ -1,10 +1,9 @@
 package com.user.user.service;
 
-import java.io.*;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +17,6 @@ import com.user.user.domain.athlete.InjuredAthleteDTO;
 import com.user.user.domain.athleteDesc.AthleteDesc;
 import com.user.user.domain.athleteHistoric.AthleteHistoric;
 import com.user.user.domain.coach.Coach;
-import com.user.user.domain.gameResult.GameResult;
 import com.user.user.domain.gameResult.InGameForecastDTO;
 import com.user.user.domain.injury.Injury;
 import com.user.user.domain.operationCodes.OperationCode;

@@ -1,22 +1,23 @@
 package com.user.user.service;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.UUID;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.user.user.domain.athleteHistoric.AthleteHistoric;
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.MediaType;
 
 @Service
+@RequiredArgsConstructor
 public class RestTemplateService<T> {
     private final RestTemplate restTemplate;
-
-    public RestTemplateService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     public T getTemplateById(String port, String endPoint, UUID id, Class<T> classType) throws Exception {
         try {
@@ -29,9 +30,17 @@ public class RestTemplateService<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public T postForEntity(String port, String endPoint, Object params, Class<T> classType) throws Exception {
         try {
-            T restResponseEntity = (T) restTemplate.postForEntity("http://localhost:" + port + "/" + endPoint, params, classType);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<Object> entity = new HttpEntity<>(params, headers);
+
+            T restResponseEntity = (T) restTemplate.postForEntity("http://localhost:" + port + "/" + endPoint, entity,
+                    classType);
 
             return restResponseEntity;
         } catch (RestClientException e) {
