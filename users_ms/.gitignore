@@ -33,3 +33,4 @@ build/
 .vscode/
 
 /user_ms/src/main/resources/application.properties/
+application.yml

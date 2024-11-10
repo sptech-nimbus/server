@@ -1,29 +1,19 @@
 package com.user.user.util;
 
-
 import java.io.*;
 import java.time.LocalDate;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 
 import com.user.user.domain.athlete.AthletewDesc;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 import com.user.user.domain.athleteDesc.AthleteDesc;
-import com.user.user.repository.AthleteDescRepository;
-
-import static org.apache.commons.csv.CSVFormat.*;
 
 public class CsvGenerator {
-    private final AthleteDescRepository athleteDescRepo;
-
-    public CsvGenerator(AthleteDescRepository athleteDescRepo) {
-        this.athleteDescRepo = athleteDescRepo;
-    }
-
-    public static void exportAthleteToCsv(List<AthletewDesc> athleteswDescs ) throws IOException {
-
+    public static String exportAthleteToCsv(List<AthletewDesc> athleteswDescs, UUID teamId) throws IOException {
         String[][] athleteDescMatrixData = new String[athleteswDescs.size()][7];
 
         for (int i = 0; i < athleteswDescs.size(); i++) {
@@ -39,14 +29,12 @@ public class CsvGenerator {
             athleteDescMatrixData[i][6] = idade.toString();
         }
 
-        String[] columnNames = {"Nome", "Sobrenome", "Categoria", "Posição", "Altura", "Peso", "Idade"};
+        String[] columnNames = { "Nome", "Sobrenome", "Categoria", "Posição", "Altura", "Peso", "Idade" };
         StringBuilder csvHeader = new StringBuilder();
         for (String columnName : columnNames) {
             csvHeader.append(columnName).append(",");
         }
         csvHeader.deleteCharAt(csvHeader.length() - 1);
-        System.out.println(csvHeader.toString());
-
 
         for (int i = 0; i < athleteswDescs.size(); i++) {
             StringBuilder csvRow = new StringBuilder();
@@ -54,22 +42,25 @@ public class CsvGenerator {
                 csvRow.append(athleteDescMatrixData[i][j]).append(",");
             }
             csvRow.deleteCharAt(csvRow.length() - 1);
-            System.out.println(csvRow.toString());
         }
-        
-        int [] columnWidths = calculateColumnWidths(athleteDescMatrixData);
 
-        String csvFilePath = "Descrições-Atletas.csv";
+        int[] columnWidths = calculateColumnWidths(athleteDescMatrixData);
+
+        String csvFilePath = CodeGenerator.codeGen(6, true) + teamId.toString() + ".csv";
+
         try (FileOutputStream file = new FileOutputStream(csvFilePath);
-             OutputStreamWriter fileWriter = new OutputStreamWriter(file, StandardCharsets.UTF_8);
-             CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withDelimiter(';'))) {
+                OutputStreamWriter fileWriter = new OutputStreamWriter(file, StandardCharsets.UTF_8);
+                CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withDelimiter(';'))) {
             for (String[] userData : athleteDescMatrixData) {
                 String[] formattedData = formatDataWithColumnWidths(userData, columnWidths);
+
                 csvPrinter.printRecord((Object[]) formattedData);
             }
+
+            return csvFilePath;
         }
     }
-    
+
     private static int[] calculateColumnWidths(String[][] data) {
         int[] columnWidths = new int[data[0].length];
         for (String[] row : data) {

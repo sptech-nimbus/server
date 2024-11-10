@@ -34,7 +34,7 @@ io.on('connection', socket => {
                 date: m.date,
                 userId: m.user.id,
                 teamId: m.team.id,
-                username: user.username
+                username: m.user.username
             };
 
             try {

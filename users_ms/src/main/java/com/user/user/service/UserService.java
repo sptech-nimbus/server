@@ -1,7 +1,11 @@
 package com.user.user.service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -16,6 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.user.user.config.security.jwt.GerenciadorTokenJwt;
+import com.user.user.domain.athlete.Athlete;
+import com.user.user.domain.coach.Coach;
 import com.user.user.domain.email.EmailDTO;
 import com.user.user.domain.operationCodes.OperationCode;
 import com.user.user.domain.persona.NewUserDTO;
@@ -30,7 +36,10 @@ import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.repository.UserRepository;
 import com.user.user.util.CodeGenerator;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository repo;
     private final CoachService coachService;
@@ -40,19 +49,7 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final GerenciadorTokenJwt gerenciadorTokenJwt;
     private final AuthenticationManager authenticationManager;
-
-    public UserService(UserRepository repo, CoachService coachService, AthleteService athleteService,
-            EmailService emailService, OperationCodeService operationCodeService, PasswordEncoder encoder,
-            GerenciadorTokenJwt gerenciadorTokenJwt, AuthenticationManager authenticationManager) {
-        this.repo = repo;
-        this.coachService = coachService;
-        this.athleteService = athleteService;
-        this.emailService = emailService;
-        this.operationCodeService = operationCodeService;
-        this.encoder = encoder;
-        this.gerenciadorTokenJwt = gerenciadorTokenJwt;
-        this.authenticationManager = authenticationManager;
-    }
+    private final AthleteDescService athleteDescService;
 
     public ResponseEntity<ResponseMessage<NewUserDTO>> register(UserDTO dto) {
         List<String> credencialsErrors = checkAllUserCredencials(dto);
@@ -123,7 +120,22 @@ public class UserService {
         User userFound = repo.findByEmail(dto.email())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário", null));
 
-        String userType = userFound.getAthlete() != null ? "Athlete" : "Coach";
+        String userType;
+        UUID personaId;
+        String username;
+
+        Optional<Coach> coach = coachService.findCoachByUserId(userFound.getId());
+
+        if (coach.isPresent()) {
+            userType = "Coach";
+            personaId = coach.get().getId();
+            username = coach.get().getFirstName() + " " + coach.get().getLastName();
+        } else {
+            Optional<Athlete> athlete = athleteService.findByUserId(userFound.getId());
+            userType = "Athlete";
+            personaId = athlete.get().getId();
+            username = athlete.get().getFirstName() + " " + athlete.get().getLastName();
+        }
 
         SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -131,10 +143,12 @@ public class UserService {
 
         return ResponseEntity.status(200)
                 .body(new ResponseMessage<UserTokenDTO>("Login realizado.", userType,
-                        new UserTokenDTO(userFound.getId(), token)));
+                        new UserTokenDTO(userFound.getId(), personaId, token, username)));
     }
 
     public ResponseEntity<ResponseMessage<?>> changePasswordRequest(ChangePasswordRequestDTO dto) {
+        LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(dto.expirationDate()), ZoneId.of("UTC"));
+
         User userFound = repo.findByEmail(dto.email()).get();
 
         Persona personaFound = userFound.getAthlete() == null ? userFound.getCoach() : userFound.getAthlete();
@@ -143,7 +157,7 @@ public class UserService {
 
         try {
             operationCodeService.insertCode(
-                    new OperationCode("change-password", recuperationCode, dto.expirationDate().plusHours(2), userFound,
+                    new OperationCode("change-password", recuperationCode, date.plusHours(2), userFound,
                             null));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ResponseMessage<>("Erro ao cadastrar código", e.getMessage()));
@@ -190,7 +204,9 @@ public class UserService {
         User userFound = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário", id));
 
         if (checkUserPassword(dto.newPassword())) {
-            userFound.setPassword(dto.newPassword());
+            String cryptPassword = encoder.encode(dto.newPassword());
+
+            userFound.setPassword(cryptPassword);
 
             repo.save(userFound);
         } else {
@@ -208,17 +224,10 @@ public class UserService {
         }
 
         if (userFound.getAthlete() != null) {
-            try {
-                athleteService.removeUserFromAthlete(userFound.getAthlete().getId());
-            } catch (ResourceNotFoundException e) {
-                throw new ResourceNotFoundException("Atleta", userFound.getAthlete().getId());
-            }
+            athleteService.removeUserFromAthlete(userFound.getAthlete().getId());
+            athleteDescService.deleteAthleteDescById(userFound.getAthlete().getId());
         } else {
-            try {
-                coachService.removeUserFromCoach(userFound.getCoach().getId());
-            } catch (ResourceNotFoundException e) {
-                throw new ResourceNotFoundException("Atleta", userFound.getCoach().getId());
-            }
+            coachService.removeUserFromCoach(userFound.getCoach().getId());
         }
 
         repo.delete(userFound);

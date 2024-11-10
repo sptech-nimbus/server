@@ -40,33 +40,37 @@ public class SecurityConfiguracao {
 
     private static final AntPathRequestMatcher[] URLS_PERMITIDAS = {
             new AntPathRequestMatcher("/swagger"),
-            new AntPathRequestMatcher("/swagger-ui/index.html"),
-            new AntPathRequestMatcher("/users/login"),
-            new AntPathRequestMatcher("/users", "POST"),
-            new AntPathRequestMatcher("/swagger-ui/**"),
-            new AntPathRequestMatcher("/swagger-ui.html"),
-            new AntPathRequestMatcher("/swagger-resources"),
-            new AntPathRequestMatcher("/swagger.yaml"),
-            new AntPathRequestMatcher("/swagger-resources/**"),
-            new AntPathRequestMatcher("/configuration/ui"),
-            new AntPathRequestMatcher("/configuration/security"),
-            new AntPathRequestMatcher("/api/public/**"),
-            new AntPathRequestMatcher("/api/public/authenticate"),
-            new AntPathRequestMatcher("/webjars/**"),
-            new AntPathRequestMatcher("/v3/api-docs/**"),
-            new AntPathRequestMatcher("/actuator/*"),
-            new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/error/**"),
-            new AntPathRequestMatcher("/users/change-password-request"),
+            new AntPathRequestMatcher("/actuator/*"),
+            new AntPathRequestMatcher("/webjars/**"),
+            new AntPathRequestMatcher("/users/login"),
+            new AntPathRequestMatcher("/swagger.yaml"),
+            new AntPathRequestMatcher("/swagger-ui/**"),
+            new AntPathRequestMatcher("/users", "POST"),
+            new AntPathRequestMatcher("/api/public/**"),
+            new AntPathRequestMatcher("/h2-console/**"),
+            new AntPathRequestMatcher("/v3/api-docs/**"),
+            new AntPathRequestMatcher("/swagger-ui.html"),
+            new AntPathRequestMatcher("/configuration/ui"),
+            new AntPathRequestMatcher("/swagger-resources"),
             new AntPathRequestMatcher("/codes/validate-code"),
-            new AntPathRequestMatcher("/users/ms-get-chat-user/**"),
+            new AntPathRequestMatcher("/swagger-resources/**"),
             new AntPathRequestMatcher("/teams/ms-get-team/**"),
+            new AntPathRequestMatcher("/swagger-ui/index.html"),
+            new AntPathRequestMatcher("/configuration/security"),
+            new AntPathRequestMatcher("/api/public/authenticate"),
+            new AntPathRequestMatcher("/coaches/ms-get-coach/**"),
+            new AntPathRequestMatcher("/users/change-password/**"),
+            new AntPathRequestMatcher("/users/ms-get-chat-user/**"),
+            new AntPathRequestMatcher("/athletes/ms-get-athlete/**"),
+            new AntPathRequestMatcher("/users/change-password-request"),
+            new AntPathRequestMatcher("/athlete-historics/ms-by-games/**"),
     };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(URLS_PERMITIDAS)
@@ -116,19 +120,24 @@ public class SecurityConfiguracao {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuracao = new CorsConfiguration();
-        configuracao.applyPermitDefaultValues();
-        configuracao.setAllowedMethods(
-                Arrays.asList(
-                        HttpMethod.GET.name(),
-                        HttpMethod.POST.name(),
-                        HttpMethod.PUT.name(),
-                        HttpMethod.PATCH.name(),
-                        HttpMethod.DELETE.name(),
-                        HttpMethod.OPTIONS.name(),
-                        HttpMethod.HEAD.name(),
-                        HttpMethod.TRACE.name()));
-
+        configuracao.setAllowedOrigins(Arrays.asList("https://thankful-rock-03dc41310.5.azurestaticapps.net"));
+        configuracao.setAllowedMethods(Arrays.asList(
+                HttpMethod.GET.name(),
+                HttpMethod.POST.name(),
+                HttpMethod.PUT.name(),
+                HttpMethod.PATCH.name(),
+                HttpMethod.DELETE.name(),
+                HttpMethod.OPTIONS.name(),
+                HttpMethod.HEAD.name(),
+                HttpMethod.TRACE.name()
+        ));
+        configuracao.setAllowedHeaders(Arrays.asList(
+                HttpHeaders.AUTHORIZATION,
+                HttpHeaders.CONTENT_TYPE,
+                HttpHeaders.ACCEPT
+        ));
         configuracao.setExposedHeaders(List.of(HttpHeaders.CONTENT_DISPOSITION));
+        configuracao.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource origem = new UrlBasedCorsConfigurationSource();
         origem.registerCorsConfiguration("/**", configuracao);

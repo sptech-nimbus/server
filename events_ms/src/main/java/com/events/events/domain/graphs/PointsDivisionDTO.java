@@ -1,5 +1,5 @@
 package com.events.events.domain.graphs;
 
-public record PointsDivisionDTO(Integer twoPointsPorcentage, Integer threePointsPorcentage) {
+public record PointsDivisionDTO(Double twoPointsPorcentage, Double threePointsPorcentage) {
 
 }

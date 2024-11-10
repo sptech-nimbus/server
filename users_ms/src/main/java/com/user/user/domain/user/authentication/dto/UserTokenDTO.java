@@ -7,29 +7,32 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserTokenDTO {
     private UUID userId;
-    private String nome;
+    private String username;
     private String email;
     private String token;
+    private UUID personaId;
 
-    public UserTokenDTO(UUID id, String token) {
+    public UserTokenDTO(UUID id, UUID personaId, String token, String username) {
         this.userId = id;
         this.token = token;
+        this.personaId = personaId;
+        this.username = username;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
     public UUID getUserId() {
         return userId;
     }
 
     public void setUserId(UUID userId) {
         this.userId = userId;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public String getEmail() {
@@ -46,5 +49,13 @@ public class UserTokenDTO {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public UUID getPersonaId() {
+        return personaId;
+    }
+
+    public void setPersonaId(UUID personaId) {
+        this.personaId = personaId;
     }
 }

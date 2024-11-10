@@ -36,9 +36,13 @@ public class GameService {
     }
 
     public GamewResultsDTO getLastGame(UUID teamId, LocalDateTime now) {
-        Game gameFound = repo
-                .findLastGameByTeam(teamId, now)
-                .orElseThrow(() -> new ResourceNotFoundException("Jogo", teamId));
+        List<Game> nextGamesFound = repo.findLastGames(teamId);
+
+        if(nextGamesFound.isEmpty()) {
+            throw new ResourceNotFoundException("Jogo", teamId);
+        }
+
+        Game gameFound = nextGamesFound.get(0);
 
         Team challenger = teamService.exchange("3000", "teams/ms-get-team", gameFound.getChallenger(), null,
                 Team.class);
@@ -107,8 +111,13 @@ public class GameService {
     }
 
     public GameWithTeams getNextGameFromTeamId(UUID teamId, LocalDateTime date) {
-        Game nextGameFound = repo.findNextGameByTeam(teamId, date)
-                .orElseThrow(() -> new ResourceNotFoundException("Jogo", teamId));
+        List<Game> nextGames = repo.findNextGames(teamId);
+
+        if (nextGames.isEmpty()) {
+            throw new ResourceNotFoundException("Jogo", teamId);
+        }
+
+        Game nextGameFound = nextGames.get(0);
 
         Team challenger = teamService.exchange("3000", "teams/ms-get-team", nextGameFound.getChallenger(), null,
                 Team.class);
@@ -125,8 +134,6 @@ public class GameService {
 
         try {
             coachFound = coachService.getTemplateById("3000", "coaches/ms-get-coach", coach.getId(), Coach.class);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage<Game>(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(500)
                     .body(new ResponseMessage<Game>("Serviço de usuários fora do ar no momento.", e.getMessage()));
