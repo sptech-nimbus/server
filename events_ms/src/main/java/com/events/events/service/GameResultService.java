@@ -3,6 +3,7 @@ package com.events.events.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import com.events.events.domain.game.Game;
 import com.events.events.domain.gameResult.GameResult;
 import com.events.events.domain.gameResult.GameResultDTO;
 import com.events.events.domain.responseMessage.ResponseMessage;
+import com.events.events.domain.team.Team;
 import com.events.events.exception.ResourceNotFoundException;
 import com.events.events.repository.GameRepository;
 import com.events.events.repository.GameResultRepository;
@@ -100,6 +102,66 @@ public class GameResultService {
 
         return ResponseEntity.status(200).body(new ResponseMessage<GameResult>(gameResult));
     }
+
+    public void validateLevel (UUID teamId) {
+        List<Game> games = gameRepo.findGamesByTeamId(teamId);
+        
+       
+        Team time = games.stream().filter(
+                    gr -> gr.getChallenger() == teamId ||
+                    gr.getChallenger() == teamId
+                    )
+                .collect(null);
+
+        System.out.println(time);
+
+        Integer victoriesQtd;
+        Integer defeatsQtd;
+        Double qtdPartidas;
+        Double porcentagemVitorias;
+        Integer level;
+
+        List<Game> victories = games.stream().filter(
+                    gr -> gr.getConfirmed() == true && 
+                    gr.getChallenger() == teamId && 
+                    gr.getGameResult().getChallengerPoints() > gr.getGameResult().getChallengedPoints())
+                .collect(Collectors.toList());
+
+        victoriesQtd = victories.size();
+        
+        List<Game> defeats = games.stream().filter(
+            gr -> gr.getConfirmed() == true && 
+            gr.getChallenged() == teamId && 
+            gr.getGameResult().getChallengedPoints() > gr.getGameResult().getChallengerPoints())
+        .collect(Collectors.toList());
+        
+        defeatsQtd = defeats.size();
+
+        qtdPartidas = victoriesQtd.doubleValue() + defeatsQtd.doubleValue();
+
+        porcentagemVitorias = (victoriesQtd.doubleValue() / qtdPartidas) * 100;
+
+        if (time.getAthletes().size() >= 12) {
+
+            level = (qtdPartidas >= 50 && porcentagemVitorias >= 60) ? 4 : 0; //Rei da quadra
+
+        } else if (time.getAthletes().size() >= 10) {
+
+            level = (qtdPartidas >= 35) ? 3 : 0; //Conquistador 
+
+        } else if (time.getAthletes().size() >= 5) {
+
+            level = (qtdPartidas >= 20) ? 2 : 0; //Desafiante
+
+        } else {
+            level = (qtdPartidas >= 10) ? 1 : 0; //Destinado
+        }
+       
+        if (level != time.getLevel()) {
+            time.setLevel(level);
+        }
+    }
+
 
     public List<String> validateDTO(GameResultDTO dto) {
         List<String> validateErrors = new ArrayList<>();

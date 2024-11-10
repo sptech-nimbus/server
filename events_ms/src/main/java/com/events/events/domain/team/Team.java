@@ -21,6 +21,7 @@ public class Team {
     private String category;
     private String picture;
     private String local;
+    private Integer level;
     private Coach coach;
     private List<Athlete> athletes;
     
@@ -32,6 +33,7 @@ public class Team {
                 "category=" + category + '\'' +
                 "picture=" + picture + '\'' +
                 "local=" + local + '\'' +
+                "level=" + level + '\'' +
                 "coach=" + coach + '\'' +
                 "athletes=" + athletes + '\'' +
                 "}";
