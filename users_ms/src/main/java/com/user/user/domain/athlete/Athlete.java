@@ -58,14 +58,4 @@ public class Athlete extends Persona {
 
         @OneToOne(mappedBy = "athlete")
         private AthleteDesc athleteDesc;
-
-        @Override
-        public String toString() {
-                return "Athlete {" + '\'' +
-                                "category=" + category + '\'' +
-                                "isStarting=" + isStarting + '\'' +
-                                "injuries=" + injuries + '\'' +
-                                "persona=" + super.toString() + '\'' +
-                                "}";
-        }
 }

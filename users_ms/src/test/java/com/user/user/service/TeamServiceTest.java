@@ -64,13 +64,15 @@ class TeamServiceTest {
     CoachDTO coachdto;
     TeamDTO teamDto;
     AthleteDTO athleteDto;
+
     @BeforeEach
     void setup() {
         MockitoAnnotations.initMocks(this);
-        service = new TeamService(repository, coachRepo, athleteRepo, operationCodeRepo, athleteDescRepository, null);
+        service = new TeamService(repository, coachRepo, athleteRepo, operationCodeRepo, athleteDescRepository, null,
+                null, null);
 
         coachdto = new CoachDTO("Cafunga", "Carequinha", LocalDate.now(), null, null);
-        user = new User(id, "cafunga@email.com" , "Cafunga@123", coach, null);
+        user = new User(id, "cafunga@email.com", "Cafunga@123", coach, null);
         coach = new Coach();
         coach.setId(id);
         coach.setUser(user);
@@ -79,11 +81,12 @@ class TeamServiceTest {
 
         BeanUtils.copyProperties(coachdto, coach);
 
-        athleteDto = new AthleteDTO("Luciano" , "Hulk" , LocalDate.now(), null, null, "sub-20" , true);
+        athleteDto = new AthleteDTO("Luciano", "Hulk", LocalDate.now(), null, null, "sub-20", true);
         BeanUtils.copyProperties(athleteDto, atlete);
 
         BeanUtils.copyProperties(teamDto, team);
     }
+
     @Test
     @DisplayName("Teste correto se, ao chamar register() retorna o time criado")
     void cenarioCorretoRegister01() {
@@ -114,7 +117,7 @@ class TeamServiceTest {
 
     @Test
     @DisplayName("Teste correto se, ao chamar putTeamById() retorna o time atualizado")
-    void cenarioCorretoPutTeam01(){
+    void cenarioCorretoPutTeam01() {
 
         team.setId(id);
 
@@ -126,13 +129,12 @@ class TeamServiceTest {
 
     @Test
     @DisplayName("Teste Incorreto se, ao chamar putTeamById(), retorna mensagem de erro")
-    void cenarioIncorretoPutTeam01(){
+    void cenarioIncorretoPutTeam01() {
 
         UUID idTeste = UUID.randomUUID();
 
         assertThrows(ResourceNotFoundException.class,
-                () -> service.putTeamById(idTeste, teamDto)
-        );
+                () -> service.putTeamById(idTeste, teamDto));
     }
 
     @Test
@@ -153,14 +155,16 @@ class TeamServiceTest {
         when(repository.findById(team.getId())).thenReturn(Optional.of(teamOpt));
         when(athleteRepo.findByTeamId(team.getId())).thenReturn(List.of(athleteOpt));
 
-        ResponseEntity<ResponseMessage<?>> teamResponse = service.deleteTeam(team.getId(), team.getCoach().getUser().getPassword());
+        ResponseEntity<ResponseMessage<?>> teamResponse = service.deleteTeam(team.getId(),
+                team.getCoach().getUser().getPassword());
 
         assertNotNull(teamResponse.getBody());
     }
 
     @Test
     @DisplayName("Teste incorreto se, ao chamar deleteTeam(), retorna senha incorreta")
-    void CenarioIncorretoDeleteTeam01() {team = new Team();
+    void CenarioIncorretoDeleteTeam01() {
+        team = new Team();
         team.setId(UUID.randomUUID());
         team.setName("Test Team");
         team.setCoach(coach);
