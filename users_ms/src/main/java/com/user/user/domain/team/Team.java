@@ -45,6 +45,9 @@ public class Team extends Pictured {
 
     @Column(name = "local", nullable = true)
     private String local;
+    
+    @Column(name = "level", nullable = true)
+    private Integer level;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "coach_id", referencedColumnName = "coach_id")

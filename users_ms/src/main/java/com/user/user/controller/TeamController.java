@@ -144,6 +144,13 @@ public class TeamController {
         }
     }
 
+    @PatchMapping("change-level/{id}")
+    public ResponseEntity<ResponseMessage<?>> changeLevel(@PathVariable UUID id, @RequestParam Integer level) {
+        service.alterarLevel(id, level);
+
+        return ResponseEntity.status(200).build();
+    }
+
     // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseMessage<?>> deleteTeamById(@PathVariable UUID id, @RequestBody String coachPassword) {

@@ -229,6 +229,16 @@ public class TeamService {
                 .orElseThrow(() -> new ResourceNotFoundException("time", athleteFound.getTeam().getId()));
     }
 
+    public void alterarLevel(UUID teamId, Integer level) {
+        System.out.println(teamId);
+        System.out.println(level);
+        Team teamFound = repo.findById(teamId).orElseThrow(() -> new ResourceNotFoundException("Time", teamId));
+
+        teamFound.setLevel(level);
+        
+        repo.save(teamFound);
+    }
+
     private final RestTemplateService<InGameForecastDTO> forecastService;
 
     public void generateForecast(UUID challengerId, UUID challengedId) {

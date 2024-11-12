@@ -49,6 +49,14 @@ public class RestTemplateService<T> {
         }
     }
 
+    public void patchLevel(UUID teamId, Integer level) {
+        try {
+            ResponseEntity<?> r = restTemplate.patchForObject("http://localhost:3000/change-level/"+teamId+"?level="+level, null, null);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
     public T exchange(String port, String endPoint, UUID id, String requestParams, Class<T> classType) {
         try {
             HttpHeaders headers = new HttpHeaders();
