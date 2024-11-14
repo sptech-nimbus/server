@@ -1,12 +1,15 @@
 spring:
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
       globalcors:
         corsConfigurations:
           "[/**]":
-            allowedOrigins: "http://localhost:5173"
+            allowedOrigins: "http://${PUBLIC_IP}, http://${PUBLIC_IP2}, http://localhost"
             allowedHeaders: "*"
             allowedMethods:
               - GET
@@ -14,56 +17,57 @@ spring:
               - PUT
               - PATCH
               - DELETE
+              - OPTIONS
       routes:
         - id: teams
-          uri: http://localhost:3000
+          uri: http://users-ms:3000
           predicates:
             - Path=/teams/**
         - id: codes
-          uri: http://localhost:3000
+          uri: http://users-ms:3000
           predicates:
             - Path=/codes/**
         - id: users
-          uri: http://localhost:3000
+          uri: http://users-ms:3000
           predicates:
             - Path=/users/**
         - id: injuries
-          uri: http://localhost:3000
+          uri: http://users-ms:3000
           predicates:
             - Path=/injuries/**
         - id: athlete-descs
-          uri: http://localhost:3000
+          uri: http://users-ms:3000
           predicates:
             - Path=/athlete-descs/**
         - id: athletes
-          uri: http://localhost:3000
+          uri: http://users-ms:3000
           predicates:
             - Path=/athletes/**
         - id: athlete-historics
-          uri: http://localhost:3000
+          uri: http://users-ms:3000
           predicates:
             - Path=/athlete-historics/**
         - id: coaches
-          uri: http://localhost:3000
+          uri: http://users-ms:3000
           predicates:
             - Path=/coaches/**
         - id: games
-          uri: http://localhost:3002
+          uri: http://events-ms:3002
           predicates:
             - Path=/games/**
         - id: trainings
-          uri: http://localhost:3002
+          uri: http://events-ms:3002
           predicates:
             - Path=/trainings/**
         - id: game-results
-          uri: http://localhost:3002
+          uri: http://events-ms:3002
           predicates:
             - Path=/game-results/**
         - id: graphs
-          uri: http://localhost:3002
+          uri: http://events-ms:3002
           predicates:
             - Path=/graphs/**
         - id: blob-storage
-          uri: http://localhost:3000
+          uri: http://users-ms:3000
           predicates:
             - Path=/blob-storage/**
