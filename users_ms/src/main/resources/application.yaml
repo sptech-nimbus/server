@@ -1,8 +1,8 @@
-server.port=3002
+server.port=3000
 server.address=0.0.0.0
 
 spring.jpa.hibernate.ddl-auto=update
-spring.datasource.url=${EVENTS_URL_DATABASE}
+spring.datasource.url=${USERS_URL_DATABASE}
 spring.datasource.username=${DATABASE_USERNAME}
 spring.datasource.password=${DATABASE_PASSWORD}
 
