@@ -71,3 +71,5 @@ spring:
           uri: http://users-ms:3000
           predicates:
             - Path=/blob-storage/**
+
+            
