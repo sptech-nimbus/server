@@ -36,14 +36,15 @@ jobs:
                 cd $SERVICE
                 mvn clean package -DskipTests
                 JAR_FILE=$(ls target/*.jar | xargs -n 1 basename)
-                docker build --build-arg JAR_FILE=$JAR_FILE -t zzzmiike/$SERVICE:${{ github.sha }} .
-                docker push zzzmiike/$SERVICE:${{ github.sha }} .
+                IMAGE_NAME=zzzmiike/$SERVICE:4.0.0
+                docker build --build-arg JAR_FILE=$JAR_FILE -t $IMAGE_NAME .
+                docker push $IMAGE_NAME
                 cd ..
             done
 
-            # Build Node.js microservice
             cd node_chat_ms
             npm install
-            docker build -t zzzmiike/node_chat_ms:${{ github.sha }} .
-            docker push zzzmiike/node_chat_ms:${{ github.sha }} .
+            IMAGE_NAME=zzzmiike/node_chat_ms:2.0.0
+            docker build -t $IMAGE_NAME .
+            docker push $IMAGE_NAME
             cd ..
