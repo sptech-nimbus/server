@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
@@ -190,5 +191,13 @@ public class TeamService {
 
     public ResponseEntity<ResponseMessage<List<Team>>> getAllTeams() {
         return ResponseEntity.status(200).body(new ResponseMessage<List<Team>>(repo.findAll()));
+    }
+
+    public int highProbability() {
+        return ThreadLocalRandom.current().nextInt(55, 99);
+    }
+
+    public int lowProbability() {
+        return ThreadLocalRandom.current().nextInt(20, 46);
     }
 }

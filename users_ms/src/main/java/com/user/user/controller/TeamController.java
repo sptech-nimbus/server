@@ -123,4 +123,16 @@ public class TeamController {
             return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
     }
+
+    // GET
+    @GetMapping("/high-probability")
+    public Integer GetHighProbability() {
+        return service.highProbability();
+    }
+
+    //GET
+    @GetMapping("/low-probability")
+    public Integer GetLowProbabilitu() {
+       return service.lowProbability();
+    }
 }
