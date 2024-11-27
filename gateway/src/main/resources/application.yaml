@@ -19,6 +19,10 @@ spring:
           uri: http://localhost:3000
           predicates:
             - Path=/teams/**
+        - id: codes
+          uri: http://localhost:3000
+          predicates:
+            - Path=/codes/**
         - id: users
           uri: http://localhost:3000
           predicates:
@@ -35,6 +39,10 @@ spring:
           uri: http://localhost:3000
           predicates:
             - Path=/athletes/**
+        - id: athlete-historics
+          uri: http://localhost:3000
+          predicates:
+            - Path=/athlete-historics/**
         - id: coaches
           uri: http://localhost:3000
           predicates:
@@ -43,7 +51,19 @@ spring:
           uri: http://localhost:3002
           predicates:
             - Path=/games/**
+        - id: trainings
+          uri: http://localhost:3002
+          predicates:
+            - Path=/trainings/**
         - id: game-results
           uri: http://localhost:3002
           predicates:
             - Path=/game-results/**
+        - id: graphs
+          uri: http://localhost:3002
+          predicates:
+            - Path=/graphs/**
+        - id: blob-storage
+          uri: http://localhost:3000
+          predicates:
+            - Path=/blob-storage/**

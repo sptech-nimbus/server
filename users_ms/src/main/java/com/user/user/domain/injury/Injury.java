@@ -44,15 +44,4 @@ public class Injury {
     @ManyToOne
     @JoinColumn(name = "athlete_id", referencedColumnName = "athlete_id")
     private Athlete athlete;
-
-    @Override
-    public String toString() {
-        return "Injury {" + '\'' +
-                "id=" + id + '\'' +
-                "type=" + type + '\'' +
-                "inicialDate=" + inicialDate + '\'' +
-                "finalDate=" + finalDate + '\'' +
-                "athlete=" + athlete + '\'' +
-                "}";
-    }
 }

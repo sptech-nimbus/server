@@ -1,6 +1,8 @@
 package com.user.user.service;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -11,8 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.user.user.domain.athlete.Athlete;
+import com.user.user.domain.athlete.AthletewDesc;
 import com.user.user.domain.athlete.InjuredAthleteDTO;
+import com.user.user.domain.athleteDesc.AthleteDesc;
+import com.user.user.domain.athleteHistoric.AthleteHistoric;
 import com.user.user.domain.coach.Coach;
+import com.user.user.domain.gameResult.InGameForecastDTO;
 import com.user.user.domain.injury.Injury;
 import com.user.user.domain.operationCodes.OperationCode;
 import com.user.user.domain.responseMessage.ResponseMessage;
@@ -21,27 +27,28 @@ import com.user.user.domain.team.ChangeTeamOwnerRequestDTO;
 import com.user.user.domain.team.Team;
 import com.user.user.domain.team.TeamDTO;
 import com.user.user.exception.ResourceNotFoundException;
+import com.user.user.repository.AthleteDescRepository;
+import com.user.user.repository.AthleteHistoricRepository;
 import com.user.user.repository.AthleteRepository;
 import com.user.user.repository.CoachRepository;
 import com.user.user.repository.OperationCodeRepository;
 import com.user.user.repository.TeamRepository;
 import com.user.user.util.CodeGenerator;
+import com.user.user.util.CsvGenerator;
 import com.user.user.util.Sorts;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class TeamService {
     private final TeamRepository repo;
     private final CoachRepository coachRepo;
     private final AthleteRepository athleteRepo;
     private final OperationCodeRepository operationCodeRepo;
-
-    public TeamService(TeamRepository repo, CoachRepository coachRepo, AthleteRepository athleteRepo,
-            OperationCodeRepository operationCodeRepo) {
-        this.repo = repo;
-        this.coachRepo = coachRepo;
-        this.athleteRepo = athleteRepo;
-        this.operationCodeRepo = operationCodeRepo;
-    }
+    private final AthleteDescRepository athleteDescRepo;
+    private final AzureBlobService azureBlobService;
+    private final AthleteHistoricRepository athleteHistoricRepository;
 
     public ResponseEntity<ResponseMessage<Team>> register(TeamDTO dto) {
         List<String> fieldsErrors = checkFields(dto);
@@ -60,13 +67,31 @@ public class TeamService {
 
         repo.save(newTeam);
 
-        return ResponseEntity.ok(new ResponseMessage<Team>(newTeam));
+        return ResponseEntity.ok(new ResponseMessage<>(newTeam));
     }
 
     public ResponseEntity<ResponseMessage<Team>> getTeamById(UUID id) {
-        return ResponseEntity.ok(new ResponseMessage<Team>(repo.findById(id).get()));
+        return ResponseEntity.ok(new ResponseMessage<>(repo.findById(id).get()));
     }
 
+    public ResponseEntity<?> generateCSV(UUID teamId) throws IOException {
+        List<Athlete> athletes = athleteRepo.findAllByTeam_Id(teamId);
+
+        List<AthletewDesc> dtoList = new ArrayList<>();
+
+        for (Athlete athlete : athletes) {
+            AthleteDesc athleteDesc = athleteDescRepo.findByAthleteId(athlete.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Informações do atleta", athlete.getId()));
+
+            dtoList.add(new AthletewDesc(athlete, athleteDesc));
+        }
+
+        String csvPath = CsvGenerator.exportAthleteToCsv(dtoList, teamId);
+
+        String blobURL = azureBlobService.uploadCSVFile(teamId.toString() + LocalDateTime.now(), csvPath);
+
+        return ResponseEntity.status(200).body(blobURL);
+    }
 
     public ResponseEntity<ResponseMessage<List<InjuredAthleteDTO>>> getActiveInjuriesOnTeam(UUID id,
             LocalDate nowDate) {
@@ -89,7 +114,11 @@ public class TeamService {
             return ResponseEntity.status(204).body(new ResponseMessage<>("Sem jogadores lesionados"));
         }
 
-        return ResponseEntity.ok(new ResponseMessage<List<InjuredAthleteDTO>>(injuredAthletes));
+        return ResponseEntity.ok(new ResponseMessage<>(injuredAthletes));
+    }
+
+    public List<Team> findByCoachId(UUID coachId) {
+        return repo.findByCoachId(coachId);
     }
 
     public ResponseEntity<ResponseMessage<?>> putTeamById(UUID id, TeamDTO dto) {
@@ -119,7 +148,7 @@ public class TeamService {
 
         Sorts.mergeSortAthletesByAgeAsc(athletes, 0, athletes.size() - 1);
 
-        return ResponseEntity.status(200).body(new ResponseMessage<List<Athlete>>(athletes));
+        return ResponseEntity.status(200).body(new ResponseMessage<>(athletes));
     }
 
     public ResponseEntity<ResponseMessage<?>> changeTeamOwnerRequest(UUID id, ChangeTeamOwnerRequestDTO dto) {
@@ -174,7 +203,7 @@ public class TeamService {
     public List<String> checkFields(TeamDTO dto) {
         List<String> errors = new ArrayList<>();
 
-        if (dto.category() == null || dto.category() == "") {
+        if (dto.category() == null || dto.category().equals("")) {
             errors.add("Campo categoria é obrigatório");
         }
 
@@ -182,7 +211,7 @@ public class TeamService {
             errors.add("Campo treinador -> id é obrigatório");
         }
 
-        if (dto.name() == null || dto.name() == "") {
+        if (dto.name() == null || dto.name().equals("")) {
             errors.add("Campo nome é obrigatório");
         }
 
@@ -190,7 +219,29 @@ public class TeamService {
     }
 
     public ResponseEntity<ResponseMessage<List<Team>>> getAllTeams() {
-        return ResponseEntity.status(200).body(new ResponseMessage<List<Team>>(repo.findAll()));
+        return ResponseEntity.status(200).body(new ResponseMessage<>(repo.findAll()));
+    }
+
+    public Team getTeamByAthlete(UUID athleteId) {
+        Athlete athleteFound = athleteRepo.findById(athleteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Atleta", athleteId));
+
+        return repo.findById(athleteFound.getTeam().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("time", athleteFound.getTeam().getId()));
+    }
+
+    private final RestTemplateService<InGameForecastDTO> forecastService;
+
+    public void generateForecast(UUID challengerId, UUID challengedId) {
+        List<AthleteHistoric> challengerHistorics = athleteHistoricRepository.findByTeamId(challengerId);
+        List<AthleteHistoric> challengedHistorics = athleteHistoricRepository.findByTeamId(challengedId);
+
+        try {
+            forecastService.postForEntity("5729", "generate-forecast",
+                    new InGameForecastDTO(challengerHistorics, challengedHistorics), InGameForecastDTO.class);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     public int highProbability() {

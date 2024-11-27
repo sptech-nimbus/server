@@ -3,6 +3,7 @@ package com.user.user.domain.team;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.user.user.domain.athlete.Athlete;
 import com.user.user.domain.coach.Coach;
 import com.user.user.domain.persona.Pictured;
@@ -49,24 +50,12 @@ public class Team extends Pictured {
     @JoinColumn(name = "coach_id", referencedColumnName = "coach_id")
     private Coach coach;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "team")
     private List<Athlete> athletes;
 
     @Override
     public void setPicture(String picturePath) {
         this.picture = picturePath;
-    }
-
-    @Override
-    public String toString() {
-        return "Team {" + '\'' +
-                "id=" + id + '\'' +
-                "name=" + name + '\'' +
-                "category=" + category + '\'' +
-                "picture=" + picture + '\'' +
-                "local=" + local + '\'' +
-                "coach=" + coach + '\'' +
-                "athletes=" + athletes + '\'' +
-                "}";
     }
 }

@@ -1,8 +1,8 @@
 package com.user.user.controller;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
@@ -41,10 +41,15 @@ public class TeamController {
     // POST
     @PostMapping
     public ResponseEntity<ResponseMessage<Team>> registerTeam(@RequestBody TeamDTO dto) {
+        return service.register(dto);
+    }
+
+    @GetMapping("generate-csv/{teamId}")
+    public ResponseEntity<?> recordingCsv(@PathVariable UUID teamId) {
         try {
-            return service.register(dto);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
+            return service.generateCSV(teamId);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).build();
         }
     }
 
@@ -57,6 +62,24 @@ public class TeamController {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseMessage<Team>> getTeamById(@PathVariable UUID id) {
         return service.getTeamById(id);
+    }
+
+    @GetMapping("by-coach/{coachId}")
+    public ResponseEntity<ResponseMessage<List<Team>>> getTeamsByCoachId(@PathVariable UUID coachId) {
+        List<Team> teamsFound = service.findByCoachId(coachId);
+
+        if (teamsFound.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(new ResponseMessage<>(teamsFound));
+    }
+
+    @GetMapping("by-athlete/{athleteId}")
+    public ResponseEntity<ResponseMessage<Team>> getTeamByAthlete(@PathVariable UUID athleteId) {
+        Team teamFound = service.getTeamByAthlete(athleteId);
+
+        return ResponseEntity.ok(new ResponseMessage<>(teamFound));
     }
 
     @GetMapping("/active-injuries/{id}")
@@ -83,6 +106,13 @@ public class TeamController {
     @GetMapping("get-team-athletes-asc-age/{id}")
     public ResponseEntity<ResponseMessage<List<Athlete>>> getAthletesByAgeAsc(@PathVariable UUID id) {
         return service.getAthletesByAgeAsc(id);
+    }
+
+    @GetMapping("generate-forecast/{challengerId}/{challengedId}")
+    public ResponseEntity<ResponseMessage<?>> generateForecast(@PathVariable UUID challengerId, @PathVariable UUID challengedId) {
+        service.generateForecast(challengerId, challengedId);
+
+        return null;
     }
 
     // PUT

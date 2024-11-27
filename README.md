@@ -1,4 +1,3 @@
-
 # nimbus - server
 
 Este repositório versiona o back-end do sistema **Nimbus**, tendo como objetivo a permanência e comunicação de dados para gerenciamento de atletas e times de basquete.

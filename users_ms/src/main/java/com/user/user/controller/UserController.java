@@ -2,6 +2,7 @@ package com.user.user.controller;
 
 import java.util.UUID;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,15 +28,11 @@ import com.user.user.service.UserService;
 
 @RestController
 @RequestMapping(path = "users", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.ALL_VALUE })
+@RequiredArgsConstructor
 public class UserController {
     private final UserService service;
 
     private final PersonaService personaService;
-
-    public UserController(UserService userService, PersonaService personaService) {
-        this.personaService = personaService;
-        this.service = userService;
-    }
 
     // POST
     @PostMapping
@@ -75,7 +72,7 @@ public class UserController {
     // PATCH
     @PatchMapping("/change-password/{id}")
     public ResponseEntity<ResponseMessage<?>> changePassword(@PathVariable UUID id,
-            @RequestBody ChangePasswordDTO dto) {
+                                                             @RequestBody ChangePasswordDTO dto) {
         try {
             return service.changePassword(id, dto);
         } catch (ResourceNotFoundException e) {
