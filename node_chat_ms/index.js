@@ -15,8 +15,8 @@ app.use('/messages', require('./routes'));
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: `http://${process.env.PUBLIC_IP}`,
-        methods: ["GET", "POST"],
+        origin: `http://${process.env.PUBLIC_IP}, http://${process.env.CORS_ORIGIN}, http://${process.env.PUBLIC_IP2}`,
+        methods: ["GET", "POST", "PATCH", "DELETE"],
         allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
         credentials: true
     }
