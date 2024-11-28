@@ -76,25 +76,9 @@ public class GameResultService {
         return ResponseEntity.status(200).body(new ResponseMessage<List<Game>>(games));
     }
 
-    public ResponseEntity<ResponseMessage<GameResult>> confirmGameResult(UUID id, Coach coach) {
-        Coach coachFound;
-
-        try {
-            coachFound = coachService.getTemplateById("3000", "coaches/ms-get-coach", coach.getId(), Coach.class);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(404).body(new ResponseMessage<GameResult>(e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ResponseMessage<GameResult>(e.getMessage()));
-        }
-
+    public ResponseEntity<ResponseMessage<GameResult>> confirmGameResult(UUID id) {
         GameResult gameResult = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resultado de jogo", id));
-
-        if (!coachFound.getTeams().stream()
-                .anyMatch(team -> team.getId().equals(gameResult.getGame().getChallenged()))) {
-            return ResponseEntity.status(409).body(new ResponseMessage<GameResult>(
-                    "Apenas o treinador do time desafiado pode confirmar um resultado"));
-        }
 
         validateLevel(gameResult.getGame().getChallenged());
         validateLevel(gameResult.getGame().getChallenger());

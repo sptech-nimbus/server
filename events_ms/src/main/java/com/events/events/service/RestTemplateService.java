@@ -7,8 +7,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import com.events.events.domain.responseMessage.ResponseMessage;
 
 @Service
 public class RestTemplateService<T> {
@@ -51,7 +54,7 @@ public class RestTemplateService<T> {
 
     public void patchLevel(UUID teamId, Integer level) {
         try {
-            ResponseEntity<?> r = restTemplate.patchForObject("http://localhost:3000/change-level/"+teamId+"?level="+level, null, null);
+            ResponseEntity<?> r = restTemplate.postForObject("http://localhost:3000/teams/ms-change-level/"+teamId+"?level="+level, null, ResponseEntity.class);
         } catch (Exception e) {
             throw e;
         }
