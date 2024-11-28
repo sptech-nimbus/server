@@ -9,7 +9,7 @@ spring:
       globalcors:
         corsConfigurations:
           "[/**]":
-            allowedOrigins: "http://${PUBLIC_IP}, http://${PUBLIC_IP2}, http://localhost"
+            allowedOrigins: "http://${PUBLIC_IP}, http://${PUBLIC_IP2}, http://localhost, http://${CORS_ORIGIN}"
             allowedHeaders: "*"
             allowedMethods:
               - GET
