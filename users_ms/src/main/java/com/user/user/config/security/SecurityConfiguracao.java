@@ -1,13 +1,14 @@
 package com.user.user.config.security;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,8 +23,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import java.util.Arrays;
-import org.springframework.http.HttpHeaders;
 
 import com.user.user.config.security.jwt.GerenciadorTokenJwt;
 import com.user.user.service.AuthenticationService;
@@ -68,6 +67,7 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/api/public/authenticate", "OPTIONS"),
             new AntPathRequestMatcher("/coaches/ms-get-coach/**"),
             new AntPathRequestMatcher("/coaches/ms-get-coach/**", "OPTIONS"),
+            new AntPathRequestMatcher("/teams/ms-change-level/**"),
             new AntPathRequestMatcher("/users/change-password/**"),
             new AntPathRequestMatcher("/users/change-password/**", "OPTIONS"),
             new AntPathRequestMatcher("/users/ms-get-chat-user/**"),

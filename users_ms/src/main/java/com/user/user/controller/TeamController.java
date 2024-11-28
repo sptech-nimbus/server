@@ -144,7 +144,7 @@ public class TeamController {
         }
     }
 
-    @PatchMapping("change-level/{id}")
+    @PostMapping("ms-change-level/{id}")
     public ResponseEntity<ResponseMessage<?>> changeLevel(@PathVariable UUID id, @RequestParam Integer level) {
         service.alterarLevel(id, level);
 
@@ -159,17 +159,5 @@ public class TeamController {
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
-    }
-
-    // GET
-    @GetMapping("/high-probability")
-    public Integer GetHighProbability() {
-        return service.highProbability();
-    }
-
-    //GET
-    @GetMapping("/low-probability")
-    public Integer GetLowProbabilitu() {
-       return service.lowProbability();
     }
 }
