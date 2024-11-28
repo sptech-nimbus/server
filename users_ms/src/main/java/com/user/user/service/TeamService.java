@@ -230,9 +230,19 @@ public class TeamService {
     }
 
     public void alterarLevel(UUID teamId, Integer level) {
-        System.out.println(teamId);
-        System.out.println(level);
         Team teamFound = repo.findById(teamId).orElseThrow(() -> new ResourceNotFoundException("Time", teamId));
+
+        switch(level) {
+            case 2 -> {
+                if(teamFound.getAthletes().size() < 5) return;
+            }
+            case 3 -> {
+                if(teamFound.getAthletes().size() < 10) return;
+            }
+            case 4 -> {
+                if(teamFound.getAthletes().size() < 12) return;
+            }
+        }
 
         teamFound.setLevel(level);
         

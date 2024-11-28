@@ -144,7 +144,7 @@ public class TeamController {
         }
     }
 
-    @PatchMapping("change-level/{id}")
+    @PostMapping("ms-change-level/{id}")
     public ResponseEntity<ResponseMessage<?>> changeLevel(@PathVariable UUID id, @RequestParam Integer level) {
         service.alterarLevel(id, level);
 

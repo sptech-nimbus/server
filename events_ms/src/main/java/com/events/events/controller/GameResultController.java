@@ -41,12 +41,11 @@ public class GameResultController {
 
     // PATCH
     @PatchMapping("confirm-game-result/{id}")
-    public ResponseEntity<ResponseMessage<GameResult>> confirmGameResult(@PathVariable UUID id,
-            @RequestBody Coach coach) {
-        return service.confirmGameResult(id, coach);
+    public ResponseEntity<ResponseMessage<GameResult>> confirmGameResult(@PathVariable UUID id) {
+        return service.confirmGameResult(id);
     }
 
-    @PatchMapping("validate-level/{teamId}") 
+    @PatchMapping("validate-level/{teamId}")
     public ResponseEntity<?> validateLevel(@PathVariable UUID teamId) {
         service.validateLevel(teamId);
 
