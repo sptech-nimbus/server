@@ -26,4 +26,3 @@ jwt.secret=${JWT_SECRET}
 
 azure.storage.connection-string=${AZURE_STORAGE_CONNECTION_STRING}
 azure.storage.container-name=assets
-
