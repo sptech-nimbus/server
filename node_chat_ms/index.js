@@ -15,7 +15,10 @@ app.use('/messages', require('./routes'));
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: 'http://localhost:5173'
+        origin: `http://${process.env.PUBLIC_IP}`,
+        methods: ["GET", "POST"],
+        allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
+        credentials: true
     }
 });
 

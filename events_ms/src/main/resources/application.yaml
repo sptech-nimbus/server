@@ -1,10 +1,10 @@
-server.port=3001
+server.port=3002
 server.address=0.0.0.0
 
 spring.jpa.hibernate.ddl-auto=update
-spring.datasource.url=jdbc:sqlserver://nimbus-server.database.windows.net:1433;databaseName=nimbus-Users;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=60;
-spring.datasource.username=nimbus
-spring.datasource.password=3t6:E"UK;XG~3bJ
+spring.datasource.url=${EVENTS_URL_DATABASE}
+spring.datasource.username=${DATABASE_USERNAME}
+spring.datasource.password=${DATABASE_PASSWORD}
 
 springdoc.api-docs.enabled=false
 springdoc.swagger-ui.url=/swagger.yaml
@@ -12,8 +12,8 @@ springdoc.swagger-ui.path=/swagger
 
 spring.mail.host=smtp.gmail.com
 spring.mail.port=587
-spring.mail.username=nimbusspstorm@gmail.com
-spring.mail.password=hzxh btkl fblx exlt
+spring.mail.username=${SPRING_MAIL_USERNAME}
+spring.mail.password=${SPRING_MAIL_PASSWORD}
 spring.mail.properties.mail.stmp.auth=true
 spring.mail.properties.mail.starttls.enable=true
 
@@ -22,7 +22,7 @@ spring.mail.properties.mail.smtp.socketFactory.class=javax.net.ssl.SSLSocketFact
 
 spring.main.allow-circular-references=true
 
-jwt.secret=
+jwt.secret=${JWT_SECRET}
 
-azure.storage.connection-string=
+azure.storage.connection-string=${AZURE_STORAGE_CONNECTION_STRING}
 azure.storage.container-name=assets

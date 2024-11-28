@@ -28,6 +28,7 @@ public class GameResultService {
     private final GameResultRepository repo;
     private final GameRepository gameRepo;
     private final RestTemplateService<Coach> coachService;
+    private final RestTemplateService<Team> teamService;
     private final SimpMessagingTemplate wsMsgTemplate;
 
     public ResponseEntity<ResponseMessage<GameResult>> register(GameResultDTO dto) {
@@ -95,6 +96,8 @@ public class GameResultService {
                     "Apenas o treinador do time desafiado pode confirmar um resultado"));
         }
 
+        validateLevel(gameResult.getGame().getChallenged());
+        validateLevel(gameResult.getGame().getChallenger());
         gameResult.setConfirmed(true);
 
         repo.save(gameResult);
@@ -102,65 +105,33 @@ public class GameResultService {
         return ResponseEntity.status(200).body(new ResponseMessage<GameResult>(gameResult));
     }
 
-    public void validateLevel (UUID teamId) {
-        List<Game> games = gameRepo.findGamesByTeamId(teamId);
-        
-       
-        Team time = games.stream().filter(
-                    gr -> gr.getChallenger() == teamId ||
-                    gr.getChallenger() == teamId
-                    )
-                .collect(null);
+    public void validateLevel(UUID teamId) {
+        List<GameResult> gameResults = repo.findConfirmedGames(teamId);
 
-        System.out.println(time);
-
-        Integer victoriesQtd;
-        Integer defeatsQtd;
-        Double qtdPartidas;
-        Double porcentagemVitorias;
-        Integer level;
-
-        List<Game> victories = games.stream().filter(
-                    gr -> gr.getConfirmed() == true && 
-                    gr.getChallenger() == teamId && 
-                    gr.getGameResult().getChallengerPoints() > gr.getGameResult().getChallengedPoints())
-                .collect(Collectors.toList());
-
-        victoriesQtd = victories.size();
-        
-        List<Game> defeats = games.stream().filter(
-            gr -> gr.getConfirmed() == true && 
-            gr.getChallenged() == teamId && 
-            gr.getGameResult().getChallengedPoints() > gr.getGameResult().getChallengerPoints())
-        .collect(Collectors.toList());
-        
-        defeatsQtd = defeats.size();
-
-        qtdPartidas = victoriesQtd.doubleValue() + defeatsQtd.doubleValue();
-
-        porcentagemVitorias = (victoriesQtd.doubleValue() / qtdPartidas) * 100;
-
-        if (time.getAthletes().size() >= 12) {
-
-            level = (qtdPartidas >= 50 && porcentagemVitorias >= 60) ? 4 : 0; //Rei da quadra
-
-        } else if (time.getAthletes().size() >= 10) {
-
-            level = (qtdPartidas >= 35) ? 3 : 0; //Conquistador 
-
-        } else if (time.getAthletes().size() >= 5) {
-
-            level = (qtdPartidas >= 20) ? 2 : 0; //Desafiante
-
-        } else {
-            level = (qtdPartidas >= 10) ? 1 : 0; //Destinado
+        if(gameResults.size() >= 50) {
+            mandarRequisicaoLevel(teamId, 4);
+            return;
         }
-       
-        if (level != time.getLevel()) {
-            time.setLevel(level);
+        
+        if(gameResults.size() >= 35) {
+            mandarRequisicaoLevel(teamId, 3);
+            return;
+        }
+        
+        if(gameResults.size() >= 20) {
+            mandarRequisicaoLevel(teamId, 2);
+            return;
+        }
+        
+        if(gameResults.size() >= 10) {
+            mandarRequisicaoLevel(teamId, 1);
+            return;
         }
     }
 
+    public void mandarRequisicaoLevel(UUID teamId, Integer level) {
+        teamService.patchLevel(teamId, level);
+    }
 
     public List<String> validateDTO(GameResultDTO dto) {
         List<String> validateErrors = new ArrayList<>();

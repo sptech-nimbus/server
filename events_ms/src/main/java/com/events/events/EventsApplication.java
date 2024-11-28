@@ -7,7 +7,6 @@ import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 public class EventsApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(EventsApplication.class, args);
 	}

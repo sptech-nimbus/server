@@ -25,10 +25,10 @@ public class RestTemplateService<T> {
         try {
             HttpHeaders headers = new HttpHeaders();
 
-            headers.add("jwt-secret", jwtSecret);
+            headers.add("Authorization","Bearer" + jwtSecret);
 
             ResponseEntity<T> restResponseEntity = restTemplate.getForEntity(
-                    "http://localhost:" + port + "/" + endPoint + "/" + id, classType);
+                    "http://users-ms:" + port + "/" + endPoint + "/" + id, classType);
 
             return restResponseEntity.getBody();
         } catch (Exception e) {
@@ -37,13 +37,21 @@ public class RestTemplateService<T> {
     }
 
     public T[] getTemplateList(String port, String endPoint, UUID id, String requestParams,
-            Class<T[]> classType) {
+                               Class<T[]> classType) {
         try {
-            String httpUrl = "http://localhost:" + port + "/" + endPoint + "/" + id + "?" + requestParams;
+            String httpUrl = "http://users-ms:" + port + "/" + endPoint + "/" + id + "?" + requestParams;
 
             ResponseEntity<T[]> restResponseEntity = restTemplate.getForEntity(httpUrl, classType);
 
             return restResponseEntity.getBody();
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public void patchLevel(UUID teamId, Integer level) {
+        try {
+            ResponseEntity<?> r = restTemplate.patchForObject("http://localhost:3000/change-level/"+teamId+"?level="+level, null, null);
         } catch (Exception e) {
             throw e;
         }
