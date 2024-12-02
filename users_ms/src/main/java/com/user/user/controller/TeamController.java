@@ -171,8 +171,4 @@ public class TeamController {
             return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> 4480588ef29d4c8a98406c1d9fffcf823a8bf9be
 }
