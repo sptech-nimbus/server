@@ -1,13 +1,14 @@
 package com.user.user.config.security;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,8 +23,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import java.util.Arrays;
-import org.springframework.http.HttpHeaders;
 
 import com.user.user.config.security.jwt.GerenciadorTokenJwt;
 import com.user.user.service.AuthenticationService;
@@ -43,28 +42,42 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/error/**"),
             new AntPathRequestMatcher("/actuator/*"),
             new AntPathRequestMatcher("/webjars/**"),
-            new AntPathRequestMatcher("/users/login"),
             new AntPathRequestMatcher("/swagger.yaml"),
             new AntPathRequestMatcher("/swagger-ui/**"),
-            new AntPathRequestMatcher("/users", "POST"),
-            new AntPathRequestMatcher("/api/public/**"),
-            new AntPathRequestMatcher("/h2-console/**"),
-            new AntPathRequestMatcher("/v3/api-docs/**"),
-            new AntPathRequestMatcher("/swagger-ui.html"),
+            new AntPathRequestMatcher("/swagger-ui/index.html"),
             new AntPathRequestMatcher("/configuration/ui"),
             new AntPathRequestMatcher("/swagger-resources"),
-            new AntPathRequestMatcher("/codes/validate-code"),
             new AntPathRequestMatcher("/swagger-resources/**"),
-            new AntPathRequestMatcher("/teams/ms-get-team/**"),
-            new AntPathRequestMatcher("/swagger-ui/index.html"),
             new AntPathRequestMatcher("/configuration/security"),
+            new AntPathRequestMatcher("/users/login"),
+            new AntPathRequestMatcher("/users/login", "OPTIONS"),
+            new AntPathRequestMatcher("/users", "POST"),
+            new AntPathRequestMatcher("/users", "OPTIONS"),
+            new AntPathRequestMatcher("/api/public/**"),
+            new AntPathRequestMatcher("/api/public/**", "OPTIONS"),
+            new AntPathRequestMatcher("/h2-console/**"),
+            new AntPathRequestMatcher("/h2-console/**", "OPTIONS"),
+            new AntPathRequestMatcher("/v3/api-docs/**"),
+            new AntPathRequestMatcher("/v3/api-docs/**", "OPTIONS"),
+            new AntPathRequestMatcher("/codes/validate-code"),
+            new AntPathRequestMatcher("/codes/validate-code", "OPTIONS"),
+            new AntPathRequestMatcher("/teams/ms-get-team/**"),
+            new AntPathRequestMatcher("/teams/ms-get-team/**", "OPTIONS"),
             new AntPathRequestMatcher("/api/public/authenticate"),
+            new AntPathRequestMatcher("/api/public/authenticate", "OPTIONS"),
             new AntPathRequestMatcher("/coaches/ms-get-coach/**"),
+            new AntPathRequestMatcher("/coaches/ms-get-coach/**", "OPTIONS"),
+            new AntPathRequestMatcher("/teams/ms-change-level/**"),
             new AntPathRequestMatcher("/users/change-password/**"),
+            new AntPathRequestMatcher("/users/change-password/**", "OPTIONS"),
             new AntPathRequestMatcher("/users/ms-get-chat-user/**"),
+            new AntPathRequestMatcher("/users/ms-get-chat-user/**", "OPTIONS"),
             new AntPathRequestMatcher("/athletes/ms-get-athlete/**"),
+            new AntPathRequestMatcher("/athletes/ms-get-athlete/**", "OPTIONS"),
             new AntPathRequestMatcher("/users/change-password-request"),
+            new AntPathRequestMatcher("/users/change-password-request", "OPTIONS"),
             new AntPathRequestMatcher("/athlete-historics/ms-by-games/**"),
+            new AntPathRequestMatcher("/athlete-historics/ms-by-games/**", "OPTIONS")
     };
 
     @Bean
@@ -120,7 +133,9 @@ public class SecurityConfiguracao {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuracao = new CorsConfiguration();
-        configuracao.setAllowedOrigins(Arrays.asList("https://thankful-rock-03dc41310.5.azurestaticapps.net"));
+        String publicIp = System.getenv("PUBLIC_IP");
+        String publicIp2 = System.getenv("PUBLIC_IP2");
+        configuracao.setAllowedOrigins(Arrays.asList("http://events-ms", "http://" + publicIp, "http://gateway", "http://localhost:5173", "http://" + publicIp2));
         configuracao.setAllowedMethods(Arrays.asList(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),

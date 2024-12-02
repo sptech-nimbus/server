@@ -155,6 +155,13 @@ public class TeamController {
         }
     }
 
+    @PostMapping("ms-change-level/{id}")
+    public ResponseEntity<ResponseMessage<?>> changeLevel(@PathVariable UUID id, @RequestParam Integer level) {
+        service.alterarLevel(id, level);
+
+        return ResponseEntity.status(200).build();
+    }
+
     // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseMessage<?>> deleteTeamById(@PathVariable UUID id, @RequestBody String coachPassword) {
@@ -164,5 +171,8 @@ public class TeamController {
             return ResponseEntity.status(404).body(new ResponseMessage<>(e.getMessage()));
         }
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4480588ef29d4c8a98406c1d9fffcf823a8bf9be
 }

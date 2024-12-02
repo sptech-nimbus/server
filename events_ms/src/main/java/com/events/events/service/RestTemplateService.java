@@ -7,8 +7,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import com.events.events.domain.responseMessage.ResponseMessage;
 
 @Service
 public class RestTemplateService<T> {
@@ -25,10 +28,10 @@ public class RestTemplateService<T> {
         try {
             HttpHeaders headers = new HttpHeaders();
 
-            headers.add("jwt-secret", jwtSecret);
+            headers.add("Authorization","Bearer" + jwtSecret);
 
             ResponseEntity<T> restResponseEntity = restTemplate.getForEntity(
-                    "http://localhost:" + port + "/" + endPoint + "/" + id, classType);
+                    "http://users-ms:" + port + "/" + endPoint + "/" + id, classType);
 
             return restResponseEntity.getBody();
         } catch (Exception e) {
@@ -37,13 +40,21 @@ public class RestTemplateService<T> {
     }
 
     public T[] getTemplateList(String port, String endPoint, UUID id, String requestParams,
-            Class<T[]> classType) {
+                               Class<T[]> classType) {
         try {
-            String httpUrl = "http://localhost:" + port + "/" + endPoint + "/" + id + "?" + requestParams;
+            String httpUrl = "http://users-ms:" + port + "/" + endPoint + "/" + id + "?" + requestParams;
 
             ResponseEntity<T[]> restResponseEntity = restTemplate.getForEntity(httpUrl, classType);
 
             return restResponseEntity.getBody();
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public void patchLevel(UUID teamId, Integer level) {
+        try {
+            ResponseEntity<?> r = restTemplate.postForObject("http://localhost:3000/teams/ms-change-level/"+teamId+"?level="+level, null, ResponseEntity.class);
         } catch (Exception e) {
             throw e;
         }

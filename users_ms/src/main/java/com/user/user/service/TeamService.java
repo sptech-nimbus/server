@@ -238,7 +238,31 @@ public class TeamService {
                 .orElseThrow(() -> new ResourceNotFoundException("time", athleteFound.getTeam().getId()));
     }
 
+<<<<<<< HEAD
     private final RestTemplateService<ForecastDTO> forecastService;
+=======
+    public void alterarLevel(UUID teamId, Integer level) {
+        Team teamFound = repo.findById(teamId).orElseThrow(() -> new ResourceNotFoundException("Time", teamId));
+
+        switch(level) {
+            case 2 -> {
+                if(teamFound.getAthletes().size() < 5) return;
+            }
+            case 3 -> {
+                if(teamFound.getAthletes().size() < 10) return;
+            }
+            case 4 -> {
+                if(teamFound.getAthletes().size() < 12) return;
+            }
+        }
+
+        teamFound.setLevel(level);
+        
+        repo.save(teamFound);
+    }
+
+    private final RestTemplateService<InGameForecastDTO> forecastService;
+>>>>>>> 4480588ef29d4c8a98406c1d9fffcf823a8bf9be
 
     public void generateForecast(UUID challengerId, UUID challengedId) throws Exception {
       
@@ -261,7 +285,10 @@ public class TeamService {
         forecastService.postForEntity("5729", "generate-forecast", jsonParams, ForecastDTO.class);
         
     }
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> 4480588ef29d4c8a98406c1d9fffcf823a8bf9be
 }
