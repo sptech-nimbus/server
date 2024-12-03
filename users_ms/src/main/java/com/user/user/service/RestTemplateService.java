@@ -5,10 +5,12 @@ import java.util.UUID;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,15 +41,24 @@ public class RestTemplateService<T> {
 
             HttpEntity<Object> entity = new HttpEntity<>(params, headers);
 
-            T restResponseEntity = (T) restTemplate.postForEntity("http://localhost:" + port + "/" + endPoint, entity,
-                    classType);
+            
+            ResponseEntity<T> responseEntity = restTemplate.exchange(
+                    "http://localhost:" + port + "/" + endPoint,
+                    HttpMethod.POST,
+                    entity,
+                    classType
+            );
 
-            return restResponseEntity;
+            System.out.println("responseEntity" + responseEntity);
+
+            
+            return responseEntity.getBody();
         } catch (RestClientException e) {
-            throw e;
+            System.out.println("Exception" + e);
+            throw new Exception("Erro ao enviar a requisição", e);
         }
     }
-
+    
     public T[] getTemplateList(String port, String endPoint, UUID id, Class<T[]> classType) throws Exception {
         try {
             ResponseEntity<T[]> restResponseEntity = restTemplate.getForEntity(

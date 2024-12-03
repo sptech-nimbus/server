@@ -4,18 +4,26 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.beans.BeanUtils;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import org.springframework.http.ResponseEntity;
+
+
+import org.springframework.beans.BeanUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.user.user.domain.athlete.Athlete;
 import com.user.user.domain.athlete.AthletewDesc;
 import com.user.user.domain.athlete.InjuredAthleteDTO;
 import com.user.user.domain.athleteDesc.AthleteDesc;
 import com.user.user.domain.athleteHistoric.AthleteHistoric;
+import com.user.user.domain.athleteHistoric.ForecastDTO;
 import com.user.user.domain.coach.Coach;
 import com.user.user.domain.gameResult.InGameForecastDTO;
 import com.user.user.domain.injury.Injury;
@@ -35,6 +43,7 @@ import com.user.user.repository.TeamRepository;
 import com.user.user.util.CodeGenerator;
 import com.user.user.util.CsvGenerator;
 import com.user.user.util.Sorts;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -229,37 +238,30 @@ public class TeamService {
                 .orElseThrow(() -> new ResourceNotFoundException("time", athleteFound.getTeam().getId()));
     }
 
-    public void alterarLevel(UUID teamId, Integer level) {
-        Team teamFound = repo.findById(teamId).orElseThrow(() -> new ResourceNotFoundException("Time", teamId));
+    private final RestTemplateService<ForecastDTO> forecastService;
 
-        switch(level) {
-            case 2 -> {
-                if(teamFound.getAthletes().size() < 5) return;
-            }
-            case 3 -> {
-                if(teamFound.getAthletes().size() < 10) return;
-            }
-            case 4 -> {
-                if(teamFound.getAthletes().size() < 12) return;
-            }
-        }
-
-        teamFound.setLevel(level);
-        
-        repo.save(teamFound);
-    }
-
-    private final RestTemplateService<InGameForecastDTO> forecastService;
-
-    public void generateForecast(UUID challengerId, UUID challengedId) {
+    public void generateForecast(UUID challengerId, UUID challengedId) throws Exception {
+      
         List<AthleteHistoric> challengerHistorics = athleteHistoricRepository.findByTeamId(challengerId);
         List<AthleteHistoric> challengedHistorics = athleteHistoricRepository.findByTeamId(challengedId);
 
-        try {
-            forecastService.postForEntity("5729", "generate-forecast",
-                    new InGameForecastDTO(challengerHistorics, challengedHistorics), InGameForecastDTO.class);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        
+        Map<String, Object> params = new HashMap<>();
+        params.put("challengerHistorics", challengerHistorics);
+        params.put("challengedHistorics", challengedHistorics);
+
+        
+        ObjectMapper objectMapper = new ObjectMapper();
+
+      
+        objectMapper.registerModule(new JavaTimeModule());
+
+        String jsonParams = objectMapper.writeValueAsString(params);
+        
+        forecastService.postForEntity("5729", "generate-forecast", jsonParams, ForecastDTO.class);
+        
     }
+
+
+
 }

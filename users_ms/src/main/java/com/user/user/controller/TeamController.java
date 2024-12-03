@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.azure.core.annotation.Get;
 import com.user.user.domain.athlete.Athlete;
 import com.user.user.domain.athlete.InjuredAthleteDTO;
 import com.user.user.domain.responseMessage.ResponseMessage;
@@ -28,6 +30,7 @@ import com.user.user.domain.team.Team;
 import com.user.user.domain.team.TeamDTO;
 import com.user.user.exception.ResourceNotFoundException;
 import com.user.user.service.TeamService;
+
 
 @RestController
 @RequestMapping("teams")
@@ -110,9 +113,17 @@ public class TeamController {
 
     @GetMapping("generate-forecast/{challengerId}/{challengedId}")
     public ResponseEntity<ResponseMessage<?>> generateForecast(@PathVariable UUID challengerId, @PathVariable UUID challengedId) {
-        service.generateForecast(challengerId, challengedId);
-
-        return null;
+        try {
+            // Chama o serviço para gerar a previsão
+            service.generateForecast(challengerId, challengedId);
+            
+            // Retorna uma resposta com sucesso
+            return ResponseEntity.ok(new ResponseMessage<>("Forecast generated successfully"));
+        } catch (Exception e) {
+            // Retorna uma resposta de erro
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(new ResponseMessage<>("Error generating forecast: " + e.getMessage()));
+        }
     }
 
     // PUT
