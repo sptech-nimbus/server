@@ -155,12 +155,12 @@ public class TeamController {
         }
     }
 
-    @PostMapping("ms-change-level/{id}")
-    public ResponseEntity<ResponseMessage<?>> changeLevel(@PathVariable UUID id, @RequestParam Integer level) {
-        service.alterarLevel(id, level);
+    // @PostMapping("ms-change-level/{id}")
+    // public ResponseEntity<ResponseMessage<?>> changeLevel(@PathVariable UUID id, @RequestParam Integer level) {
+    //     service.alterarLevel(id, level);
 
-        return ResponseEntity.status(200).build();
-    }
+    //     return ResponseEntity.status(200).build();
+    // }
 
     // DELETE
     @DeleteMapping("/{id}")
