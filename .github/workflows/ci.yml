@@ -48,7 +48,8 @@ jobs:
                     --build-arg SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }} \
                     --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }} \
                     --build-arg AZURE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }} \
-                    -t $IMAGE_NAME .
+                    -t $IMAGE_NAME \
+                    .
                 docker push $IMAGE_NAME
                 cd ..
             done
