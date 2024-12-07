@@ -21,6 +21,6 @@ ENV AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING}
 
 RUN echo "USERS_URL_DATABASE=${USERS_URL_DATABASE}"
 
-ADD /target/${JAR_FILE} /app/app.jar
+COPY /target/${JAR_FILE} /app/app.jar
 WORKDIR /app
 ENTRYPOINT ["java", "-jar", "app.jar"]
