@@ -38,7 +38,7 @@ jobs:
                 cd $SERVICE
                 mvn clean package -DskipTests
                 JAR_FILE=$(ls target/*.jar | xargs -n 1 basename)
-                ls -l gateway/target/
+                ls -l target/
                 IMAGE_NAME=zzzmiike/$SERVICE:4.0.0
                 docker build \
                     --build-arg USERS_URL_DATABASE="${{ secrets.USERS_URL_DATABASE }}" \
