@@ -39,17 +39,7 @@ jobs:
                 mvn clean package -DskipTests
                 JAR_FILE=$(ls target/*.jar | xargs -n 1 basename)
                 IMAGE_NAME=zzzmiike/$SERVICE:4.0.0
-                docker build \
-                      --build-arg JAR_FILE=$JAR_FILE \
-                    --build-arg USERS_URL_DATABASE="${{ secrets.USERS_URL_DATABASE }}" \
-                    --build-arg EVENTS_URL_DATABASE="${{ secrets.EVENTS_URL_DATABASE }}" \
-                    --build-arg DATABASE_USERNAME="${{ secrets.DATABASE_USERNAME }}" \
-                    --build-arg DATABASE_PASSWORD="${{ secrets.DATABASE_PASSWORD }}" \
-                    --build-arg SPRING_MAIL_USERNAME="${{ secrets.SPRING_MAIL_USERNAME }}" \
-                    --build-arg SPRING_MAIL_PASSWORD="${{ secrets.SPRING_MAIL_PASSWORD }}" \
-                    --build-arg JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-                    --build-arg AZURE_STORAGE_CONNECTION_STRING="${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" \
-                    -t $IMAGE_NAME \
+                docker build --build-arg JAR_FILE=$JAR_FILE --build-arg USERS_URL_DATABASE="${{ secrets.USERS_URL_DATABASE }}" --build-arg EVENTS_URL_DATABASE="${{ secrets.EVENTS_URL_DATABASE }}" --build-arg DATABASE_USERNAME="${{ secrets.DATABASE_USERNAME }}" --build-arg DATABASE_PASSWORD="${{ secrets.DATABASE_PASSWORD }}" --build-arg SPRING_MAIL_USERNAME="${{ secrets.SPRING_MAIL_USERNAME }}" --build-arg SPRING_MAIL_PASSWORD="${{ secrets.SPRING_MAIL_PASSWORD }}" --build-arg JWT_SECRET="${{ secrets.JWT_SECRET }}" --build-arg AZURE_STORAGE_CONNECTION_STRING="${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" -t $IMAGE_NAME \
                     .
                 docker push $IMAGE_NAME
                 cd ..
