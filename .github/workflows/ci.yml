@@ -1,8 +1,8 @@
-name: Continuos Integration - Nimbus
+name: Continuous Integration - Nimbus
 
 on:
   push:
-      branches: [ main ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
     types: [ opened, reopened ]
@@ -34,20 +34,30 @@ jobs:
 
       - name: Build Docker Images
         run: |
-            for SERVICE in gateway users_ms events_ms; do
-                cd $SERVICE
-                mvn clean package -DskipTests
-                JAR_FILE=$(ls target/*.jar | xargs -n 1 basename)
-                IMAGE_NAME=zzzmiike/$SERVICE:4.0.0
-                docker build --build-arg JAR_FILE=$JAR_FILE --build-arg USERS_URL_DATABASE="${{ secrets.USERS_URL_DATABASE }}" --build-arg EVENTS_URL_DATABASE="${{ secrets.EVENTS_URL_DATABASE }}" --build-arg DATABASE_USERNAME="${{ secrets.DATABASE_USERNAME }}" --build-arg DATABASE_PASSWORD="${{ secrets.DATABASE_PASSWORD }}" --build-arg SPRING_MAIL_USERNAME="${{ secrets.SPRING_MAIL_USERNAME }}" --build-arg SPRING_MAIL_PASSWORD="${{ secrets.SPRING_MAIL_PASSWORD }}" --build-arg JWT_SECRET="${{ secrets.JWT_SECRET }}" --build-arg AZURE_STORAGE_CONNECTION_STRING="${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" -t $IMAGE_NAME \
-                    .
-                docker push $IMAGE_NAME
-                cd ..
-            done
-
-            cd node_chat_ms
-            npm install
-            IMAGE_NAME=zzzmiike/node_chat_ms:2.0.0
-            docker build -t $IMAGE_NAME .
+          for SERVICE in gateway users_ms events_ms; do
+            cd $SERVICE
+            mvn clean package -DskipTests
+            JAR_FILE=$(ls target/*.jar | xargs -n 1 basename)
+            IMAGE_NAME=zzzmiike/$SERVICE:4.0.0
+            docker build --build-arg JAR_FILE=$JAR_FILE \
+                         --build-arg USERS_URL_DATABASE="${{ secrets.USERS_URL_DATABASE }}" \
+                         --build-arg EVENTS_URL_DATABASE="${{ secrets.EVENTS_URL_DATABASE }}" \
+                         --build-arg DATABASE_USERNAME="${{ secrets.DATABASE_USERNAME }}" \
+                         --build-arg DATABASE_PASSWORD="${{ secrets.DATABASE_PASSWORD }}" \
+                         --build-arg SPRING_MAIL_USERNAME="${{ secrets.SPRING_MAIL_USERNAME }}" \
+                         --build-arg SPRING_MAIL_PASSWORD="${{ secrets.SPRING_MAIL_PASSWORD }}" \
+                         --build-arg JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+                         --build-arg AZURE_STORAGE_CONNECTION_STRING="${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" \
+                         -t $IMAGE_NAME .
             docker push $IMAGE_NAME
             cd ..
+          done
+
+      - name: Build Node.js Service
+        run: |
+          cd node_chat_ms
+          npm install
+          IMAGE_NAME=zzzmiike/node_chat_ms:2.0.0
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
+          cd ..
