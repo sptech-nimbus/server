@@ -32,6 +32,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Print Environment Variables
+        run: printenv
+
       - name: Build Docker Images
         run: |
           for SERVICE in users_ms; do
