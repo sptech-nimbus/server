@@ -34,7 +34,7 @@ jobs:
 
       - name: Build Docker Images
         run: |
-          for SERVICE in gateway users_ms events_ms; do
+          for SERVICE in users_ms; do
             cd $SERVICE
             mvn clean package -DskipTests
             JAR_FILE=$(ls target/*.jar | xargs -n 1 basename)
