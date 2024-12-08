@@ -32,15 +32,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Print Secrets
+      - name: Create .env file
         run: |
-          echo "USERS_URL_DATABASE=${{ secrets.USERS_URL_DATABASE }}"
-          echo "DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}"
-          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}"
-          echo "SPRING_MAIL_USERNAME=${{ secrets.SPRING_MAIL_USERNAME }}"
-          echo "SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }}"
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}"
-          echo "AZURE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}"
+          echo "USERS_URL_DATABASE=${{ secrets.USERS_URL_DATABASE }}" >> .env
+          echo "DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}" >> .env
+          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
+          echo "SPRING_MAIL_USERNAME=${{ secrets.SPRING_MAIL_USERNAME }}" >> .env
+          echo "SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "AZURE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" >> .env
 
       - name: Build Docker Images
         run: |
@@ -49,16 +49,7 @@ jobs:
             mvn clean package -DskipTests
             JAR_FILE=$(ls target/*.jar | xargs -n 1 basename)
             IMAGE_NAME=zzzmiike/$SERVICE:4.0.0
-            docker build --build-arg JAR_FILE=$JAR_FILE \
-                         --build-arg USERS_URL_DATABASE="${{ secrets.USERS_URL_DATABASE }}" \
-                         --build-arg EVENTS_URL_DATABASE="${{ secrets.EVENTS_URL_DATABASE }}" \
-                         --build-arg DATABASE_USERNAME="${{ secrets.DATABASE_USERNAME }}" \
-                         --build-arg DATABASE_PASSWORD="${{ secrets.DATABASE_PASSWORD }}" \
-                         --build-arg SPRING_MAIL_USERNAME="${{ secrets.SPRING_MAIL_USERNAME }}" \
-                         --build-arg SPRING_MAIL_PASSWORD="${{ secrets.SPRING_MAIL_PASSWORD }}" \
-                         --build-arg JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-                         --build-arg AZURE_STORAGE_CONNECTION_STRING="${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" \
-                         -t $IMAGE_NAME .
+            docker build --build-arg JAR_FILE=$JAR_FILE -t $IMAGE_NAME .
             docker push $IMAGE_NAME
             cd ..
           done
