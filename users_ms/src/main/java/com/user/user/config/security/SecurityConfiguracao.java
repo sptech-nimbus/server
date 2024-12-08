@@ -135,7 +135,8 @@ public class SecurityConfiguracao {
         CorsConfiguration configuracao = new CorsConfiguration();
         String publicIp = System.getenv("PUBLIC_IP");
         String publicIp2 = System.getenv("PUBLIC_IP2");
-        configuracao.setAllowedOrigins(Arrays.asList("http://events-ms", "http://" + publicIp, "http://gateway", "http://localhost:5173", "http://" + publicIp2));
+        String corsOriginDNS = System.getenv("CORS_ORIGIN");
+        configuracao.setAllowedOrigins(Arrays.asList("http://events-ms", "http://gateway", "http://localhost:5173", "http://" + publicIp2, "http://" + corsOriginDNS, "http://" + publicIp));
         configuracao.setAllowedMethods(Arrays.asList(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),
