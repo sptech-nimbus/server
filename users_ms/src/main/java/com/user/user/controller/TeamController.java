@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.azure.core.annotation.Get;
 import com.user.user.domain.athlete.Athlete;
 import com.user.user.domain.athlete.InjuredAthleteDTO;
+import com.user.user.domain.athleteHistoric.ForecastDTO;
 import com.user.user.domain.responseMessage.ResponseMessage;
 import com.user.user.domain.team.ChangeTeamOwnerAcceptDTO;
 import com.user.user.domain.team.ChangeTeamOwnerRequestDTO;
@@ -112,13 +113,13 @@ public class TeamController {
     }
 
     @GetMapping("generate-forecast/{challengerId}/{challengedId}")
-    public ResponseEntity<ResponseMessage<?>> generateForecast(@PathVariable UUID challengerId, @PathVariable UUID challengedId) {
+    public ResponseEntity<?> generateForecast(@PathVariable UUID challengerId, @PathVariable UUID challengedId) {
         try {
             // Chama o serviço para gerar a previsão
-            service.generateForecast(challengerId, challengedId);
+            ForecastDTO forecast = service.generateForecast(challengerId, challengedId);
             
             // Retorna uma resposta com sucesso
-            return ResponseEntity.ok(new ResponseMessage<>("Forecast generated successfully"));
+            return ResponseEntity.ok(forecast);
         } catch (Exception e) {
             // Retorna uma resposta de erro
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

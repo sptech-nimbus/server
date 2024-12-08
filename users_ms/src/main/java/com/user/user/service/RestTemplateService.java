@@ -49,7 +49,7 @@ public class RestTemplateService<T> {
                     classType
             );
 
-            System.out.println("responseEntity" + responseEntity);
+            System.out.println("responseEntity body: " + responseEntity.getBody());
 
             
             return responseEntity.getBody();

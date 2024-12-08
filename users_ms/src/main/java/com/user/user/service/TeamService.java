@@ -240,7 +240,7 @@ public class TeamService {
 
     private final RestTemplateService<ForecastDTO> forecastService;
 
-    public void generateForecast(UUID challengerId, UUID challengedId) throws Exception {
+    public ForecastDTO generateForecast(UUID challengerId, UUID challengedId) throws Exception {
       
         List<AthleteHistoric> challengerHistorics = athleteHistoricRepository.findByTeamId(challengerId);
         List<AthleteHistoric> challengedHistorics = athleteHistoricRepository.findByTeamId(challengedId);
@@ -258,7 +258,7 @@ public class TeamService {
 
         String jsonParams = objectMapper.writeValueAsString(params);
         
-        forecastService.postForEntity("5729", "generate-forecast", jsonParams, ForecastDTO.class);
+        return forecastService.postForEntity("5729", "generate-forecast", jsonParams, ForecastDTO.class);
         
     }
 
