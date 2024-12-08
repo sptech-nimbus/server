@@ -1,14 +1,37 @@
+# syntax=docker/dockerfile:1
 FROM eclipse-temurin:17-jdk-alpine
 RUN mkdir /app
 EXPOSE 3000
 
 ARG JAR_FILE
 
-COPY .env /app/.env
+# Definindo os argumentos para as secrets
+ARG USERS_URL_DATABASE
+ARG DATABASE_USERNAME
+ARG DATABASE_PASSWORD
+ARG SPRING_MAIL_USERNAME
+ARG SPRING_MAIL_PASSWORD
+ARG JWT_SECRET
+ARG AZURE_STORAGE_CONNECTION_STRING
+
+# Usando as secrets com --mount=type=secret
+RUN --mount=type=secret,id=USERS_URL_DATABASE,env=USERS_URL_DATABASE \
+    --mount=type=secret,id=DATABASE_USERNAME,env=DATABASE_USERNAME \
+    --mount=type=secret,id=DATABASE_PASSWORD,env=DATABASE_PASSWORD \
+    --mount=type=secret,id=SPRING_MAIL_USERNAME,env=SPRING_MAIL_USERNAME \
+    --mount=type=secret,id=SPRING_MAIL_PASSWORD,env=SPRING_MAIL_PASSWORD \
+    --mount=type=secret,id=JWT_SECRET,env=JWT_SECRET \
+    --mount=type=secret,id=AZURE_STORAGE_CONNECTION_STRING,env=AZURE_STORAGE_CONNECTION_STRING \
+    echo "Secrets loaded"
+
+ENV USERS_URL_DATABASE=${USERS_URL_DATABASE}
+ENV DATABASE_USERNAME=${DATABASE_USERNAME}
+ENV DATABASE_PASSWORD=${DATABASE_PASSWORD}
+ENV SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
+ENV SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
+ENV JWT_SECRET=${JWT_SECRET}
+ENV AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING}
+
 COPY /target/${JAR_FILE} /app/app.jar
 WORKDIR /app
-
-RUN apk add --no-cache bash
-RUN echo "source /app/.env" >> /etc/profile
-
-ENTRYPOINT ["bash", "-c", "source /app/.env && java -jar app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
