@@ -32,8 +32,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Print Environment Variables
-        run: printenv
+      - name: Print Secrets
+        run: |
+          echo "USERS_URL_DATABASE=${{ secrets.USERS_URL_DATABASE }}"
+          echo "DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}"
+          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}"
+          echo "SPRING_MAIL_USERNAME=${{ secrets.SPRING_MAIL_USERNAME }}"
+          echo "SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }}"
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}"
+          echo "AZURE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}"
 
       - name: Build Docker Images
         run: |
