@@ -57,7 +57,7 @@ jobs:
           platforms: linux/amd64
           tags: zzzmiike/users_ms:4.0.0
           build-args: |
-            JAR_FILE=*.jar
+            JAR_FILE=${JAR_FILE}.jar
           secrets: |
             USERS_URL_DATABASE=${{ secrets.USERS_URL_DATABASE }}
             DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}
