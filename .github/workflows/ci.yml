@@ -41,7 +41,7 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./users_ms
           platforms: linux/amd64,linux/arm64
           tags: zzzmiike/users_ms:4.0.0
           build-args: |
