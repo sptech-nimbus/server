@@ -41,6 +41,7 @@ jobs:
             ${{ runner.os }}-maven
     
       - name: Build JAR
+        working-directory: ./users_ms
         run: mvn clean package -DskipTests
 
       - name: Log in to Docker Hub
