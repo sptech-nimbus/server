@@ -42,7 +42,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./users_ms
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: zzzmiike/users_ms:4.0.0
           build-args: |
             JAR_FILE=target/*.jar
