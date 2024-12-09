@@ -55,6 +55,7 @@ jobs:
         with:
           context: ./users_ms
           platforms: linux/amd64
+          push: true
           tags: zzzmiike/users_ms:4.0.0
           build-args: |
             JAR_FILE=*.jar
