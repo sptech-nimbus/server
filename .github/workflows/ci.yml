@@ -65,6 +65,7 @@ jobs:
             SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             AZURE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          
 
       - name: Build Node.js Service
         run: |
