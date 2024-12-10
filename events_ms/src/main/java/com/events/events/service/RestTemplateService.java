@@ -54,7 +54,7 @@ public class RestTemplateService<T> {
 
     public void patchLevel(UUID teamId, Integer level) {
         try {
-            ResponseEntity<?> r = restTemplate.postForObject("http://localhost:3000/teams/ms-change-level/"+teamId+"?level="+level, null, ResponseEntity.class);
+            ResponseEntity<?> r = restTemplate.postForObject("http://users-ms:3000/teams/ms-change-level/"+teamId+"?level="+level, null, ResponseEntity.class);
         } catch (Exception e) {
             throw e;
         }
@@ -66,7 +66,7 @@ public class RestTemplateService<T> {
 
             headers.add("jwt-secret", jwtSecret);
 
-            String httpUrl = "http://localhost:" + port + "/" + endPoint + "/" + id;
+            String httpUrl = "http://users-ms:" + port + "/" + endPoint + "/" + id;
 
             HttpEntity<String> entity = new HttpEntity<String>(headers);
 
