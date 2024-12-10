@@ -49,6 +49,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Determine JAR File Name
+        working-directory: ./users_ms
+        run: echo "JAR_FILE=$(ls target/*.jar | xargs -n 1 basename)" >> $GITHUB_ENV
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
@@ -58,6 +62,7 @@ jobs:
           push: true
           tags: zzzmiike/users_ms:4.0.0
           build-args: |
+            JAR_FILE=${{ env.JAR_FILE }}
             USERS_URL_DATABASE=${{ secrets.USERS_URL_DATABASE }}
             DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}
             DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
@@ -75,7 +80,3 @@ jobs:
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
           cd ..
-
-      - name: Debug Docker build args
-        run: echo "USERS_URL_DATABASE=${{ secrets.USERS_URL_DATABASE }} DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}"
-        
