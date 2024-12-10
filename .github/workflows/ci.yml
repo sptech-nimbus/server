@@ -46,10 +46,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
     
-      - name: Build JAR
+      - name: Build JAR USERS
         working-directory: ./users_ms
         run: mvn clean package -DskipTests
-      
+
       - name: Determine JAR File Name
         working-directory: ./users_ms
         run: echo "JAR_FILE=$(ls target/*.jar | xargs -n 1 basename)" >> $GITHUB_ENV
@@ -71,6 +71,49 @@ jobs:
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             AZURE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
           
+      - name: Build JAR EVENTS
+        working-directory: ./events_ms
+        run: mvn clean package -DskipTests
+    
+      - name: Determine JAR File Name
+        working-directory: ./events_ms
+        run: echo "JAR_FILE=$(ls target/*.jar | xargs -n 1 basename)" >> $GITHUB_ENV
+    
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./events_ms
+          platforms: linux/amd64
+          push: true
+          tags: zzzmiike/events_ms:4.0.0
+          build-args: |
+                JAR_FILE=${{ env.JAR_FILE }}
+                EVENTS_URL_DATABASE=${{ secrets.EVENTS_URL_DATABASE }}
+                DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}
+                DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
+                SPRING_MAIL_USERNAME=${{ secrets.SPRING_MAIL_USERNAME }}
+                SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }}
+                JWT_SECRET=${{ secrets.JWT_SECRET }}
+                AZURE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+
+
+      - name: Build JAR Gateway
+        working-directory: ./gateway
+        run: mvn clean package -DskipTests
+            
+      - name: Determine JAR File Name
+        working-directory: ./gateway
+        run: echo "JAR_FILE=$(ls target/*.jar | xargs -n 1 basename)" >> $GITHUB_ENV
+    
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./gateway
+          platforms: linux/amd64
+          push: true
+          tags: zzzmiike/gateway:4.0.0
+          build-args: |
+                JAR_FILE=${{ env.JAR_FILE }}
 
       - name: Build Node.js Service
         run: |
